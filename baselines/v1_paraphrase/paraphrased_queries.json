@@ -1,0 +1,102 @@
+[
+  {
+    "query": "What's to the left of the sink?",
+    "source_query": "What is left of the sink?",
+    "expected": ["toilet"]
+  },
+  {
+    "query": "Which object is on the left side of the sink?",
+    "source_query": "What is left of the sink?",
+    "expected": ["toilet"]
+  },
+  {
+    "query": "What sits under the mirror?",
+    "source_query": "What is below the mirror?",
+    "expected": ["sink"]
+  },
+  {
+    "query": "Which object is directly beneath the mirror?",
+    "source_query": "What is below the mirror?",
+    "expected": ["sink"]
+  },
+  {
+    "query": "What's close to the back wall?",
+    "source_query": "What is near the back wall?",
+    "expected": ["trash_can", "black_door"]
+  },
+  {
+    "query": "Which objects are by the back wall?",
+    "source_query": "What is near the back wall?",
+    "expected": ["trash_can", "black_door"]
+  },
+  {
+    "query": "Which objects are mounted on the right wall?",
+    "source_query": "What is on the right wall?",
+    "expected": ["paper_towel_dispenser", "right_grab_bar"]
+  },
+  {
+    "query": "What's attached to the right wall?",
+    "source_query": "What is on the right wall?",
+    "expected": ["paper_towel_dispenser", "right_grab_bar"]
+  },
+  {
+    "query": "Which zone contains the trash can?",
+    "source_query": "Where is the trash can?",
+    "expected": ["back_left_floor"]
+  },
+  {
+    "query": "In what part of the room is the trash can?",
+    "source_query": "Where is the trash can?",
+    "expected": ["back_left_floor"]
+  },
+  {
+    "query": "What sits in front of the toilet?",
+    "source_query": "What is in front of the toilet?",
+    "expected": ["floor_drain"]
+  },
+  {
+    "query": "Which object is directly in front of the toilet?",
+    "source_query": "What is in front of the toilet?",
+    "expected": ["floor_drain"]
+  },
+  {
+    "query": "Which zone is the vending machine in?",
+    "source_query": "Where is the vending machine?",
+    "expected": ["left_front_wall"]
+  },
+  {
+    "query": "Where can I find the vending machine?",
+    "source_query": "Where is the vending machine?",
+    "expected": ["left_front_wall"]
+  },
+  {
+    "query": "What's to the right of the toilet?",
+    "source_query": "What is right of the toilet?",
+    "expected": ["sink"]
+  },
+  {
+    "query": "Which object is on the right side of the toilet?",
+    "source_query": "What is right of the toilet?",
+    "expected": ["sink"]
+  },
+  {
+    "query": "What sits behind the toilet?",
+    "source_query": "What is behind the toilet?",
+    "expected": ["black_door"]
+  },
+  {
+    "query": "Which object is directly behind the toilet?",
+    "source_query": "What is behind the toilet?",
+    "expected": ["black_door"]
+  },
+  {
+    "query": "Which wall is the paper towel dispenser on?",
+    "source_query": "Where is the paper towel dispenser?",
+    "expected": ["right_brick_wall"]
+  },
+  {
+    "query": "Where's the paper towel dispenser located?",
+    "source_query": "Where is the paper towel dispenser?",
+    "expected": ["right_brick_wall"]
+  }
+]

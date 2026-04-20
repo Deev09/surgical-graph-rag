@@ -1,0 +1,727 @@
+{
+  "baseline_id": "v1_paraphrase",
+  "source_baseline": "v1",
+  "parser_mode": "llm_first",
+  "exported_at": "2026-04-20T03:41:47.934116+00:00",
+  "summary": {
+    "n_queries": 20,
+    "top1_accuracy": 0.95,
+    "topk_recall": 0.95,
+    "avg_false_positives_per_query": 0.05,
+    "strict_top1_accuracy": 0.85,
+    "strict_topk_recall": 0.85,
+    "intent_congruent_rate": 0.85,
+    "hit_category_counts": {
+      "strict_hit": 17,
+      "intent_cushion": 2,
+      "miss": 1
+    },
+    "answer_type_counts": {
+      "label": 14,
+      "zone": 6
+    },
+    "unparseable_count": 0,
+    "parser_drift_count_over_parsed": 3,
+    "parser_drift_rate_over_parsed": 0.15,
+    "parser_source_breakdown": {
+      "llm": 20
+    },
+    "mean_retry_count": 0,
+    "mean_latency_ms": 1481.3405104679987,
+    "p95_latency_ms": 1624.0589186898433
+  },
+  "rows": [
+    {
+      "query": "What's to the left of the sink?",
+      "source_query": "What is left of the sink?",
+      "expected": [
+        "toilet"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "toilet",
+      "topk_labels": [
+        "toilet"
+      ],
+      "pruned_labels": [
+        "toilet"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "LEFT_OF",
+      "paraphrase_anchor": "sink",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1463.3106249384582
+    },
+    {
+      "query": "Which object is on the left side of the sink?",
+      "source_query": "What is left of the sink?",
+      "expected": [
+        "toilet"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "toilet",
+      "topk_labels": [
+        "toilet"
+      ],
+      "pruned_labels": [
+        "toilet"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "LEFT_OF",
+      "paraphrase_anchor": "sink",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1500.4899590276182
+    },
+    {
+      "query": "What sits under the mirror?",
+      "source_query": "What is below the mirror?",
+      "expected": [
+        "sink"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "sink",
+      "topk_labels": [
+        "sink"
+      ],
+      "pruned_labels": [
+        "sink"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "BELOW",
+      "paraphrase_anchor": "mirror",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1428.6724999547005
+    },
+    {
+      "query": "Which object is directly beneath the mirror?",
+      "source_query": "What is below the mirror?",
+      "expected": [
+        "sink"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "sink",
+      "topk_labels": [
+        "sink"
+      ],
+      "pruned_labels": [
+        "sink"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "BELOW",
+      "paraphrase_anchor": "mirror",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1435.701166978106
+    },
+    {
+      "query": "What's close to the back wall?",
+      "source_query": "What is near the back wall?",
+      "expected": [
+        "trash_can",
+        "black_door"
+      ],
+      "k": 10,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "black_door",
+      "topk_labels": [
+        "black_door",
+        "trash_can"
+      ],
+      "pruned_labels": [
+        "black_door",
+        "trash_can"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_near_zone",
+      "paraphrase_intent": "describe_near_zone",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": "back_wall",
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1418.9193749334663
+    },
+    {
+      "query": "Which objects are by the back wall?",
+      "source_query": "What is near the back wall?",
+      "expected": [
+        "trash_can",
+        "black_door"
+      ],
+      "k": 10,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "black_door",
+      "topk_labels": [
+        "black_door",
+        "trash_can"
+      ],
+      "pruned_labels": [
+        "black_door",
+        "trash_can"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_near_zone",
+      "paraphrase_intent": "describe_near_zone",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": "back_wall",
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1411.8258329108357
+    },
+    {
+      "query": "Which objects are mounted on the right wall?",
+      "source_query": "What is on the right wall?",
+      "expected": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ],
+      "k": 10,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "paper_towel_dispenser",
+      "topk_labels": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ],
+      "pruned_labels": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_zone",
+      "paraphrase_intent": "describe_zone",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": "right_wall",
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1386.9231671560556
+    },
+    {
+      "query": "What's attached to the right wall?",
+      "source_query": "What is on the right wall?",
+      "expected": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ],
+      "k": 10,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "paper_towel_dispenser",
+      "topk_labels": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ],
+      "pruned_labels": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_zone",
+      "paraphrase_intent": "describe_zone",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": "right_wall",
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1442.6716670859605
+    },
+    {
+      "query": "Which zone contains the trash can?",
+      "source_query": "Where is the trash can?",
+      "expected": [
+        "back_left_floor"
+      ],
+      "k": 4,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "trash_can",
+      "topk_labels": [
+        "trash_can"
+      ],
+      "pruned_labels": [
+        "trash_can"
+      ],
+      "answer_type": "zone",
+      "intent_congruent": false,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "intent_cushion",
+      "source_intent": "find_location",
+      "paraphrase_intent": "find_object",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": null,
+      "parser_drift": true,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1546.9364169985056
+    },
+    {
+      "query": "In what part of the room is the trash can?",
+      "source_query": "Where is the trash can?",
+      "expected": [
+        "back_left_floor"
+      ],
+      "k": 10,
+      "top1_ok": false,
+      "topk_ok": false,
+      "false_positives": 1,
+      "top1_label": "ceiling_vent",
+      "topk_labels": [
+        "ceiling_vent"
+      ],
+      "pruned_labels": [
+        "ceiling_vent"
+      ],
+      "answer_type": "zone",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "source_intent": "find_location",
+      "paraphrase_intent": "describe_zone",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": "ceiling_center",
+      "parser_drift": true,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1605.5941248778254
+    },
+    {
+      "query": "What sits in front of the toilet?",
+      "source_query": "What is in front of the toilet?",
+      "expected": [
+        "floor_drain"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "floor_drain",
+      "topk_labels": [
+        "floor_drain"
+      ],
+      "pruned_labels": [
+        "floor_drain"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "IN_FRONT_OF",
+      "paraphrase_anchor": "toilet",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1625.0307499431074
+    },
+    {
+      "query": "Which object is directly in front of the toilet?",
+      "source_query": "What is in front of the toilet?",
+      "expected": [
+        "floor_drain"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "floor_drain",
+      "topk_labels": [
+        "floor_drain"
+      ],
+      "pruned_labels": [
+        "floor_drain"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "IN_FRONT_OF",
+      "paraphrase_anchor": "toilet",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1523.188583087176
+    },
+    {
+      "query": "Which zone is the vending machine in?",
+      "source_query": "Where is the vending machine?",
+      "expected": [
+        "left_front_wall"
+      ],
+      "k": 4,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "vending_machine",
+      "topk_labels": [
+        "vending_machine"
+      ],
+      "pruned_labels": [
+        "vending_machine"
+      ],
+      "answer_type": "zone",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "find_location",
+      "paraphrase_intent": "find_location",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1459.536333102733
+    },
+    {
+      "query": "Where can I find the vending machine?",
+      "source_query": "Where is the vending machine?",
+      "expected": [
+        "left_front_wall"
+      ],
+      "k": 4,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "vending_machine",
+      "topk_labels": [
+        "vending_machine"
+      ],
+      "pruned_labels": [
+        "vending_machine"
+      ],
+      "answer_type": "zone",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "find_location",
+      "paraphrase_intent": "find_location",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1459.1498330701143
+    },
+    {
+      "query": "What's to the right of the toilet?",
+      "source_query": "What is right of the toilet?",
+      "expected": [
+        "sink"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "sink",
+      "topk_labels": [
+        "sink"
+      ],
+      "pruned_labels": [
+        "sink"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "RIGHT_OF",
+      "paraphrase_anchor": "toilet",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1506.8123748060316
+    },
+    {
+      "query": "Which object is on the right side of the toilet?",
+      "source_query": "What is right of the toilet?",
+      "expected": [
+        "sink"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "sink",
+      "topk_labels": [
+        "sink"
+      ],
+      "pruned_labels": [
+        "sink"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "RIGHT_OF",
+      "paraphrase_anchor": "toilet",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1501.4418750070035
+    },
+    {
+      "query": "What sits behind the toilet?",
+      "source_query": "What is behind the toilet?",
+      "expected": [
+        "black_door"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "black_door",
+      "topk_labels": [
+        "black_door"
+      ],
+      "pruned_labels": [
+        "black_door"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "BEHIND",
+      "paraphrase_anchor": "toilet",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1490.1198749430478
+    },
+    {
+      "query": "Which object is directly behind the toilet?",
+      "source_query": "What is behind the toilet?",
+      "expected": [
+        "black_door"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "black_door",
+      "topk_labels": [
+        "black_door"
+      ],
+      "pruned_labels": [
+        "black_door"
+      ],
+      "answer_type": "label",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "describe_spatial",
+      "paraphrase_intent": "describe_spatial",
+      "paraphrase_relation": "BEHIND",
+      "paraphrase_anchor": "toilet",
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1491.9563338626176
+    },
+    {
+      "query": "Which wall is the paper towel dispenser on?",
+      "source_query": "Where is the paper towel dispenser?",
+      "expected": [
+        "right_brick_wall"
+      ],
+      "k": 10,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "paper_towel_dispenser",
+      "topk_labels": [
+        "paper_towel_dispenser"
+      ],
+      "pruned_labels": [
+        "paper_towel_dispenser"
+      ],
+      "answer_type": "zone",
+      "intent_congruent": false,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "intent_cushion",
+      "source_intent": "find_location",
+      "paraphrase_intent": "describe_zone",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": "right_brick_wall",
+      "parser_drift": true,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1512.774207862094
+    },
+    {
+      "query": "Where's the paper towel dispenser located?",
+      "source_query": "Where is the paper towel dispenser?",
+      "expected": [
+        "right_brick_wall"
+      ],
+      "k": 4,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "paper_towel_dispenser",
+      "topk_labels": [
+        "paper_towel_dispenser"
+      ],
+      "pruned_labels": [
+        "paper_towel_dispenser"
+      ],
+      "answer_type": "zone",
+      "intent_congruent": true,
+      "strict_top1_ok": true,
+      "strict_topk_ok": true,
+      "hit_category": "strict_hit",
+      "source_intent": "find_location",
+      "paraphrase_intent": "find_location",
+      "paraphrase_relation": null,
+      "paraphrase_anchor": null,
+      "paraphrase_zone_family": null,
+      "parser_drift": false,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1415.7552088145167
+    }
+  ]
+}

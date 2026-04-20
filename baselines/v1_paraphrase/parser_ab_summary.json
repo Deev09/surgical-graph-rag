@@ -1,0 +1,127 @@
+{
+  "exported_at": "2026-04-20T03:42:16.929690+00:00",
+  "source_baseline": "v1",
+  "paraphrase_set": "paraphrased_queries.json",
+  "modes": {
+    "regex": {
+      "output_file": "evaluation_table.regex.json",
+      "summary": {
+        "n_queries": 20,
+        "top1_accuracy": 0.45,
+        "topk_recall": 0.45,
+        "avg_false_positives_per_query": 0.4,
+        "strict_top1_accuracy": 0.25,
+        "strict_topk_recall": 0.25,
+        "intent_congruent_rate": 0.8,
+        "hit_category_counts": {
+          "strict_hit": 5,
+          "miss": 11,
+          "intent_cushion": 4
+        },
+        "answer_type_counts": {
+          "label": 14,
+          "zone": 6
+        },
+        "unparseable_count": 0,
+        "parser_drift_count_over_parsed": 15,
+        "parser_drift_rate_over_parsed": 0.75,
+        "parser_source_breakdown": {
+          "regex": 20
+        },
+        "mean_retry_count": 0,
+        "mean_latency_ms": 0.021741539239883423,
+        "p95_latency_ms": 0.15202269423753023
+      }
+    },
+    "llm": {
+      "output_file": "evaluation_table.llm.json",
+      "summary": {
+        "n_queries": 20,
+        "top1_accuracy": 0.95,
+        "topk_recall": 0.95,
+        "avg_false_positives_per_query": 0.05,
+        "strict_top1_accuracy": 0.85,
+        "strict_topk_recall": 0.85,
+        "intent_congruent_rate": 0.85,
+        "hit_category_counts": {
+          "strict_hit": 17,
+          "intent_cushion": 2,
+          "miss": 1
+        },
+        "answer_type_counts": {
+          "label": 14,
+          "zone": 6
+        },
+        "unparseable_count": 0,
+        "parser_drift_count_over_parsed": 3,
+        "parser_drift_rate_over_parsed": 0.15,
+        "parser_source_breakdown": {
+          "llm": 20
+        },
+        "mean_retry_count": 0,
+        "mean_latency_ms": 2081.3339728396386,
+        "p95_latency_ms": 13514.597802248318
+      }
+    },
+    "llm_first": {
+      "output_file": "evaluation_table.llm_first.json",
+      "summary": {
+        "n_queries": 20,
+        "top1_accuracy": 0.95,
+        "topk_recall": 0.95,
+        "avg_false_positives_per_query": 0.05,
+        "strict_top1_accuracy": 0.85,
+        "strict_topk_recall": 0.85,
+        "intent_congruent_rate": 0.85,
+        "hit_category_counts": {
+          "strict_hit": 17,
+          "intent_cushion": 2,
+          "miss": 1
+        },
+        "answer_type_counts": {
+          "label": 14,
+          "zone": 6
+        },
+        "unparseable_count": 0,
+        "parser_drift_count_over_parsed": 3,
+        "parser_drift_rate_over_parsed": 0.15,
+        "parser_source_breakdown": {
+          "llm": 20
+        },
+        "mean_retry_count": 0,
+        "mean_latency_ms": 1481.3405104679987,
+        "p95_latency_ms": 1624.0589186898433
+      }
+    },
+    "llm_strict": {
+      "output_file": "evaluation_table.llm_strict.json",
+      "summary": {
+        "n_queries": 20,
+        "top1_accuracy": 0.95,
+        "topk_recall": 0.95,
+        "avg_false_positives_per_query": 0.05,
+        "strict_top1_accuracy": 0.85,
+        "strict_topk_recall": 0.85,
+        "intent_congruent_rate": 0.85,
+        "hit_category_counts": {
+          "strict_hit": 17,
+          "intent_cushion": 2,
+          "miss": 1
+        },
+        "answer_type_counts": {
+          "label": 14,
+          "zone": 6
+        },
+        "unparseable_count": 0,
+        "parser_drift_count_over_parsed": 3,
+        "parser_drift_rate_over_parsed": 0.15,
+        "parser_source_breakdown": {
+          "llm": 20
+        },
+        "mean_retry_count": 0,
+        "mean_latency_ms": 1449.0271063172258,
+        "p95_latency_ms": 1541.0046797362156
+      }
+    }
+  }
+}
