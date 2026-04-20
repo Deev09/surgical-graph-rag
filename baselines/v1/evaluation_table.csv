@@ -1,0 +1,11 @@
+query,expected,top1_label,top1_ok,topk_ok,false_positives,k,topk_labels
+What is left of the sink?,toilet,toilet,True,True,0,6,toilet
+What is below the mirror?,sink,sink,True,True,0,6,sink
+What is near the back wall?,trash_can;black_door,black_door,True,True,0,10,black_door;trash_can
+What is on the right wall?,paper_towel_dispenser;right_grab_bar,paper_towel_dispenser,True,True,0,10,paper_towel_dispenser;right_grab_bar
+Where is the trash can?,back_left_floor,trash_can,True,True,0,4,trash_can
+What is in front of the toilet?,floor_drain,floor_drain,True,True,0,6,floor_drain
+Where is the vending machine?,left_front_wall,vending_machine,True,True,0,4,vending_machine
+What is right of the toilet?,sink,sink,True,True,0,6,sink
+What is behind the toilet?,black_door,black_door,True,True,0,6,black_door
+Where is the paper towel dispenser?,right_brick_wall,paper_towel_dispenser,True,True,0,4,paper_towel_dispenser

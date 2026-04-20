@@ -1,0 +1,34 @@
+{
+  "What is left of the sink?": [
+    "toilet"
+  ],
+  "What is below the mirror?": [
+    "sink"
+  ],
+  "What is near the back wall?": [
+    "trash_can",
+    "black_door"
+  ],
+  "What is on the right wall?": [
+    "paper_towel_dispenser",
+    "right_grab_bar"
+  ],
+  "Where is the trash can?": [
+    "back_left_floor"
+  ],
+  "What is in front of the toilet?": [
+    "floor_drain"
+  ],
+  "Where is the vending machine?": [
+    "left_front_wall"
+  ],
+  "What is right of the toilet?": [
+    "sink"
+  ],
+  "What is behind the toilet?": [
+    "black_door"
+  ],
+  "Where is the paper towel dispenser?": [
+    "right_brick_wall"
+  ]
+}

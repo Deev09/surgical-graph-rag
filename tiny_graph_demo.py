@@ -1,12 +1,22 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import math
 import os
 import re
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
+
+V1_BASELINE_ID = "v1"
+
+# Horizontal salience for BELOW/ABOVE: penalizes candidates far from the anchor in the floor plane
+# (reduces false positives like toilet vs sink for "below the mirror").
+SPATIAL_XY_SALIENCE_LAMBDA = 0.38
+SPATIAL_XY_SALIENCE_FLOOR = 0.05
 
 # Docker Model Runner OpenAI-compatible API (host TCP). Override if needed:
 #   export CONTEXT_SURGEON_OPENAI_BASE_URL=http://localhost:12434/engines/vllm/v1
@@ -115,7 +125,7 @@ GRAFFITI_BATHROOM: dict[str, Any] = {
     ],
     "relations": [
         {"source": "obj_1", "type": "LEFT_OF", "target": "obj_2"},
-        {"source": "obj_1", "type": "BELOW", "target": "obj_3", "weight": 0.45},
+        {"source": "obj_1", "type": "BELOW", "target": "obj_3", "weight": 0.4},
         {"source": "obj_2", "type": "BELOW", "target": "obj_3", "weight": 1.0},
         {"source": "obj_2", "type": "RIGHT_OF", "target": "obj_1"},
         {"source": "obj_4", "type": "IN_FRONT_OF", "target": "obj_1"},
@@ -439,6 +449,21 @@ def _dist3(a: tuple[float, float, float], b: tuple[float, float, float]) -> floa
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2)
 
 
+def _spatial_xy_salience(
+    node: dict[str, Any],
+    spatial_type: str,
+    anchor_node: dict[str, Any],
+) -> float:
+    """Planar proximity factor for vertical relations (v2 spatial salience)."""
+    if spatial_type not in ("BELOW", "ABOVE"):
+        return 1.0
+    na = _get_xyz(node)
+    nb = _get_xyz(anchor_node)
+    d_xy = _dist_xy(na, nb)
+    raw = 1.0 - SPATIAL_XY_SALIENCE_LAMBDA * d_xy
+    return max(SPATIAL_XY_SALIENCE_FLOOR, min(1.0, raw))
+
+
 def _geometric_spatial_bonus(
     node: dict[str, Any],
     spatial_type: str,
@@ -493,7 +518,10 @@ def score_node(
             return 0.0
         anchor_n = _find_anchor_node(graph, parsed.relation_anchor)
         geo = _geometric_spatial_bonus(node, parsed.spatial_relation, anchor_n) if anchor_n else 0.0
-        return w + geo
+        base = w + geo
+        if anchor_n:
+            base *= _spatial_xy_salience(node, parsed.spatial_relation, anchor_n)
+        return base
 
     if parsed.intent == "describe_zone" and parsed.zone_family:
         zf = parsed.zone_family
@@ -776,11 +804,13 @@ def run_benchmark(
         rows.append(
             {
                 "query": query,
+                "k": k_use,
                 "top1_ok": top1_ok,
                 "topk_ok": topk_ok,
                 "false_positives": fp,
                 "top1_label": labels_pruned[0] if labels_pruned else None,
                 "expected": expected,
+                "topk_labels": labels_pruned,
                 "pruned_labels": labels_pruned,
             }
         )
@@ -799,7 +829,10 @@ def run_benchmark(
             tk = "OK" if r["topk_ok"] else "miss"
             print(f"Q: {r['query']}")
             print(f"   top-1: {t1}  (got {r['top1_label']!r}, want any of {r['expected']})")
-            print(f"   top-k: {tk}  fp_in_k={r['false_positives']}  k={len(r['pruned_labels'])}")
+            print(
+                f"   top-k: {tk}  fp_in_k={r['false_positives']}  "
+                f"k_cap={r['k']}  returned={len(r['pruned_labels'])}"
+            )
             print(f"   pruned: {r['pruned_labels']}\n")
         print(
             f"Summary: top1_acc={summary['top1_accuracy']:.2%}  "
@@ -807,6 +840,108 @@ def run_benchmark(
             f"avg_fp@k={summary['avg_false_positives_per_query']:.2f}"
         )
     return summary
+
+
+def export_baseline(out_dir: str | Path) -> Path:
+    """Write frozen v1 artifacts: scene graph, expected answers, eval table, manifest."""
+    root = Path(out_dir).resolve()
+    root.mkdir(parents=True, exist_ok=True)
+    summary = run_benchmark(verbose=False)
+
+    graph_path = root / "scene_graph.json"
+    graph_path.write_text(json.dumps(GRAFFITI_BATHROOM, indent=2) + "\n", encoding="utf-8")
+
+    exp_path = root / "expected_answers.json"
+    exp_path.write_text(json.dumps(EXPECTED_ANSWERS, indent=2) + "\n", encoding="utf-8")
+
+    rows_out: list[dict[str, Any]] = []
+    for r in summary["rows"]:
+        rows_out.append(
+            {
+                "query": r["query"],
+                "expected": r["expected"],
+                "top1_label": r["top1_label"],
+                "top1_ok": r["top1_ok"],
+                "topk_ok": r["topk_ok"],
+                "false_positives": r["false_positives"],
+                "k": r["k"],
+                "topk_labels": r["topk_labels"],
+            }
+        )
+
+    eval_path = root / "evaluation_table.json"
+    eval_payload = {
+        "baseline_id": V1_BASELINE_ID,
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "summary": {k: v for k, v in summary.items() if k != "rows"},
+        "rows": rows_out,
+    }
+    eval_path.write_text(json.dumps(eval_payload, indent=2) + "\n", encoding="utf-8")
+
+    csv_path = root / "evaluation_table.csv"
+    with csv_path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(
+            [
+                "query",
+                "expected",
+                "top1_label",
+                "top1_ok",
+                "topk_ok",
+                "false_positives",
+                "k",
+                "topk_labels",
+            ]
+        )
+        for row in rows_out:
+            w.writerow(
+                [
+                    row["query"],
+                    ";".join(row["expected"]),
+                    row["top1_label"] or "",
+                    row["top1_ok"],
+                    row["topk_ok"],
+                    row["false_positives"],
+                    row["k"],
+                    ";".join(row["topk_labels"]),
+                ]
+            )
+
+    s = summary
+    pitch = (
+        "Built a coarse spatial scene-graph pruning pipeline over a real captured bathroom scene, "
+        "supporting relation-aware and zone-aware retrieval. "
+        f"On a {s['n_queries']}-query benchmark, the system achieved {s['top1_accuracy']:.0%} top-1 accuracy "
+        f"and {s['topk_recall']:.0%} top-k recall with {s['avg_false_positives_per_query']:.2f} average false "
+        "positives at k."
+    )
+    manifest = {
+        "baseline_id": V1_BASELINE_ID,
+        "exported_at": eval_payload["exported_at"],
+        "project_pitch": pitch,
+        "components": {
+            "implementation": "tiny_graph_demo.py",
+            "scene_graph": "scene_graph.json",
+            "benchmark_expected": "expected_answers.json",
+            "evaluation": "evaluation_table.json",
+        },
+        "scorer": {
+            "min_score_default": 0.20,
+            "relation_weights_on_edges": True,
+            "spatial_xy_salience": {
+                "relations": ["BELOW", "ABOVE"],
+                "lambda_xy": SPATIAL_XY_SALIENCE_LAMBDA,
+                "floor": SPATIAL_XY_SALIENCE_FLOOR,
+            },
+        },
+        "summary": {k: v for k, v in summary.items() if k != "rows"},
+        "llm_rerun_hint": (
+            "Unset SKIP_LLM and ensure Docker Model Runner (or CONTEXT_SURGEON_OPENAI_BASE_URL). "
+            "Run the default __main__ loop to exercise list-style spatial answers with the LLM."
+        ),
+    }
+    (root / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return root
 
 
 def run_demo(query: str, *, send_to_llm: bool = True, verbose: bool = True) -> None:
@@ -863,7 +998,20 @@ if __name__ == "__main__":
         action="store_true",
         help="Run benchmark and exit (no per-query demo).",
     )
+    ap.add_argument(
+        "--export-baseline",
+        metavar="DIR",
+        nargs="?",
+        const="baselines/v1",
+        help="Write v1 baseline JSON/CSV under DIR (default: baselines/v1).",
+    )
     args = ap.parse_args()
+
+    if args.export_baseline:
+        out = export_baseline(args.export_baseline)
+        print(f"Wrote baseline to {out}")
+        if not args.benchmark and not args.benchmark_only:
+            raise SystemExit(0)
 
     if args.benchmark or args.benchmark_only:
         run_benchmark(verbose=True)

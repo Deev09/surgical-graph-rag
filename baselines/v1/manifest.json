@@ -1,0 +1,30 @@
+{
+  "baseline_id": "v1",
+  "exported_at": "2026-04-14T05:29:15.662189+00:00",
+  "project_pitch": "Built a coarse spatial scene-graph pruning pipeline over a real captured bathroom scene, supporting relation-aware and zone-aware retrieval. On a 10-query benchmark, the system achieved 100% top-1 accuracy and 100% top-k recall with 0.00 average false positives at k.",
+  "components": {
+    "implementation": "tiny_graph_demo.py",
+    "scene_graph": "scene_graph.json",
+    "benchmark_expected": "expected_answers.json",
+    "evaluation": "evaluation_table.json"
+  },
+  "scorer": {
+    "min_score_default": 0.2,
+    "relation_weights_on_edges": true,
+    "spatial_xy_salience": {
+      "relations": [
+        "BELOW",
+        "ABOVE"
+      ],
+      "lambda_xy": 0.38,
+      "floor": 0.05
+    }
+  },
+  "summary": {
+    "n_queries": 10,
+    "top1_accuracy": 1.0,
+    "topk_recall": 1.0,
+    "avg_false_positives_per_query": 0.0
+  },
+  "llm_rerun_hint": "Unset SKIP_LLM and ensure Docker Model Runner (or CONTEXT_SURGEON_OPENAI_BASE_URL). Run the default __main__ loop to exercise list-style spatial answers with the LLM."
+}

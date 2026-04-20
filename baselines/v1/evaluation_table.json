@@ -1,0 +1,156 @@
+{
+  "baseline_id": "v1",
+  "exported_at": "2026-04-14T05:29:15.662189+00:00",
+  "summary": {
+    "n_queries": 10,
+    "top1_accuracy": 1.0,
+    "topk_recall": 1.0,
+    "avg_false_positives_per_query": 0.0
+  },
+  "rows": [
+    {
+      "query": "What is left of the sink?",
+      "expected": [
+        "toilet"
+      ],
+      "top1_label": "toilet",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 6,
+      "topk_labels": [
+        "toilet"
+      ]
+    },
+    {
+      "query": "What is below the mirror?",
+      "expected": [
+        "sink"
+      ],
+      "top1_label": "sink",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 6,
+      "topk_labels": [
+        "sink"
+      ]
+    },
+    {
+      "query": "What is near the back wall?",
+      "expected": [
+        "trash_can",
+        "black_door"
+      ],
+      "top1_label": "black_door",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 10,
+      "topk_labels": [
+        "black_door",
+        "trash_can"
+      ]
+    },
+    {
+      "query": "What is on the right wall?",
+      "expected": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ],
+      "top1_label": "paper_towel_dispenser",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 10,
+      "topk_labels": [
+        "paper_towel_dispenser",
+        "right_grab_bar"
+      ]
+    },
+    {
+      "query": "Where is the trash can?",
+      "expected": [
+        "back_left_floor"
+      ],
+      "top1_label": "trash_can",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 4,
+      "topk_labels": [
+        "trash_can"
+      ]
+    },
+    {
+      "query": "What is in front of the toilet?",
+      "expected": [
+        "floor_drain"
+      ],
+      "top1_label": "floor_drain",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 6,
+      "topk_labels": [
+        "floor_drain"
+      ]
+    },
+    {
+      "query": "Where is the vending machine?",
+      "expected": [
+        "left_front_wall"
+      ],
+      "top1_label": "vending_machine",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 4,
+      "topk_labels": [
+        "vending_machine"
+      ]
+    },
+    {
+      "query": "What is right of the toilet?",
+      "expected": [
+        "sink"
+      ],
+      "top1_label": "sink",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 6,
+      "topk_labels": [
+        "sink"
+      ]
+    },
+    {
+      "query": "What is behind the toilet?",
+      "expected": [
+        "black_door"
+      ],
+      "top1_label": "black_door",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 6,
+      "topk_labels": [
+        "black_door"
+      ]
+    },
+    {
+      "query": "Where is the paper towel dispenser?",
+      "expected": [
+        "right_brick_wall"
+      ],
+      "top1_label": "paper_towel_dispenser",
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "k": 4,
+      "topk_labels": [
+        "paper_towel_dispenser"
+      ]
+    }
+  ]
+}
