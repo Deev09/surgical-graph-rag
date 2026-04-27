@@ -13,10 +13,10 @@ from typing import Any
 
 V1_BASELINE_ID = "v1"
 
-# Horizontal salience for BELOW/ABOVE: penalizes candidates far from the anchor in the floor plane
-# (reduces false positives like toilet vs sink for "below the mirror").
-SPATIAL_XY_SALIENCE_LAMBDA = 0.38
-SPATIAL_XY_SALIENCE_FLOOR = 0.05
+# Horizontal salience constants for BELOW/ABOVE now live in scoring.spatial.
+# Re-imported here so export_baseline + external callers keep their reference via
+# tiny_graph_demo. Single source of truth is scoring.spatial.
+from scoring.spatial import SPATIAL_XY_SALIENCE_FLOOR, SPATIAL_XY_SALIENCE_LAMBDA  # noqa: E402
 
 # Docker Model Runner OpenAI-compatible API (host TCP). Override if needed:
 #   export CONTEXT_SURGEON_OPENAI_BASE_URL=http://localhost:12434/engines/vllm/v1
@@ -408,225 +408,39 @@ def _structured_rel_matches(
     return False
 
 
-def _best_spatial_relation_weight(
-    relations: list[Any],
-    spatial_type: str,
-    anchor: str,
-) -> float:
-    best = 0.0
-    for rel in relations:
-        if not isinstance(rel, dict):
-            continue
-        if rel.get("type") != spatial_type:
-            continue
-        tgt = rel.get("target")
-        if tgt is None or not _label_equiv(str(anchor), str(tgt)):
-            continue
-        w = float(rel.get("weight", 1.0))
-        best = max(best, w)
-    return best
+# Spatial / geometry helpers extracted to the scoring.* package. Re-imported
+# here so existing `from tiny_graph_demo import ...` callers still resolve.
+from scoring.geom import _dist3, _dist_xy, _find_anchor_node, _get_xyz  # noqa: E402
+from scoring.spatial import (  # noqa: E402
+    _best_spatial_relation_weight,
+    _geometric_spatial_bonus,
+    _spatial_xy_salience,
+)
 
 
-def _get_xyz(node: dict[str, Any]) -> tuple[float, float, float]:
-    p = node.get("xyz")
-    if not p or len(p) < 3:
-        return (0.0, 0.0, 0.0)
-    return (float(p[0]), float(p[1]), float(p[2]))
-
-
-def _find_anchor_node(scene_graph: list[dict[str, Any]], anchor: str) -> dict[str, Any] | None:
-    for n in scene_graph:
-        if _label_equiv(str(n["label"]), anchor):
-            return n
-    return None
-
-
-def _dist_xy(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
-    return math.hypot(a[0] - b[0], a[1] - b[1])
-
-
-def _dist3(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
-    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2)
-
-
-def _spatial_xy_salience(
-    node: dict[str, Any],
-    spatial_type: str,
-    anchor_node: dict[str, Any],
-) -> float:
-    """Planar proximity factor for vertical relations (v2 spatial salience)."""
-    if spatial_type not in ("BELOW", "ABOVE"):
-        return 1.0
-    na = _get_xyz(node)
-    nb = _get_xyz(anchor_node)
-    d_xy = _dist_xy(na, nb)
-    raw = 1.0 - SPATIAL_XY_SALIENCE_LAMBDA * d_xy
-    return max(SPATIAL_XY_SALIENCE_FLOOR, min(1.0, raw))
-
-
-def _geometric_spatial_bonus(
-    node: dict[str, Any],
-    spatial_type: str,
-    anchor_node: dict[str, Any],
-) -> float:
-    """Small tie-breaker from coarse xyz; relation weights stay primary."""
-    na = _get_xyz(node)
-    nb = _get_xyz(anchor_node)
-    d_xy = _dist_xy(na, nb)
-    d3 = _dist3(na, nb)
-
-    if spatial_type == "BELOW":
-        dz = nb[2] - na[2]
-        vertical = max(0.0, min(0.22, 0.05 * dz))
-        horiz = max(0.0, 0.16 - 0.04 * d_xy)
-        return vertical + horiz
-    if spatial_type == "ABOVE":
-        dz = na[2] - nb[2]
-        return max(0.0, min(0.22, 0.05 * dz))
-    if spatial_type == "LEFT_OF":
-        return max(0.0, 0.14 - 0.05 * max(0.0, na[0] - nb[0])) if na[0] < nb[0] else 0.0
-    if spatial_type == "RIGHT_OF":
-        return max(0.0, 0.14 - 0.05 * max(0.0, nb[0] - na[0])) if na[0] > nb[0] else 0.0
-    if spatial_type == "IN_FRONT_OF":
-        return max(0.0, 0.14 - 0.05 * max(0.0, na[1] - nb[1])) if na[1] > nb[1] else 0.0
-    if spatial_type == "BEHIND":
-        return max(0.0, 0.14 - 0.05 * max(0.0, nb[1] - na[1])) if na[1] < nb[1] else 0.0
-    if spatial_type == "NEAR":
-        return max(0.0, 0.2 - 0.055 * d3)
-    return 0.0
-
-
-def score_node(
-    node: dict[str, Any],
-    parsed: ParsedQuery,
-    *,
-    scene_graph: list[dict[str, Any]] | None = None,
-) -> float:
-    score = 0.0
-    rels: list[Any] = list(node.get("relations", []))
-
-    node_label = normalize_text(str(node["label"]).replace("_", " "))
-    node_type = normalize_text(node["attributes"].get("type", ""))
-    node_zone = str(node["zone"])
-    node_zone_norm = normalize_text(node_zone.replace("_", " "))
-    node_color = normalize_text(node["attributes"].get("color", ""))
-    graph = scene_graph if scene_graph is not None else scene
-
-    if parsed.intent == "describe_spatial" and parsed.spatial_relation and parsed.relation_anchor:
-        w = _best_spatial_relation_weight(rels, parsed.spatial_relation, parsed.relation_anchor)
-        if w <= 0:
-            return 0.0
-        anchor_n = _find_anchor_node(graph, parsed.relation_anchor)
-        geo = _geometric_spatial_bonus(node, parsed.spatial_relation, anchor_n) if anchor_n else 0.0
-        base = w + geo
-        if anchor_n:
-            base *= _spatial_xy_salience(node, parsed.spatial_relation, anchor_n)
-        return base
-
-    if parsed.intent == "describe_zone" and parsed.zone_family:
-        zf = parsed.zone_family
-        if zf == "right_wall" and node_zone in ("right_wall", "right_brick_wall"):
-            score += 1.0
-        elif zf == "right_brick_wall" and node_zone == "right_brick_wall":
-            score += 1.05
-        elif zf == "left_wall" and node_zone == "left_wall":
-            score += 1.0
-        elif zf == "back_wall" and node_zone == "back_wall":
-            score += 1.0
-        elif zf == "front_right" and (
-            node_zone == "front_right" or node_zone.startswith("front_right_")
-        ):
-            score += 0.9
-        elif zf == "ceiling_center" and node_zone == "ceiling_center":
-            score += 1.0
-        return score
-
-    if parsed.intent == "describe_near_zone" and parsed.zone_family == "back_wall":
-        if node_zone == "back_wall":
-            score += 1.0
-        elif _structured_rel_matches(rels, want_type="NEAR", anchor="black_door"):
-            for rel in rels:
-                if isinstance(rel, dict) and rel.get("type") == "NEAR" and _label_equiv(
-                    "black_door", str(rel.get("target", ""))
-                ):
-                    score += 0.95 * float(rel.get("weight", 1.0))
-                    break
-        elif "back" in node_zone_norm and "wall" in node_zone_norm:
-            score += 0.35
-        return score
-
-    # Target label / type (e.g. "where is the trash can")
-    label_hit = False
-    if parsed.target_label:
-        tl = normalize_text(parsed.target_label.replace("_", " "))
-        if tl == node_label or tl in node_label or node_label in tl:
-            score += 0.75
-            label_hit = True
-
-    if not label_hit and parsed.target_type and parsed.target_type == node_type and not parsed.target_label:
-        score += 0.30
-
-    if parsed.color and parsed.color == node_color:
-        score += 0.25
-
-    if parsed.zone and parsed.zone == node_zone:
-        score += 0.20
-
-    if parsed.anchor_objects:
-        for anchor in parsed.anchor_objects:
-            for rel in rels:
-                if isinstance(rel, dict):
-                    rt = str(rel.get("type", ""))
-                    tgt = str(rel.get("target", ""))
-                    if rt == "NEAR" and _label_equiv(anchor, tgt):
-                        score += 0.45 * float(rel.get("weight", 1.0))
-                        break
-                    if _label_equiv(anchor, tgt):
-                        score += 0.22 * float(rel.get("weight", 1.0))
-                        break
-                else:
-                    rel_norm = normalize_text(str(rel))
-                    anchor_norm = normalize_text(anchor)
-                    if f"near {anchor_norm}" in rel_norm or anchor_norm in rel_norm:
-                        score += 0.28
-                        break
-
-    return score
+# score_node + candidate_filter extracted to scoring.* package. Re-imported
+# below; the candidate_filter wrapper preserves the v1 (no score_fn arg)
+# signature so eval_paraphrase / run_benchmark still work bit-identically.
+from scoring.filter import candidate_filter as _scoring_candidate_filter  # noqa: E402
+from scoring.v1 import score_node  # noqa: E402
 
 
 def candidate_filter(
     scene_graph: list[dict[str, Any]],
     parsed: ParsedQuery,
-    min_score: float = 0.20
+    min_score: float = 0.20,
 ) -> list[dict[str, Any]]:
-    candidates: list[dict[str, Any]] = []
-
-    for node in scene_graph:
-        node_label_norm = normalize_text(str(node["label"]).replace("_", " "))
-
-        if parsed.intent == "describe_near_anchor" and parsed.anchor_objects:
-            if any(_label_equiv(node_label_norm, anchor) for anchor in parsed.anchor_objects):
-                continue
-
-        if parsed.intent == "describe_spatial" and parsed.relation_anchor:
-            if _label_equiv(node_label_norm, parsed.relation_anchor):
-                continue
-
-        score = score_node(node, parsed, scene_graph=scene_graph)
-        if score >= min_score:
-            node_copy = dict(node)
-            node_copy["score"] = round(score, 3)
-            candidates.append(node_copy)
-
-    return candidates
+    """Backwards-compat shim: forwards to scoring.filter.candidate_filter
+    with the v1 score_node injected. Behavior is bit-identical to the
+    pre-extraction implementation."""
+    return _scoring_candidate_filter(scene_graph, parsed, score_node, min_score=min_score)
 
 
 # ----------------------------
 # 4) Top-k prune
 # ----------------------------
 
-def top_k_prune(candidates: list[dict[str, Any]], k: int = 3) -> list[dict[str, Any]]:
-    return sorted(candidates, key=lambda x: x["score"], reverse=True)[:k]
+from scoring.topk import top_k_prune  # noqa: E402
 
 
 # ----------------------------
@@ -731,12 +545,7 @@ def answer_with_local_model(user_prompt: str) -> str:
 # 7) Demo runner
 # ----------------------------
 
-def top_k_for_intent(parsed: ParsedQuery) -> int:
-    if parsed.intent in ("describe_near_anchor", "describe_near_zone", "describe_zone"):
-        return 10
-    if parsed.intent == "describe_spatial":
-        return 6
-    return 4
+from scoring.topk import top_k_for_intent  # noqa: E402
 
 
 # ----------------------------

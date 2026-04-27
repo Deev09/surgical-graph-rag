@@ -2,8 +2,8 @@
   "baseline_id": "v1_paraphrase",
   "source_baseline": "v1",
   "parser_mode": "regex",
-  "scorer": "v1",
-  "exported_at": "2026-04-27T02:35:27.584687+00:00",
+  "scorer": "v2",
+  "exported_at": "2026-04-27T02:35:27.586386+00:00",
   "summary": {
     "n_queries": 20,
     "top1_accuracy": 0.45,
@@ -28,8 +28,8 @@
       "regex": 20
     },
     "mean_retry_count": 0,
-    "mean_latency_ms": 0.013941596262156963,
-    "p95_latency_ms": 0.06887682247906923
+    "mean_latency_ms": 0.010533269960433245,
+    "p95_latency_ms": 0.015994126442819834
   },
   "rows": [
     {
@@ -64,8 +64,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.0174578744918108,
-      "scorer": "v1"
+      "parser_latency_ms": 0.007582828402519226,
+      "scorer": "v2"
     },
     {
       "query": "Which object is on the left side of the sink?",
@@ -99,8 +99,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.07158308289945126,
-      "scorer": "v1"
+      "parser_latency_ms": 0.016042031347751617,
+      "scorer": "v2"
     },
     {
       "query": "What sits under the mirror?",
@@ -134,8 +134,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.015208963304758072,
-      "scorer": "v1"
+      "parser_latency_ms": 0.014165882021188736,
+      "scorer": "v2"
     },
     {
       "query": "Which object is directly beneath the mirror?",
@@ -169,8 +169,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.014084158465266228,
-      "scorer": "v1"
+      "parser_latency_ms": 0.013625016435980797,
+      "scorer": "v2"
     },
     {
       "query": "What's close to the back wall?",
@@ -201,8 +201,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.011707888916134834,
-      "scorer": "v1"
+      "parser_latency_ms": 0.011666910722851753,
+      "scorer": "v2"
     },
     {
       "query": "Which objects are by the back wall?",
@@ -233,8 +233,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.013749813660979271,
-      "scorer": "v1"
+      "parser_latency_ms": 0.01095794141292572,
+      "scorer": "v2"
     },
     {
       "query": "Which objects are mounted on the right wall?",
@@ -271,8 +271,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.0030419323593378067,
-      "scorer": "v1"
+      "parser_latency_ms": 0.002666143700480461,
+      "scorer": "v2"
     },
     {
       "query": "What's attached to the right wall?",
@@ -303,8 +303,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.0113749410957098,
-      "scorer": "v1"
+      "parser_latency_ms": 0.011541880667209625,
+      "scorer": "v2"
     },
     {
       "query": "Which zone contains the trash can?",
@@ -338,8 +338,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.014082994312047958,
-      "scorer": "v1"
+      "parser_latency_ms": 0.014625024050474167,
+      "scorer": "v2"
     },
     {
       "query": "In what part of the room is the trash can?",
@@ -373,8 +373,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.014458084478974342,
-      "scorer": "v1"
+      "parser_latency_ms": 0.015083933249115944,
+      "scorer": "v2"
     },
     {
       "query": "What sits in front of the toilet?",
@@ -408,8 +408,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.011167023330926895,
-      "scorer": "v1"
+      "parser_latency_ms": 0.011417083442211151,
+      "scorer": "v2"
     },
     {
       "query": "Which object is directly in front of the toilet?",
@@ -443,8 +443,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.01154094934463501,
-      "scorer": "v1"
+      "parser_latency_ms": 0.011582858860492706,
+      "scorer": "v2"
     },
     {
       "query": "Which zone is the vending machine in?",
@@ -478,8 +478,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.008291099220514297,
-      "scorer": "v1"
+      "parser_latency_ms": 0.00837491825222969,
+      "scorer": "v2"
     },
     {
       "query": "Where can I find the vending machine?",
@@ -513,8 +513,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.008249888196587563,
-      "scorer": "v1"
+      "parser_latency_ms": 0.00816606916487217,
+      "scorer": "v2"
     },
     {
       "query": "What's to the right of the toilet?",
@@ -548,8 +548,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.0027921050786972046,
-      "scorer": "v1"
+      "parser_latency_ms": 0.002874992787837982,
+      "scorer": "v2"
     },
     {
       "query": "Which object is on the right side of the toilet?",
@@ -583,8 +583,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.011791009455919266,
-      "scorer": "v1"
+      "parser_latency_ms": 0.011665979400277138,
+      "scorer": "v2"
     },
     {
       "query": "What sits behind the toilet?",
@@ -618,8 +618,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.010792165994644165,
-      "scorer": "v1"
+      "parser_latency_ms": 0.010709045454859734,
+      "scorer": "v2"
     },
     {
       "query": "Which object is directly behind the toilet?",
@@ -653,8 +653,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.010707881301641464,
-      "scorer": "v1"
+      "parser_latency_ms": 0.010874820873141289,
+      "scorer": "v2"
     },
     {
       "query": "Which wall is the paper towel dispenser on?",
@@ -688,8 +688,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.008666887879371643,
-      "scorer": "v1"
+      "parser_latency_ms": 0.008750008419156075,
+      "scorer": "v2"
     },
     {
       "query": "Where's the paper towel dispenser located?",
@@ -723,8 +723,8 @@
       "parser_source": "regex",
       "parser_error": null,
       "parser_retry_count": 0,
-      "parser_latency_ms": 0.008083181455731392,
-      "scorer": "v1"
+      "parser_latency_ms": 0.008292030543088913,
+      "scorer": "v2"
     }
   ]
 }

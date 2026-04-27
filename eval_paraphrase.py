@@ -20,16 +20,21 @@ from pathlib import Path
 from typing import Any
 
 from tiny_graph_demo import (
-    candidate_filter,
     node_matches_expectation,
     parse_query,
     scene,
-    top_k_for_intent,
-    top_k_prune,
 )
+
+from scoring.filter import candidate_filter
+from scoring.topk import top_k_for_intent, top_k_prune
+from scoring.v1 import score_node as score_node_v1
+from scoring.v2 import score_node as score_node_v2
 
 from parsers.dispatch import MODES, parse
 from strict_eval import resolve_answer_type, score_one_strict
+
+
+SCORERS = {"v1": score_node_v1, "v2": score_node_v2}
 
 
 ROOT = Path(__file__).resolve().parent
@@ -38,8 +43,9 @@ OUT_DIR = ROOT / "baselines" / "v1_paraphrase"
 LEGACY_REGEX_PATH = OUT_DIR / "evaluation_table.json"
 
 
-def _out_path(mode: str) -> Path:
-    return OUT_DIR / f"evaluation_table.{mode}.json"
+def _out_path(mode: str, scorer_id: str = "v1") -> Path:
+    suffix = mode if scorer_id == "v1" else f"{scorer_id}.{mode}"
+    return OUT_DIR / f"evaluation_table.{suffix}.json"
 
 
 def _load_records() -> list[dict[str, Any]]:
@@ -50,10 +56,10 @@ def _load_records() -> list[dict[str, Any]]:
     return records
 
 
-def _score_one(parsed, expected: list[str]) -> dict[str, Any]:
+def _score_one(parsed, expected: list[str], score_fn) -> dict[str, Any]:
     """Run the same inner pipeline run_benchmark uses; emit both lenient and strict fields."""
     k = top_k_for_intent(parsed)
-    candidates = candidate_filter(scene, parsed)
+    candidates = candidate_filter(scene, parsed, score_fn)
     pruned = top_k_prune(candidates, k=k)
     labels_pruned = [str(p["label"]) for p in pruned]
 
@@ -81,7 +87,7 @@ def _score_one(parsed, expected: list[str]) -> dict[str, Any]:
     }
 
 
-def _run_mode(mode: str, records: list[dict[str, Any]]) -> dict[str, Any]:
+def _run_mode(mode: str, records: list[dict[str, Any]], score_fn, scorer_id: str) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     for rec in records:
         q = rec["query"]
@@ -118,11 +124,12 @@ def _run_mode(mode: str, records: list[dict[str, Any]]) -> dict[str, Any]:
                     "parser_error": dr.error,
                     "parser_retry_count": dr.retry_count,
                     "parser_latency_ms": dr.latency_ms,
+                    "scorer": scorer_id,
                 }
             )
             continue
 
-        scored = _score_one(dr.parsed, expected)
+        scored = _score_one(dr.parsed, expected, score_fn)
         drift = dr.parsed.intent != p_src.intent
         rows.append(
             {
@@ -141,6 +148,7 @@ def _run_mode(mode: str, records: list[dict[str, Any]]) -> dict[str, Any]:
                 "parser_error": dr.error,
                 "parser_retry_count": dr.retry_count,
                 "parser_latency_ms": dr.latency_ms,
+                "scorer": scorer_id,
             }
         )
 
@@ -191,6 +199,7 @@ def _run_mode(mode: str, records: list[dict[str, Any]]) -> dict[str, Any]:
         "baseline_id": "v1_paraphrase",
         "source_baseline": "v1",
         "parser_mode": mode,
+        "scorer": scorer_id,
         "exported_at": datetime.now(timezone.utc).isoformat(),
         "summary": summary,
         "rows": rows,
@@ -199,7 +208,7 @@ def _run_mode(mode: str, records: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _write_payload(payload: dict[str, Any]) -> Path:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    path = _out_path(payload["parser_mode"])
+    path = _out_path(payload["parser_mode"], payload.get("scorer", "v1"))
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return path
 
@@ -235,7 +244,8 @@ def _regex_parity_check(regex_payload: dict[str, Any]) -> list[str]:
 def _print_mode_summary(payload: dict[str, Any]) -> None:
     s = payload["summary"]
     mode = payload["parser_mode"]
-    print(f"\n=== mode: {mode} ===")
+    scorer = payload.get("scorer", "v1")
+    print(f"\n=== scorer={scorer}  parser={mode} ===")
     print(f"  n={s['n_queries']}  unparseable={s['unparseable_count']}")
     print(f"  lenient top-1: {s['top1_accuracy']:.2%}   topk: {s['topk_recall']:.2%}   FP@k: {s['avg_false_positives_per_query']:.2f}")
     print(f"  strict  top-1: {s['strict_top1_accuracy']:.2%}   topk: {s['strict_topk_recall']:.2%}   intent-congruent: {s['intent_congruent_rate']:.2%}")
@@ -250,17 +260,17 @@ def _print_mode_summary(payload: dict[str, Any]) -> None:
           f"latency mean={s['mean_latency_ms']:.1f}ms  p95={s['p95_latency_ms']:.1f}ms")
 
 
-def _write_ab_summary(payloads: dict[str, dict[str, Any]]) -> Path:
+def _write_ab_summary(payloads: dict[tuple[str, str], dict[str, Any]]) -> Path:
     rollup = {
         "exported_at": datetime.now(timezone.utc).isoformat(),
         "source_baseline": "v1",
         "paraphrase_set": str(IN_PATH.name),
         "modes": {
-            m: {
-                "output_file": _out_path(m).name,
+            f"{s}.{m}": {
+                "output_file": _out_path(m, s).name,
                 "summary": p["summary"],
             }
-            for m, p in payloads.items()
+            for (s, m), p in payloads.items()
         },
     }
     path = OUT_DIR / "parser_ab_summary.json"
@@ -276,19 +286,28 @@ def main() -> None:
         default="regex",
         help="Which parser to run. 'all' runs every mode sequentially and writes an A/B summary.",
     )
+    ap.add_argument(
+        "--scorer",
+        choices=("v1", "v2", "both"),
+        default="v1",
+        help="Which scorer to plug into candidate_filter.",
+    )
     args = ap.parse_args()
 
     records = _load_records()
+    scorer_ids = ("v1", "v2") if args.scorer == "both" else (args.scorer,)
 
-    if args.parser == "all":
-        payloads: dict[str, dict[str, Any]] = {}
-        for mode in MODES:
-            payload = _run_mode(mode, records)
+    payloads: dict[tuple[str, str], dict[str, Any]] = {}
+    for scorer_id in scorer_ids:
+        score_fn = SCORERS[scorer_id]
+        modes = MODES if args.parser == "all" else (args.parser,)
+        for mode in modes:
+            payload = _run_mode(mode, records, score_fn, scorer_id)
             path = _write_payload(payload)
-            payloads[mode] = payload
+            payloads[(scorer_id, mode)] = payload
             _print_mode_summary(payload)
             print(f"  -> {path}")
-            if mode == "regex":
+            if mode == "regex" and scorer_id == "v1":
                 discrepancies = _regex_parity_check(payload)
                 if discrepancies:
                     print("  REGEX PARITY WARNING — A/B numbers may not be comparable:")
@@ -296,23 +315,10 @@ def main() -> None:
                         print(f"    - {d}")
                 else:
                     print("  regex parity OK (identical to legacy evaluation_table.json)")
+
+    if len(payloads) > 1:
         summary_path = _write_ab_summary(payloads)
         print(f"\nA/B summary: {summary_path}")
-        return
-
-    payload = _run_mode(args.parser, records)
-    path = _write_payload(payload)
-    _print_mode_summary(payload)
-    print(f"\nReport: {path}")
-
-    if args.parser == "regex":
-        discrepancies = _regex_parity_check(payload)
-        if discrepancies:
-            print("\nREGEX PARITY WARNING — A/B numbers may not be comparable:")
-            for d in discrepancies:
-                print(f"  - {d}")
-        else:
-            print("\nregex parity OK (identical to legacy evaluation_table.json)")
 
 
 if __name__ == "__main__":

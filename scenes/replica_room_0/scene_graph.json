@@ -1,0 +1,1320 @@
+{
+  "scene": "replica_room_0",
+  "objects": [
+    {
+      "id": "obj_93",
+      "label": "table_1",
+      "zone": null,
+      "xyz": [
+        5.205,
+        2.733,
+        0.376
+      ],
+      "attributes": {
+        "type": "table_1",
+        "bbox_sizes": [
+          0.493,
+          0.485,
+          0.678
+        ]
+      }
+    },
+    {
+      "id": "obj_92",
+      "label": "book_1",
+      "zone": null,
+      "xyz": [
+        5.178,
+        2.343,
+        0.659
+      ],
+      "attributes": {
+        "type": "book_1",
+        "bbox_sizes": [
+          0.24,
+          0.178,
+          0.034
+        ]
+      }
+    },
+    {
+      "id": "obj_91",
+      "label": "window_1",
+      "zone": null,
+      "xyz": [
+        5.864,
+        3.442,
+        1.852
+      ],
+      "attributes": {
+        "type": "window_1",
+        "bbox_sizes": [
+          0.031,
+          0.771,
+          1.838
+        ]
+      }
+    },
+    {
+      "id": "obj_90",
+      "label": "book_2",
+      "zone": null,
+      "xyz": [
+        5.275,
+        2.622,
+        0.727
+      ],
+      "attributes": {
+        "type": "book_2",
+        "bbox_sizes": [
+          0.252,
+          0.171,
+          0.033
+        ]
+      }
+    },
+    {
+      "id": "obj_87",
+      "label": "lamp_1",
+      "zone": null,
+      "xyz": [
+        5.211,
+        2.775,
+        1.067
+      ],
+      "attributes": {
+        "type": "lamp_1",
+        "bbox_sizes": [
+          0.427,
+          0.428,
+          0.725
+        ]
+      }
+    },
+    {
+      "id": "obj_86",
+      "label": "blanket",
+      "zone": null,
+      "xyz": [
+        2.796,
+        2.366,
+        0.379
+      ],
+      "attributes": {
+        "type": "blanket",
+        "bbox_sizes": [
+          0.481,
+          1.006,
+          0.708
+        ]
+      }
+    },
+    {
+      "id": "obj_85",
+      "label": "book_3",
+      "zone": null,
+      "xyz": [
+        -0.609,
+        0.727,
+        0.703
+      ],
+      "attributes": {
+        "type": "book_3",
+        "bbox_sizes": [
+          0.269,
+          0.189,
+          0.056
+        ]
+      }
+    },
+    {
+      "id": "obj_84",
+      "label": "pillar_1",
+      "zone": null,
+      "xyz": [
+        6.556,
+        3.134,
+        1.418
+      ],
+      "attributes": {
+        "type": "pillar_1",
+        "bbox_sizes": [
+          0.153,
+          0.292,
+          2.723
+        ]
+      }
+    },
+    {
+      "id": "obj_83",
+      "label": "lamp_2",
+      "zone": null,
+      "xyz": [
+        4.049,
+        0.843,
+        2.757
+      ],
+      "attributes": {
+        "type": "lamp_2",
+        "bbox_sizes": [
+          0.617,
+          1.184,
+          0.023
+        ]
+      }
+    },
+    {
+      "id": "obj_82",
+      "label": "wall-plug_1",
+      "zone": null,
+      "xyz": [
+        2.872,
+        3.301,
+        0.49
+      ],
+      "attributes": {
+        "type": "wall-plug_1",
+        "bbox_sizes": [
+          0.007,
+          0.072,
+          0.121
+        ]
+      }
+    },
+    {
+      "id": "obj_80",
+      "label": "wall-plug_2",
+      "zone": null,
+      "xyz": [
+        6.345,
+        3.285,
+        0.5
+      ],
+      "attributes": {
+        "type": "wall-plug_2",
+        "bbox_sizes": [
+          0.003,
+          0.054,
+          0.093
+        ]
+      }
+    },
+    {
+      "id": "obj_79",
+      "label": "candle",
+      "zone": null,
+      "xyz": [
+        -0.58,
+        0.515,
+        0.813
+      ],
+      "attributes": {
+        "type": "candle",
+        "bbox_sizes": [
+          0.179,
+          0.183,
+          0.268
+        ]
+      }
+    },
+    {
+      "id": "obj_38",
+      "label": "window_2",
+      "zone": null,
+      "xyz": [
+        6.858,
+        2.24,
+        1.846
+      ],
+      "attributes": {
+        "type": "window_2",
+        "bbox_sizes": [
+          0.058,
+          0.77,
+          1.827
+        ]
+      }
+    },
+    {
+      "id": "obj_34",
+      "label": "blinds_1",
+      "zone": null,
+      "xyz": [
+        5.873,
+        3.437,
+        1.842
+      ],
+      "attributes": {
+        "type": "blinds_1",
+        "bbox_sizes": [
+          0.037,
+          0.688,
+          1.728
+        ]
+      }
+    },
+    {
+      "id": "obj_31",
+      "label": "wall-plug_3",
+      "zone": null,
+      "xyz": [
+        -0.487,
+        3.319,
+        0.477
+      ],
+      "attributes": {
+        "type": "wall-plug_3",
+        "bbox_sizes": [
+          0.005,
+          0.07,
+          0.108
+        ]
+      }
+    },
+    {
+      "id": "obj_30",
+      "label": "blinds_2",
+      "zone": null,
+      "xyz": [
+        1.671,
+        3.469,
+        1.824
+      ],
+      "attributes": {
+        "type": "blinds_2",
+        "bbox_sizes": [
+          0.019,
+          1.457,
+          1.715
+        ]
+      }
+    },
+    {
+      "id": "obj_29",
+      "label": "window_3",
+      "zone": null,
+      "xyz": [
+        3.188,
+        3.455,
+        1.844
+      ],
+      "attributes": {
+        "type": "window_3",
+        "bbox_sizes": [
+          0.03,
+          1.518,
+          1.831
+        ]
+      }
+    },
+    {
+      "id": "obj_28",
+      "label": "window_4",
+      "zone": null,
+      "xyz": [
+        4.717,
+        3.446,
+        1.849
+      ],
+      "attributes": {
+        "type": "window_4",
+        "bbox_sizes": [
+          0.017,
+          1.529,
+          1.836
+        ]
+      }
+    },
+    {
+      "id": "obj_27",
+      "label": "table_2",
+      "zone": null,
+      "xyz": [
+        2.243,
+        -0.436,
+        0.324
+      ],
+      "attributes": {
+        "type": "table_2",
+        "bbox_sizes": [
+          0.43,
+          0.583,
+          0.6
+        ]
+      }
+    },
+    {
+      "id": "obj_26",
+      "label": "window_5",
+      "zone": null,
+      "xyz": [
+        6.849,
+        1.093,
+        1.846
+      ],
+      "attributes": {
+        "type": "window_5",
+        "bbox_sizes": [
+          0.05,
+          1.536,
+          1.821
+        ]
+      }
+    },
+    {
+      "id": "obj_7",
+      "label": "table_3",
+      "zone": null,
+      "xyz": [
+        2.237,
+        -0.691,
+        0.36
+      ],
+      "attributes": {
+        "type": "table_3",
+        "bbox_sizes": [
+          0.493,
+          0.493,
+          0.677
+        ]
+      }
+    },
+    {
+      "id": "obj_32",
+      "label": "cushion_1",
+      "zone": null,
+      "xyz": [
+        2.887,
+        2.457,
+        0.705
+      ],
+      "attributes": {
+        "type": "cushion_1",
+        "bbox_sizes": [
+          0.409,
+          0.547,
+          0.352
+        ]
+      }
+    },
+    {
+      "id": "obj_21",
+      "label": "blinds_3",
+      "zone": null,
+      "xyz": [
+        6.855,
+        2.227,
+        1.845
+      ],
+      "attributes": {
+        "type": "blinds_3",
+        "bbox_sizes": [
+          0.051,
+          0.692,
+          1.723
+        ]
+      }
+    },
+    {
+      "id": "obj_22",
+      "label": "blinds_4",
+      "zone": null,
+      "xyz": [
+        4.712,
+        3.447,
+        1.835
+      ],
+      "attributes": {
+        "type": "blinds_4",
+        "bbox_sizes": [
+          0.029,
+          1.467,
+          1.732
+        ]
+      }
+    },
+    {
+      "id": "obj_2",
+      "label": "cabinet",
+      "zone": null,
+      "xyz": [
+        -0.582,
+        1.111,
+        0.344
+      ],
+      "attributes": {
+        "type": "cabinet",
+        "bbox_sizes": [
+          2.004,
+          0.583,
+          0.687
+        ]
+      }
+    },
+    {
+      "id": "obj_19",
+      "label": "blinds_5",
+      "zone": null,
+      "xyz": [
+        6.858,
+        1.094,
+        1.839
+      ],
+      "attributes": {
+        "type": "blinds_5",
+        "bbox_sizes": [
+          0.051,
+          1.477,
+          1.73
+        ]
+      }
+    },
+    {
+      "id": "obj_36",
+      "label": "door",
+      "zone": null,
+      "xyz": [
+        -0.207,
+        -1.096,
+        1.112
+      ],
+      "attributes": {
+        "type": "door",
+        "bbox_sizes": [
+          0.033,
+          1.043,
+          2.179
+        ]
+      }
+    },
+    {
+      "id": "obj_35",
+      "label": "indoor-plant",
+      "zone": null,
+      "xyz": [
+        3.838,
+        1.02,
+        0.892
+      ],
+      "attributes": {
+        "type": "indoor-plant",
+        "bbox_sizes": [
+          0.211,
+          0.445,
+          0.595
+        ]
+      }
+    },
+    {
+      "id": "obj_16",
+      "label": "switch",
+      "zone": null,
+      "xyz": [
+        1.236,
+        -1.11,
+        1.181
+      ],
+      "attributes": {
+        "type": "switch",
+        "bbox_sizes": [
+          0.01,
+          0.178,
+          0.131
+        ]
+      }
+    },
+    {
+      "id": "obj_17",
+      "label": "window_6",
+      "zone": null,
+      "xyz": [
+        6.836,
+        -0.409,
+        1.844
+      ],
+      "attributes": {
+        "type": "window_6",
+        "bbox_sizes": [
+          0.264,
+          1.466,
+          1.822
+        ]
+      }
+    },
+    {
+      "id": "obj_18",
+      "label": "cushion_2",
+      "zone": null,
+      "xyz": [
+        3.131,
+        -0.386,
+        0.72
+      ],
+      "attributes": {
+        "type": "cushion_2",
+        "bbox_sizes": [
+          0.266,
+          0.408,
+          0.357
+        ]
+      }
+    },
+    {
+      "id": "obj_12",
+      "label": "book_4",
+      "zone": null,
+      "xyz": [
+        3.521,
+        1.027,
+        0.517
+      ],
+      "attributes": {
+        "type": "book_4",
+        "bbox_sizes": [
+          0.34,
+          0.32,
+          0.025
+        ]
+      }
+    },
+    {
+      "id": "obj_13",
+      "label": "cushion_3",
+      "zone": null,
+      "xyz": [
+        4.408,
+        2.548,
+        0.74
+      ],
+      "attributes": {
+        "type": "cushion_3",
+        "bbox_sizes": [
+          0.266,
+          0.427,
+          0.39
+        ]
+      }
+    },
+    {
+      "id": "obj_6",
+      "label": "lamp_3",
+      "zone": null,
+      "xyz": [
+        3.356,
+        -0.583,
+        0.709
+      ],
+      "attributes": {
+        "type": "lamp_3",
+        "bbox_sizes": [
+          0.904,
+          2.548,
+          1.394
+        ]
+      }
+    },
+    {
+      "id": "obj_11",
+      "label": "table_4",
+      "zone": null,
+      "xyz": [
+        3.707,
+        1.025,
+        0.276
+      ],
+      "attributes": {
+        "type": "table_4",
+        "bbox_sizes": [
+          1.432,
+          0.846,
+          0.468
+        ]
+      }
+    },
+    {
+      "id": "obj_3",
+      "label": "book_5",
+      "zone": null,
+      "xyz": [
+        -0.599,
+        0.73,
+        0.734
+      ],
+      "attributes": {
+        "type": "book_5",
+        "bbox_sizes": [
+          0.176,
+          0.245,
+          0.044
+        ]
+      }
+    },
+    {
+      "id": "obj_15",
+      "label": "blinds_6",
+      "zone": null,
+      "xyz": [
+        6.857,
+        -0.43,
+        1.838
+      ],
+      "attributes": {
+        "type": "blinds_6",
+        "bbox_sizes": [
+          0.024,
+          1.426,
+          1.733
+        ]
+      }
+    },
+    {
+      "id": "obj_9",
+      "label": "sofa_1",
+      "zone": null,
+      "xyz": [
+        3.7,
+        -0.524,
+        0.475
+      ],
+      "attributes": {
+        "type": "sofa_1",
+        "bbox_sizes": [
+          2.404,
+          1.363,
+          0.908
+        ]
+      }
+    },
+    {
+      "id": "obj_4",
+      "label": "book_6",
+      "zone": null,
+      "xyz": [
+        -0.589,
+        0.741,
+        0.766
+      ],
+      "attributes": {
+        "type": "book_6",
+        "bbox_sizes": [
+          0.179,
+          0.236,
+          0.036
+        ]
+      }
+    },
+    {
+      "id": "obj_10",
+      "label": "table_5",
+      "zone": null,
+      "xyz": [
+        5.203,
+        2.475,
+        0.341
+      ],
+      "attributes": {
+        "type": "table_5",
+        "bbox_sizes": [
+          0.425,
+          0.539,
+          0.612
+        ]
+      }
+    },
+    {
+      "id": "obj_5",
+      "label": "cushion_4",
+      "zone": null,
+      "xyz": [
+        4.68,
+        2.506,
+        0.719
+      ],
+      "attributes": {
+        "type": "cushion_4",
+        "bbox_sizes": [
+          0.331,
+          0.472,
+          0.374
+        ]
+      }
+    },
+    {
+      "id": "obj_75",
+      "label": "basket",
+      "zone": null,
+      "xyz": [
+        2.363,
+        2.719,
+        0.204
+      ],
+      "attributes": {
+        "type": "basket",
+        "bbox_sizes": [
+          0.417,
+          0.41,
+          0.337
+        ]
+      }
+    },
+    {
+      "id": "obj_8",
+      "label": "cushion_5",
+      "zone": null,
+      "xyz": [
+        4.548,
+        -0.421,
+        0.733
+      ],
+      "attributes": {
+        "type": "cushion_5",
+        "bbox_sizes": [
+          0.411,
+          0.534,
+          0.415
+        ]
+      }
+    },
+    {
+      "id": "obj_39",
+      "label": "stool_1",
+      "zone": null,
+      "xyz": [
+        1.819,
+        1.531,
+        0.272
+      ],
+      "attributes": {
+        "type": "stool_1",
+        "bbox_sizes": [
+          0.651,
+          0.659,
+          0.464
+        ]
+      }
+    },
+    {
+      "id": "obj_40",
+      "label": "lamp_4",
+      "zone": null,
+      "xyz": [
+        0.395,
+        0.87,
+        2.74
+      ],
+      "attributes": {
+        "type": "lamp_4",
+        "bbox_sizes": [
+          1.167,
+          0.6,
+          0.023
+        ]
+      }
+    },
+    {
+      "id": "obj_41",
+      "label": "stool_2",
+      "zone": null,
+      "xyz": [
+        1.774,
+        0.651,
+        0.258
+      ],
+      "attributes": {
+        "type": "stool_2",
+        "bbox_sizes": [
+          0.651,
+          0.659,
+          0.468
+        ]
+      }
+    },
+    {
+      "id": "obj_43",
+      "label": "pot",
+      "zone": null,
+      "xyz": [
+        3.501,
+        1.07,
+        0.666
+      ],
+      "attributes": {
+        "type": "pot",
+        "bbox_sizes": [
+          0.19,
+          0.192,
+          0.234
+        ]
+      }
+    },
+    {
+      "id": "obj_42",
+      "label": "window_7",
+      "zone": null,
+      "xyz": [
+        0.526,
+        3.475,
+        1.829
+      ],
+      "attributes": {
+        "type": "window_7",
+        "bbox_sizes": [
+          0.025,
+          0.768,
+          1.826
+        ]
+      }
+    },
+    {
+      "id": "obj_44",
+      "label": "wall-plug_4",
+      "zone": null,
+      "xyz": [
+        6.198,
+        3.285,
+        0.5
+      ],
+      "attributes": {
+        "type": "wall-plug_4",
+        "bbox_sizes": [
+          0.004,
+          0.054,
+          0.092
+        ]
+      }
+    },
+    {
+      "id": "obj_45",
+      "label": "vase",
+      "zone": null,
+      "xyz": [
+        -0.615,
+        1.818,
+        0.936
+      ],
+      "attributes": {
+        "type": "vase",
+        "bbox_sizes": [
+          0.252,
+          0.263,
+          0.504
+        ]
+      }
+    },
+    {
+      "id": "obj_46",
+      "label": "pillar_2",
+      "zone": null,
+      "xyz": [
+        -0.754,
+        3.26,
+        1.39
+      ],
+      "attributes": {
+        "type": "pillar_2",
+        "bbox_sizes": [
+          0.124,
+          0.147,
+          2.716
+        ]
+      }
+    },
+    {
+      "id": "obj_49",
+      "label": "lamp_5",
+      "zone": null,
+      "xyz": [
+        2.217,
+        2.087,
+        2.755
+      ],
+      "attributes": {
+        "type": "lamp_5",
+        "bbox_sizes": [
+          1.157,
+          0.567,
+          0.024
+        ]
+      }
+    },
+    {
+      "id": "obj_50",
+      "label": "blinds_7",
+      "zone": null,
+      "xyz": [
+        0.522,
+        3.486,
+        1.817
+      ],
+      "attributes": {
+        "type": "blinds_7",
+        "bbox_sizes": [
+          0.035,
+          0.697,
+          1.739
+        ]
+      }
+    },
+    {
+      "id": "obj_55",
+      "label": "plant-stand",
+      "zone": null,
+      "xyz": [
+        3.878,
+        1.001,
+        0.542
+      ],
+      "attributes": {
+        "type": "plant-stand",
+        "bbox_sizes": [
+          0.172,
+          0.167,
+          0.067
+        ]
+      }
+    },
+    {
+      "id": "obj_56",
+      "label": "wall-plug_5",
+      "zone": null,
+      "xyz": [
+        6.067,
+        3.277,
+        0.501
+      ],
+      "attributes": {
+        "type": "wall-plug_5",
+        "bbox_sizes": [
+          0.021,
+          0.054,
+          0.094
+        ]
+      }
+    },
+    {
+      "id": "obj_58",
+      "label": "blinds_8",
+      "zone": null,
+      "xyz": [
+        3.196,
+        3.455,
+        1.832
+      ],
+      "attributes": {
+        "type": "blinds_8",
+        "bbox_sizes": [
+          0.035,
+          1.453,
+          1.708
+        ]
+      }
+    },
+    {
+      "id": "obj_59",
+      "label": "book_7",
+      "zone": null,
+      "xyz": [
+        3.527,
+        1.027,
+        0.535
+      ],
+      "attributes": {
+        "type": "book_7",
+        "bbox_sizes": [
+          0.292,
+          0.285,
+          0.028
+        ]
+      }
+    },
+    {
+      "id": "obj_60",
+      "label": "rug",
+      "zone": null,
+      "xyz": [
+        3.705,
+        0.991,
+        0.047
+      ],
+      "attributes": {
+        "type": "rug",
+        "bbox_sizes": [
+          4.152,
+          2.888,
+          0.049
+        ]
+      }
+    },
+    {
+      "id": "obj_61",
+      "label": "window_8",
+      "zone": null,
+      "xyz": [
+        0.562,
+        -1.138,
+        1.18
+      ],
+      "attributes": {
+        "type": "window_8",
+        "bbox_sizes": [
+          0.093,
+          0.498,
+          2.065
+        ]
+      }
+    },
+    {
+      "id": "obj_62",
+      "label": "window_9",
+      "zone": null,
+      "xyz": [
+        1.665,
+        3.464,
+        1.835
+      ],
+      "attributes": {
+        "type": "window_9",
+        "bbox_sizes": [
+          0.024,
+          1.517,
+          1.83
+        ]
+      }
+    },
+    {
+      "id": "obj_63",
+      "label": "picture",
+      "zone": null,
+      "xyz": [
+        3.669,
+        -1.103,
+        1.599
+      ],
+      "attributes": {
+        "type": "picture",
+        "bbox_sizes": [
+          0.053,
+          1.855,
+          1.269
+        ]
+      }
+    },
+    {
+      "id": "obj_64",
+      "label": "vent_1",
+      "zone": null,
+      "xyz": [
+        5.274,
+        1.146,
+        2.776
+      ],
+      "attributes": {
+        "type": "vent_1",
+        "bbox_sizes": [
+          0.305,
+          0.321,
+          0.019
+        ]
+      }
+    },
+    {
+      "id": "obj_65",
+      "label": "plate_1",
+      "zone": null,
+      "xyz": [
+        -0.566,
+        1.456,
+        0.693
+      ],
+      "attributes": {
+        "type": "plate_1",
+        "bbox_sizes": [
+          0.167,
+          0.443,
+          0.027
+        ]
+      }
+    },
+    {
+      "id": "obj_66",
+      "label": "plate_2",
+      "zone": null,
+      "xyz": [
+        3.691,
+        1.025,
+        0.224
+      ],
+      "attributes": {
+        "type": "plate_2",
+        "bbox_sizes": [
+          0.366,
+          0.428,
+          0.036
+        ]
+      }
+    },
+    {
+      "id": "obj_68",
+      "label": "vent_2",
+      "zone": null,
+      "xyz": [
+        1.614,
+        1.173,
+        2.761
+      ],
+      "attributes": {
+        "type": "vent_2",
+        "bbox_sizes": [
+          0.321,
+          0.323,
+          0.022
+        ]
+      }
+    },
+    {
+      "id": "obj_69",
+      "label": "cushion_6",
+      "zone": null,
+      "xyz": [
+        5.837,
+        0.468,
+        0.657
+      ],
+      "attributes": {
+        "type": "cushion_6",
+        "bbox_sizes": [
+          0.214,
+          0.468,
+          0.26
+        ]
+      }
+    },
+    {
+      "id": "obj_70",
+      "label": "cushion_7",
+      "zone": null,
+      "xyz": [
+        4.166,
+        -0.414,
+        0.716
+      ],
+      "attributes": {
+        "type": "cushion_7",
+        "bbox_sizes": [
+          0.419,
+          0.333,
+          0.358
+        ]
+      }
+    },
+    {
+      "id": "obj_71",
+      "label": "cushion_8",
+      "zone": null,
+      "xyz": [
+        2.818,
+        -0.363,
+        0.704
+      ],
+      "attributes": {
+        "type": "cushion_8",
+        "bbox_sizes": [
+          0.282,
+          0.446,
+          0.367
+        ]
+      }
+    },
+    {
+      "id": "obj_72",
+      "label": "cushion_9",
+      "zone": null,
+      "xyz": [
+        5.858,
+        1.471,
+        0.653
+      ],
+      "attributes": {
+        "type": "cushion_9",
+        "bbox_sizes": [
+          0.175,
+          0.457,
+          0.246
+        ]
+      }
+    },
+    {
+      "id": "obj_73",
+      "label": "chair_1",
+      "zone": null,
+      "xyz": [
+        5.698,
+        1.498,
+        0.586
+      ],
+      "attributes": {
+        "type": "chair_1",
+        "bbox_sizes": [
+          0.895,
+          0.837,
+          1.088
+        ]
+      }
+    },
+    {
+      "id": "obj_74",
+      "label": "chair_2",
+      "zone": null,
+      "xyz": [
+        5.697,
+        0.511,
+        0.579
+      ],
+      "attributes": {
+        "type": "chair_2",
+        "bbox_sizes": [
+          0.897,
+          0.842,
+          1.082
+        ]
+      }
+    },
+    {
+      "id": "obj_77",
+      "label": "sofa_2",
+      "zone": null,
+      "xyz": [
+        3.753,
+        2.644,
+        0.478
+      ],
+      "attributes": {
+        "type": "sofa_2",
+        "bbox_sizes": [
+          2.343,
+          1.131,
+          0.914
+        ]
+      }
+    },
+    {
+      "id": "obj_78",
+      "label": "lamp_6",
+      "zone": null,
+      "xyz": [
+        5.89,
+        2.064,
+        2.778
+      ],
+      "attributes": {
+        "type": "lamp_6",
+        "bbox_sizes": [
+          0.589,
+          1.193,
+          0.023
+        ]
+      }
+    }
+  ],
+  "relations": []
+}

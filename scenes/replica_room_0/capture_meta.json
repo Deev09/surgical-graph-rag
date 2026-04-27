@@ -1,0 +1,36 @@
+{
+  "scene_id": "replica_room_0",
+  "source": "replica/room_0",
+  "axis_convention": {
+    "up_axis": "+z",
+    "gravity_dir_raw": [
+      0.0036468247417360544,
+      0.0030083837918937206,
+      -0.999988853931427
+    ]
+  },
+  "units": "meters",
+  "room_bbox": [
+    [
+      -0.754,
+      -1.138,
+      0.047
+    ],
+    [
+      6.858,
+      3.486,
+      2.778
+    ]
+  ],
+  "object_count": 73,
+  "authored_relation_count": 0,
+  "import_notes": {
+    "z_translation_applied": 1.522,
+    "dropped_undefined": 12,
+    "dropped_structural": 7,
+    "keep_structural": false,
+    "zone_field": "always_null_for_this_scene",
+    "abb_center_rotated_by_orientation_quat": true,
+    "bbox_sizes_kept_in_local_frame": true
+  }
+}

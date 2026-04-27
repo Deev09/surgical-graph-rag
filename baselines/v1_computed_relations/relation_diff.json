@@ -1,0 +1,958 @@
+{
+  "scene": "graffiti_bathroom",
+  "thresholds": {
+    "min_delta": 0.3,
+    "near_threshold": 1.0
+  },
+  "totals": {
+    "authored": 17,
+    "computed": 154,
+    "intersection": 8
+  },
+  "skipped_by_compute": [
+    "ATTACHED_TO"
+  ],
+  "has_authored_relations": true,
+  "per_type": {
+    "ABOVE": {
+      "true_positives": 1,
+      "false_positives": 10,
+      "false_negatives": 0,
+      "precision_vs_authored": 0.09090909090909091,
+      "recall_vs_authored": 1.0
+    },
+    "ATTACHED_TO": {
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 1,
+      "precision_vs_authored": null,
+      "recall_vs_authored": 0.0
+    },
+    "BEHIND": {
+      "true_positives": 2,
+      "false_positives": 17,
+      "false_negatives": 0,
+      "precision_vs_authored": 0.10526315789473684,
+      "recall_vs_authored": 1.0
+    },
+    "BELOW": {
+      "true_positives": 1,
+      "false_positives": 10,
+      "false_negatives": 2,
+      "precision_vs_authored": 0.09090909090909091,
+      "recall_vs_authored": 0.3333333333333333
+    },
+    "IN_FRONT_OF": {
+      "true_positives": 0,
+      "false_positives": 19,
+      "false_negatives": 1,
+      "precision_vs_authored": 0.0,
+      "recall_vs_authored": 0.0
+    },
+    "LEFT_OF": {
+      "true_positives": 2,
+      "false_positives": 33,
+      "false_negatives": 2,
+      "precision_vs_authored": 0.05714285714285714,
+      "recall_vs_authored": 0.5
+    },
+    "NEAR": {
+      "true_positives": 0,
+      "false_positives": 24,
+      "false_negatives": 1,
+      "precision_vs_authored": 0.0,
+      "recall_vs_authored": 0.0
+    },
+    "RIGHT_OF": {
+      "true_positives": 2,
+      "false_positives": 33,
+      "false_negatives": 2,
+      "precision_vs_authored": 0.05714285714285714,
+      "recall_vs_authored": 0.5
+    }
+  },
+  "per_type_edges": {
+    "RIGHT_OF": {
+      "true_positives": [
+        [
+          "obj_2",
+          "RIGHT_OF",
+          "obj_1"
+        ],
+        [
+          "obj_7",
+          "RIGHT_OF",
+          "obj_2"
+        ]
+      ],
+      "false_positives": [
+        [
+          "obj_4",
+          "RIGHT_OF",
+          "obj_5"
+        ],
+        [
+          "obj_7",
+          "RIGHT_OF",
+          "obj_1"
+        ],
+        [
+          "obj_3",
+          "RIGHT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_7",
+          "RIGHT_OF",
+          "obj_4"
+        ],
+        [
+          "obj_4",
+          "RIGHT_OF",
+          "obj_1"
+        ],
+        [
+          "obj_7",
+          "RIGHT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_9",
+          "RIGHT_OF",
+          "obj_5"
+        ],
+        [
+          "obj_9",
+          "RIGHT_OF",
+          "obj_1"
+        ],
+        [
+          "obj_12",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_2",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_9",
+          "RIGHT_OF",
+          "obj_10"
+        ],
+        [
+          "obj_12",
+          "RIGHT_OF",
+          "obj_1"
+        ],
+        [
+          "obj_8",
+          "RIGHT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_4",
+          "RIGHT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_9",
+          "RIGHT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_12",
+          "RIGHT_OF",
+          "obj_5"
+        ],
+        [
+          "obj_2",
+          "RIGHT_OF",
+          "obj_5"
+        ],
+        [
+          "obj_1",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_10",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_12",
+          "RIGHT_OF",
+          "obj_4"
+        ],
+        [
+          "obj_3",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_12",
+          "RIGHT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_7",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_8",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_4",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_3",
+          "RIGHT_OF",
+          "obj_10"
+        ],
+        [
+          "obj_9",
+          "RIGHT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_10",
+          "RIGHT_OF",
+          "obj_5"
+        ],
+        [
+          "obj_7",
+          "RIGHT_OF",
+          "obj_10"
+        ],
+        [
+          "obj_3",
+          "RIGHT_OF",
+          "obj_5"
+        ],
+        [
+          "obj_2",
+          "RIGHT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_7",
+          "RIGHT_OF",
+          "obj_5"
+        ],
+        [
+          "obj_3",
+          "RIGHT_OF",
+          "obj_1"
+        ]
+      ],
+      "false_negatives": [
+        [
+          "obj_9",
+          "RIGHT_OF",
+          "obj_3"
+        ],
+        [
+          "obj_12",
+          "RIGHT_OF",
+          "obj_2"
+        ]
+      ]
+    },
+    "ABOVE": {
+      "true_positives": [
+        [
+          "obj_10",
+          "ABOVE",
+          "obj_4"
+        ]
+      ],
+      "false_positives": [
+        [
+          "obj_10",
+          "ABOVE",
+          "obj_6"
+        ],
+        [
+          "obj_10",
+          "ABOVE",
+          "obj_12"
+        ],
+        [
+          "obj_7",
+          "ABOVE",
+          "obj_12"
+        ],
+        [
+          "obj_3",
+          "ABOVE",
+          "obj_2"
+        ],
+        [
+          "obj_5",
+          "ABOVE",
+          "obj_1"
+        ],
+        [
+          "obj_3",
+          "ABOVE",
+          "obj_4"
+        ],
+        [
+          "obj_10",
+          "ABOVE",
+          "obj_2"
+        ],
+        [
+          "obj_10",
+          "ABOVE",
+          "obj_1"
+        ],
+        [
+          "obj_3",
+          "ABOVE",
+          "obj_9"
+        ],
+        [
+          "obj_3",
+          "ABOVE",
+          "obj_12"
+        ]
+      ],
+      "false_negatives": []
+    },
+    "BEHIND": {
+      "true_positives": [
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_1"
+        ],
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_2"
+        ]
+      ],
+      "false_positives": [
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_9"
+        ],
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_12"
+        ],
+        [
+          "obj_6",
+          "BEHIND",
+          "obj_1"
+        ],
+        [
+          "obj_7",
+          "BEHIND",
+          "obj_3"
+        ],
+        [
+          "obj_12",
+          "BEHIND",
+          "obj_2"
+        ],
+        [
+          "obj_4",
+          "BEHIND",
+          "obj_9"
+        ],
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_7"
+        ],
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_3"
+        ],
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_5"
+        ],
+        [
+          "obj_11",
+          "BEHIND",
+          "obj_5"
+        ],
+        [
+          "obj_4",
+          "BEHIND",
+          "obj_2"
+        ],
+        [
+          "obj_6",
+          "BEHIND",
+          "obj_11"
+        ],
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_10"
+        ],
+        [
+          "obj_12",
+          "BEHIND",
+          "obj_9"
+        ],
+        [
+          "obj_8",
+          "BEHIND",
+          "obj_4"
+        ],
+        [
+          "obj_7",
+          "BEHIND",
+          "obj_9"
+        ],
+        [
+          "obj_6",
+          "BEHIND",
+          "obj_5"
+        ]
+      ],
+      "false_negatives": []
+    },
+    "LEFT_OF": {
+      "true_positives": [
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_1"
+        ],
+        [
+          "obj_1",
+          "LEFT_OF",
+          "obj_2"
+        ]
+      ],
+      "false_positives": [
+        [
+          "obj_4",
+          "LEFT_OF",
+          "obj_12"
+        ],
+        [
+          "obj_1",
+          "LEFT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_1",
+          "LEFT_OF",
+          "obj_3"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_9"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_12"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_3"
+        ],
+        [
+          "obj_10",
+          "LEFT_OF",
+          "obj_9"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_4"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_3"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_2"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_10"
+        ],
+        [
+          "obj_10",
+          "LEFT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_10",
+          "LEFT_OF",
+          "obj_3"
+        ],
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_9"
+        ],
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_12"
+        ],
+        [
+          "obj_4",
+          "LEFT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_2"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_4"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_1",
+          "LEFT_OF",
+          "obj_4"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_10"
+        ],
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_2"
+        ],
+        [
+          "obj_1",
+          "LEFT_OF",
+          "obj_9"
+        ],
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_1",
+          "LEFT_OF",
+          "obj_12"
+        ],
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_3"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_9"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_12"
+        ],
+        [
+          "obj_11",
+          "LEFT_OF",
+          "obj_4"
+        ],
+        [
+          "obj_2",
+          "LEFT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_8"
+        ]
+      ],
+      "false_negatives": [
+        [
+          "obj_6",
+          "LEFT_OF",
+          "obj_1"
+        ],
+        [
+          "obj_5",
+          "LEFT_OF",
+          "obj_1"
+        ]
+      ]
+    },
+    "BELOW": {
+      "true_positives": [
+        [
+          "obj_2",
+          "BELOW",
+          "obj_3"
+        ]
+      ],
+      "false_positives": [
+        [
+          "obj_6",
+          "BELOW",
+          "obj_10"
+        ],
+        [
+          "obj_9",
+          "BELOW",
+          "obj_3"
+        ],
+        [
+          "obj_1",
+          "BELOW",
+          "obj_5"
+        ],
+        [
+          "obj_4",
+          "BELOW",
+          "obj_10"
+        ],
+        [
+          "obj_2",
+          "BELOW",
+          "obj_10"
+        ],
+        [
+          "obj_1",
+          "BELOW",
+          "obj_10"
+        ],
+        [
+          "obj_12",
+          "BELOW",
+          "obj_7"
+        ],
+        [
+          "obj_12",
+          "BELOW",
+          "obj_3"
+        ],
+        [
+          "obj_4",
+          "BELOW",
+          "obj_3"
+        ],
+        [
+          "obj_12",
+          "BELOW",
+          "obj_10"
+        ]
+      ],
+      "false_negatives": [
+        [
+          "obj_4",
+          "BELOW",
+          "obj_2"
+        ],
+        [
+          "obj_1",
+          "BELOW",
+          "obj_3"
+        ]
+      ]
+    },
+    "IN_FRONT_OF": {
+      "true_positives": [],
+      "false_positives": [
+        [
+          "obj_1",
+          "IN_FRONT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_11",
+          "IN_FRONT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_2",
+          "IN_FRONT_OF",
+          "obj_12"
+        ],
+        [
+          "obj_5",
+          "IN_FRONT_OF",
+          "obj_6"
+        ],
+        [
+          "obj_10",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_9",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_12",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_3",
+          "IN_FRONT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_5",
+          "IN_FRONT_OF",
+          "obj_11"
+        ],
+        [
+          "obj_9",
+          "IN_FRONT_OF",
+          "obj_4"
+        ],
+        [
+          "obj_2",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_9",
+          "IN_FRONT_OF",
+          "obj_12"
+        ],
+        [
+          "obj_1",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_5",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_3",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_7",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_4",
+          "IN_FRONT_OF",
+          "obj_8"
+        ],
+        [
+          "obj_9",
+          "IN_FRONT_OF",
+          "obj_7"
+        ],
+        [
+          "obj_2",
+          "IN_FRONT_OF",
+          "obj_4"
+        ]
+      ],
+      "false_negatives": [
+        [
+          "obj_4",
+          "IN_FRONT_OF",
+          "obj_1"
+        ]
+      ]
+    },
+    "NEAR": {
+      "true_positives": [],
+      "false_positives": [
+        [
+          "obj_9",
+          "NEAR",
+          "obj_2"
+        ],
+        [
+          "obj_12",
+          "NEAR",
+          "obj_9"
+        ],
+        [
+          "obj_3",
+          "NEAR",
+          "obj_9"
+        ],
+        [
+          "obj_11",
+          "NEAR",
+          "obj_5"
+        ],
+        [
+          "obj_11",
+          "NEAR",
+          "obj_1"
+        ],
+        [
+          "obj_1",
+          "NEAR",
+          "obj_4"
+        ],
+        [
+          "obj_12",
+          "NEAR",
+          "obj_7"
+        ],
+        [
+          "obj_2",
+          "NEAR",
+          "obj_9"
+        ],
+        [
+          "obj_2",
+          "NEAR",
+          "obj_12"
+        ],
+        [
+          "obj_3",
+          "NEAR",
+          "obj_7"
+        ],
+        [
+          "obj_5",
+          "NEAR",
+          "obj_11"
+        ],
+        [
+          "obj_12",
+          "NEAR",
+          "obj_2"
+        ],
+        [
+          "obj_7",
+          "NEAR",
+          "obj_9"
+        ],
+        [
+          "obj_2",
+          "NEAR",
+          "obj_7"
+        ],
+        [
+          "obj_2",
+          "NEAR",
+          "obj_3"
+        ],
+        [
+          "obj_7",
+          "NEAR",
+          "obj_12"
+        ],
+        [
+          "obj_3",
+          "NEAR",
+          "obj_2"
+        ],
+        [
+          "obj_1",
+          "NEAR",
+          "obj_11"
+        ],
+        [
+          "obj_9",
+          "NEAR",
+          "obj_12"
+        ],
+        [
+          "obj_7",
+          "NEAR",
+          "obj_3"
+        ],
+        [
+          "obj_9",
+          "NEAR",
+          "obj_7"
+        ],
+        [
+          "obj_9",
+          "NEAR",
+          "obj_3"
+        ],
+        [
+          "obj_4",
+          "NEAR",
+          "obj_1"
+        ],
+        [
+          "obj_7",
+          "NEAR",
+          "obj_2"
+        ]
+      ],
+      "false_negatives": [
+        [
+          "obj_6",
+          "NEAR",
+          "obj_8"
+        ]
+      ]
+    },
+    "ATTACHED_TO": {
+      "true_positives": [],
+      "false_positives": [],
+      "false_negatives": [
+        [
+          "obj_7",
+          "ATTACHED_TO",
+          "obj_12"
+        ]
+      ]
+    }
+  },
+  "computed_edge_counts": {
+    "ABOVE": 11,
+    "BEHIND": 19,
+    "BELOW": 11,
+    "IN_FRONT_OF": 19,
+    "LEFT_OF": 35,
+    "NEAR": 24,
+    "RIGHT_OF": 35
+  }
+}

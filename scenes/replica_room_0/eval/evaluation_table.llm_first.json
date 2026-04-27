@@ -1,0 +1,429 @@
+{
+  "scene_id": "replica_room_0",
+  "parser_mode": "llm_first",
+  "exported_at": "2026-04-27T02:24:06.682468+00:00",
+  "summary": {
+    "n_queries": 10,
+    "top1_accuracy": 0.3,
+    "topk_recall": 0.7,
+    "avg_false_positives_per_query": 3.2,
+    "strict_top1_accuracy": 0.0,
+    "strict_topk_recall": 0.0,
+    "intent_congruent_rate": 0.1,
+    "hit_category_counts": {
+      "metric_cushion": 3,
+      "miss": 7
+    },
+    "answer_type_counts": {
+      "both": 1,
+      "unknown": 9
+    },
+    "failure_attribution_counts": {
+      "none": 3,
+      "scorer": 4,
+      "relation_extraction": 1,
+      "dense_graph": 2
+    },
+    "unparseable_count": 0,
+    "parser_source_breakdown": {
+      "llm": 9,
+      "llm_fallback": 1
+    },
+    "mean_retry_count": 0.1,
+    "mean_latency_ms": 1676.0860790964216,
+    "p95_latency_ms": 3015.3793329373
+  },
+  "rows": [
+    {
+      "query": "What is to the left of the cabinet?",
+      "expected": [],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": null,
+      "topk_labels": [],
+      "pruned_labels": [],
+      "answer_type": "both",
+      "intent_congruent": true,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "metric_cushion",
+      "parsed_intent": "describe_spatial",
+      "parsed_relation": "LEFT_OF",
+      "parsed_anchor": "cabinet",
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1521.9887080602348,
+      "failure_attribution": "none"
+    },
+    {
+      "query": "What is above the plant-stand?",
+      "expected": [
+        "indoor-plant"
+      ],
+      "k": 6,
+      "top1_ok": false,
+      "topk_ok": true,
+      "false_positives": 3,
+      "top1_label": "lamp_2",
+      "topk_labels": [
+        "lamp_2",
+        "indoor-plant",
+        "vent_1",
+        "lamp_5"
+      ],
+      "pruned_labels": [
+        "lamp_2",
+        "indoor-plant",
+        "vent_1",
+        "lamp_5"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "parsed_intent": "describe_spatial",
+      "parsed_relation": "ABOVE",
+      "parsed_anchor": "plant-stand",
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1548.0048330500722,
+      "failure_attribution": "scorer"
+    },
+    {
+      "query": "Where is the sofa?",
+      "expected": [
+        "sofa_1",
+        "sofa_2"
+      ],
+      "k": 4,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 0,
+      "top1_label": "sofa_1",
+      "topk_labels": [
+        "sofa_1",
+        "sofa_2"
+      ],
+      "pruned_labels": [
+        "sofa_1",
+        "sofa_2"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "metric_cushion",
+      "parsed_intent": "find_location",
+      "parsed_relation": null,
+      "parsed_anchor": null,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1439.984040800482,
+      "failure_attribution": "none"
+    },
+    {
+      "query": "Where are the chairs?",
+      "expected": [
+        "chair_1",
+        "chair_2"
+      ],
+      "k": 4,
+      "top1_ok": false,
+      "topk_ok": false,
+      "false_positives": 0,
+      "top1_label": null,
+      "topk_labels": [],
+      "pruned_labels": [],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "parsed_intent": "find_location",
+      "parsed_relation": null,
+      "parsed_anchor": null,
+      "parser_mode": "llm_first",
+      "parser_source": "llm_fallback",
+      "parser_error": "target_label not in vocab (fuzzy): 'chairs'",
+      "parser_retry_count": 1,
+      "parser_latency_ms": 3015.3793329373,
+      "failure_attribution": "relation_extraction"
+    },
+    {
+      "query": "What is near the cabinet?",
+      "expected": [
+        "candle",
+        "plate_1",
+        "book_3",
+        "vase"
+      ],
+      "k": 10,
+      "top1_ok": false,
+      "topk_ok": true,
+      "false_positives": 8,
+      "top1_label": "book_5",
+      "topk_labels": [
+        "book_5",
+        "book_6",
+        "vase",
+        "plate_1",
+        "table_1",
+        "book_1",
+        "window_1",
+        "book_2",
+        "lamp_1",
+        "blanket"
+      ],
+      "pruned_labels": [
+        "book_5",
+        "book_6",
+        "vase",
+        "plate_1",
+        "table_1",
+        "book_1",
+        "window_1",
+        "book_2",
+        "lamp_1",
+        "blanket"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "parsed_intent": "describe_near_anchor",
+      "parsed_relation": null,
+      "parsed_anchor": null,
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1485.5708749964833,
+      "failure_attribution": "scorer"
+    },
+    {
+      "query": "What is below the picture?",
+      "expected": [
+        "sofa_1",
+        "cushion_5",
+        "cushion_7",
+        "cushion_2",
+        "cushion_8"
+      ],
+      "k": 6,
+      "top1_ok": true,
+      "topk_ok": true,
+      "false_positives": 1,
+      "top1_label": "sofa_1",
+      "topk_labels": [
+        "sofa_1",
+        "lamp_3",
+        "cushion_7",
+        "cushion_2",
+        "cushion_8"
+      ],
+      "pruned_labels": [
+        "sofa_1",
+        "lamp_3",
+        "cushion_7",
+        "cushion_2",
+        "cushion_8"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "metric_cushion",
+      "parsed_intent": "describe_spatial",
+      "parsed_relation": "BELOW",
+      "parsed_anchor": "picture",
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1488.782708067447,
+      "failure_attribution": "none"
+    },
+    {
+      "query": "What is to the right of table_4?",
+      "expected": [
+        "chair_2",
+        "chair_1",
+        "table_5"
+      ],
+      "k": 6,
+      "top1_ok": false,
+      "topk_ok": false,
+      "false_positives": 6,
+      "top1_label": "book_1",
+      "topk_labels": [
+        "book_1",
+        "pillar_1",
+        "wall-plug_2",
+        "window_2",
+        "window_5",
+        "blinds_3"
+      ],
+      "pruned_labels": [
+        "book_1",
+        "pillar_1",
+        "wall-plug_2",
+        "window_2",
+        "window_5",
+        "blinds_3"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "parsed_intent": "describe_spatial",
+      "parsed_relation": "RIGHT_OF",
+      "parsed_anchor": "table_4",
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1594.3188341334462,
+      "failure_attribution": "dense_graph"
+    },
+    {
+      "query": "What is to the right of the door?",
+      "expected": [
+        "window_8",
+        "switch",
+        "picture"
+      ],
+      "k": 6,
+      "top1_ok": false,
+      "topk_ok": false,
+      "false_positives": 6,
+      "top1_label": "table_1",
+      "topk_labels": [
+        "table_1",
+        "book_1",
+        "window_1",
+        "book_2",
+        "lamp_1",
+        "pillar_1"
+      ],
+      "pruned_labels": [
+        "table_1",
+        "book_1",
+        "window_1",
+        "book_2",
+        "lamp_1",
+        "pillar_1"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "parsed_intent": "describe_spatial",
+      "parsed_relation": "RIGHT_OF",
+      "parsed_anchor": "door",
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1573.6006670631468,
+      "failure_attribution": "dense_graph"
+    },
+    {
+      "query": "What is behind the rug?",
+      "expected": [
+        "sofa_1",
+        "cushion_2",
+        "lamp_3"
+      ],
+      "k": 6,
+      "top1_ok": false,
+      "topk_ok": true,
+      "false_positives": 3,
+      "top1_label": "cushion_8",
+      "topk_labels": [
+        "cushion_8",
+        "cushion_2",
+        "cushion_7",
+        "cushion_5",
+        "sofa_1",
+        "lamp_3"
+      ],
+      "pruned_labels": [
+        "cushion_8",
+        "cushion_2",
+        "cushion_7",
+        "cushion_5",
+        "sofa_1",
+        "lamp_3"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "parsed_intent": "describe_spatial",
+      "parsed_relation": "BEHIND",
+      "parsed_anchor": "rug",
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1511.3830000627786,
+      "failure_attribution": "scorer"
+    },
+    {
+      "query": "What is in front of sofa_1?",
+      "expected": [
+        "rug",
+        "cushion_1",
+        "sofa_2"
+      ],
+      "k": 6,
+      "top1_ok": false,
+      "topk_ok": true,
+      "false_positives": 5,
+      "top1_label": "plant-stand",
+      "topk_labels": [
+        "plant-stand",
+        "rug",
+        "indoor-plant",
+        "table_4",
+        "plate_2",
+        "book_4"
+      ],
+      "pruned_labels": [
+        "plant-stand",
+        "rug",
+        "indoor-plant",
+        "table_4",
+        "plate_2",
+        "book_4"
+      ],
+      "answer_type": "unknown",
+      "intent_congruent": false,
+      "strict_top1_ok": false,
+      "strict_topk_ok": false,
+      "hit_category": "miss",
+      "parsed_intent": "describe_spatial",
+      "parsed_relation": "IN_FRONT_OF",
+      "parsed_anchor": "sofa_1",
+      "parser_mode": "llm_first",
+      "parser_source": "llm",
+      "parser_error": null,
+      "parser_retry_count": 0,
+      "parser_latency_ms": 1581.8477917928249,
+      "failure_attribution": "scorer"
+    }
+  ]
+}

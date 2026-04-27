@@ -1,0 +1,27 @@
+{
+  "scene": "replica_room_0",
+  "thresholds": {
+    "min_delta": 0.3,
+    "near_threshold": 1.0
+  },
+  "totals": {
+    "authored": 0,
+    "computed": 5414,
+    "intersection": 0
+  },
+  "skipped_by_compute": [
+    "ATTACHED_TO"
+  ],
+  "has_authored_relations": false,
+  "per_type": null,
+  "per_type_edges": null,
+  "computed_edge_counts": {
+    "ABOVE": 232,
+    "BEHIND": 825,
+    "BELOW": 232,
+    "IN_FRONT_OF": 825,
+    "LEFT_OF": 1537,
+    "NEAR": 226,
+    "RIGHT_OF": 1537
+  }
+}

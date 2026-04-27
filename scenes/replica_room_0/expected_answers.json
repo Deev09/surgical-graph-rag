@@ -1,0 +1,47 @@
+{
+  "What is to the left of the cabinet?": [],
+  "What is above the plant-stand?": [
+    "indoor-plant"
+  ],
+  "Where is the sofa?": [
+    "sofa_1",
+    "sofa_2"
+  ],
+  "Where are the chairs?": [
+    "chair_1",
+    "chair_2"
+  ],
+  "What is near the cabinet?": [
+    "candle",
+    "plate_1",
+    "book_3",
+    "vase"
+  ],
+  "What is below the picture?": [
+    "sofa_1",
+    "cushion_5",
+    "cushion_7",
+    "cushion_2",
+    "cushion_8"
+  ],
+  "What is to the right of table_4?": [
+    "chair_2",
+    "chair_1",
+    "table_5"
+  ],
+  "What is to the right of the door?": [
+    "window_8",
+    "switch",
+    "picture"
+  ],
+  "What is behind the rug?": [
+    "sofa_1",
+    "cushion_2",
+    "lamp_3"
+  ],
+  "What is in front of sofa_1?": [
+    "rug",
+    "cushion_1",
+    "sofa_2"
+  ]
+}
