@@ -1,0 +1,291 @@
+{
+  "schema_version": "v0.1",
+  "scene_id": "replica_room_0",
+  "questions": [
+    {
+      "question_id": "repro0_q01",
+      "scene_id": "replica_room_0",
+      "text": "What is to the left of the cabinet?",
+      "category": "negative",
+      "answer_type": "none",
+      "ambiguity_policy": "none",
+      "requires_3d": true,
+      "expected_targets": [],
+      "paraphrases": [],
+      "notes": "True-negative: cabinet sits against the left wall, nothing is to its left. Correct system response is to abstain or return empty."
+    },
+    {
+      "question_id": "repro0_q02",
+      "scene_id": "replica_room_0",
+      "text": "What is above the plant-stand?",
+      "category": "relative_position",
+      "answer_type": "entity",
+      "ambiguity_policy": "one_of",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "indoor-plant",
+          "display_label": "indoor plant",
+          "aliases": ["plant", "houseplant", "potted plant"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "repro0_q03",
+      "scene_id": "replica_room_0",
+      "text": "Where is the sofa?",
+      "category": "ambiguity",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "any_of_subset",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "sofa_1",
+          "display_label": "sofa",
+          "aliases": ["couch", "settee"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "sofa_2",
+          "display_label": "sofa",
+          "aliases": ["couch", "settee"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Singular phrasing but two instances exist. Either alone is a valid answer; both is a stronger answer."
+    },
+    {
+      "question_id": "repro0_q04",
+      "scene_id": "replica_room_0",
+      "text": "Where are the chairs?",
+      "category": "multi_instance",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "all_of",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "chair_1",
+          "display_label": "chair",
+          "aliases": ["seat"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "chair_2",
+          "display_label": "chair",
+          "aliases": ["seat"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Plural phrasing — complete answer enumerates all chair instances."
+    },
+    {
+      "question_id": "repro0_q05",
+      "scene_id": "replica_room_0",
+      "text": "What is near the cabinet?",
+      "category": "proximity",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "any_of_subset",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "candle",
+          "display_label": "candle",
+          "aliases": [],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "plate_1",
+          "display_label": "plate",
+          "aliases": ["dish"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "book_3",
+          "display_label": "book",
+          "aliases": [],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "vase",
+          "display_label": "vase",
+          "aliases": ["jar", "vessel"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Cabinet has multiple nearby items on/around it; any subset is a valid answer."
+    },
+    {
+      "question_id": "repro0_q06",
+      "scene_id": "replica_room_0",
+      "text": "What is below the picture?",
+      "category": "relative_position",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "any_of_subset",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "sofa_1",
+          "display_label": "sofa",
+          "aliases": ["couch"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "cushion_5",
+          "display_label": "cushion",
+          "aliases": ["pillow", "throw pillow"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "cushion_7",
+          "display_label": "cushion",
+          "aliases": ["pillow", "throw pillow"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "cushion_2",
+          "display_label": "cushion",
+          "aliases": ["pillow", "throw pillow"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "cushion_8",
+          "display_label": "cushion",
+          "aliases": ["pillow", "throw pillow"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Picture is mounted above the sofa; cushions on the sofa also count as below the picture."
+    },
+    {
+      "question_id": "repro0_q07",
+      "scene_id": "replica_room_0",
+      "text": "What is to the right of table_4?",
+      "category": "relative_position",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "any_of_subset",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "chair_2",
+          "display_label": "chair",
+          "aliases": ["seat"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "chair_1",
+          "display_label": "chair",
+          "aliases": ["seat"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "table_5",
+          "display_label": "table",
+          "aliases": [],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Question references a specific instance (table_4) by id."
+    },
+    {
+      "question_id": "repro0_q08",
+      "scene_id": "replica_room_0",
+      "text": "What is to the right of the door?",
+      "category": "relative_position",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "any_of_subset",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "window_8",
+          "display_label": "window",
+          "aliases": [],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "switch",
+          "display_label": "switch",
+          "aliases": ["light switch", "wall switch"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "picture",
+          "display_label": "picture",
+          "aliases": ["painting", "framed art", "wall art"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "repro0_q09",
+      "scene_id": "replica_room_0",
+      "text": "What is behind the rug?",
+      "category": "relative_position",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "any_of_subset",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "sofa_1",
+          "display_label": "sofa",
+          "aliases": ["couch"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "cushion_2",
+          "display_label": "cushion",
+          "aliases": ["pillow", "throw pillow"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "lamp_3",
+          "display_label": "lamp",
+          "aliases": ["table lamp"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "BEHIND from the room's notional viewpoint; depends on camera/forward axis convention."
+    },
+    {
+      "question_id": "repro0_q10",
+      "scene_id": "replica_room_0",
+      "text": "What is in front of sofa_1?",
+      "category": "relative_position",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "any_of_subset",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "rug",
+          "display_label": "rug",
+          "aliases": ["carpet", "mat"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "cushion_1",
+          "display_label": "cushion",
+          "aliases": ["pillow", "throw pillow"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "sofa_2",
+          "display_label": "sofa",
+          "aliases": ["couch"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Anchor referenced by id (sofa_1)."
+    }
+  ]
+}

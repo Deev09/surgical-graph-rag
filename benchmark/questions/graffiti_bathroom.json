@@ -1,0 +1,208 @@
+{
+  "schema_version": "v0.1",
+  "scene_id": "graffiti_bathroom",
+  "questions": [
+    {
+      "question_id": "graffba_q01",
+      "scene_id": "graffiti_bathroom",
+      "text": "What is left of the sink?",
+      "category": "relative_position",
+      "answer_type": "entity",
+      "ambiguity_policy": "one_of",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "toilet",
+          "display_label": "toilet",
+          "aliases": ["bowl", "wc"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "graffba_q02",
+      "scene_id": "graffiti_bathroom",
+      "text": "What is below the mirror?",
+      "category": "relative_position",
+      "answer_type": "entity",
+      "ambiguity_policy": "one_of",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "sink",
+          "display_label": "sink",
+          "aliases": ["basin", "washbasin"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "graffba_q03",
+      "scene_id": "graffiti_bathroom",
+      "text": "What is near the back wall?",
+      "category": "proximity",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "all_of",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "trash_can",
+          "display_label": "trash can",
+          "aliases": ["trash bin", "garbage can", "wastebasket"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "black_door",
+          "display_label": "black door",
+          "aliases": ["door"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Both items are along the back wall; a complete answer enumerates both."
+    },
+    {
+      "question_id": "graffba_q04",
+      "scene_id": "graffiti_bathroom",
+      "text": "What is on the right wall?",
+      "category": "zone",
+      "answer_type": "entity_list",
+      "ambiguity_policy": "all_of",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "paper_towel_dispenser",
+          "display_label": "paper towel dispenser",
+          "aliases": ["paper towel holder", "towel dispenser"],
+          "target_kind": "entity"
+        },
+        {
+          "canonical_id": "right_grab_bar",
+          "display_label": "right grab bar",
+          "aliases": ["grab bar", "handrail"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Wall-membership query; complete answer should enumerate all wall-mounted items."
+    },
+    {
+      "question_id": "graffba_q05",
+      "scene_id": "graffiti_bathroom",
+      "text": "Where is the trash can?",
+      "category": "zone",
+      "answer_type": "location",
+      "ambiguity_policy": "one_of",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "back_left_floor",
+          "display_label": "back left floor",
+          "aliases": ["rear left of the room", "back left corner"],
+          "target_kind": "zone"
+        }
+      ],
+      "paraphrases": [],
+      "notes": "Zone-target answer (target_kind=zone); not an entity_id."
+    },
+    {
+      "question_id": "graffba_q06",
+      "scene_id": "graffiti_bathroom",
+      "text": "What is in front of the toilet?",
+      "category": "relative_position",
+      "answer_type": "entity",
+      "ambiguity_policy": "one_of",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "floor_drain",
+          "display_label": "floor drain",
+          "aliases": ["drain"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "graffba_q07",
+      "scene_id": "graffiti_bathroom",
+      "text": "Where is the vending machine?",
+      "category": "zone",
+      "answer_type": "location",
+      "ambiguity_policy": "one_of",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "left_front_wall",
+          "display_label": "left front wall",
+          "aliases": ["front left wall"],
+          "target_kind": "zone"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "graffba_q08",
+      "scene_id": "graffiti_bathroom",
+      "text": "What is right of the toilet?",
+      "category": "relative_position",
+      "answer_type": "entity",
+      "ambiguity_policy": "one_of",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "sink",
+          "display_label": "sink",
+          "aliases": ["basin", "washbasin"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "graffba_q09",
+      "scene_id": "graffiti_bathroom",
+      "text": "What is behind the toilet?",
+      "category": "relative_position",
+      "answer_type": "entity",
+      "ambiguity_policy": "one_of",
+      "requires_3d": false,
+      "expected_targets": [
+        {
+          "canonical_id": "black_door",
+          "display_label": "black door",
+          "aliases": ["door"],
+          "target_kind": "entity"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    },
+    {
+      "question_id": "graffba_q10",
+      "scene_id": "graffiti_bathroom",
+      "text": "Where is the paper towel dispenser?",
+      "category": "zone",
+      "answer_type": "location",
+      "ambiguity_policy": "one_of",
+      "requires_3d": true,
+      "expected_targets": [
+        {
+          "canonical_id": "right_brick_wall",
+          "display_label": "right brick wall",
+          "aliases": ["right wall"],
+          "target_kind": "zone"
+        }
+      ],
+      "paraphrases": [],
+      "notes": ""
+    }
+  ]
+}
