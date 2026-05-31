@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phase 1 — Final Accounting</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a1f2e;
+    --panel-2: #232a3d;
+    --text: #e6e6e6;
+    --muted: #8a93a8;
+    --accent: #7dd3fc;
+    --pass: #10b981;
+    --fail: #ef4444;
+    --warn: #f59e0b;
+    --border: #2a3142;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 32px 0 12px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h3 { font-size: 15px; margin: 16px 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta { color: var(--muted); margin-bottom: 24px; }
+  .banner {
+    background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(125,211,252,0.1));
+    border: 1px solid var(--pass);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+  .banner .label {
+    display: inline-block;
+    background: var(--pass);
+    color: #062a1f;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .stat .value {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .stat .label {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  td.mono { font-family: var(--mono); font-size: 13px; }
+  td.code { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .pass-badge, .fail-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .pass-badge { background: rgba(16,185,129,0.2); color: var(--pass); }
+  .fail-badge { background: rgba(239,68,68,0.2); color: var(--fail); }
+
+  .bar-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--panel-2);
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 80px;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--pass);
+    border-radius: 5px;
+  }
+  .bar-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  pre.diagram {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  .callout {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin: 10px 0;
+  }
+  .callout .title {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  ul { padding-left: 18px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--panel-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  .footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 720px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Phase 1 — Final Accounting</h1>
+  <div class="meta">surgical-graph-rag · 2026-05-31 · see <a href="phase0_design.md" style="color:var(--accent)">phase0_design.md</a> for frozen contracts</div>
+
+  <div class="banner">
+    <span class="label">COMPLETE</span>
+    All 13 task items landed. Phase 1 exit gate green: 0 cross-stage <code>_internal</code> imports, both artifact gates pass on canonical Replica, <strong>165 / 165 tests across 9 suites</strong>.
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="value">13 / 13</div><div class="label">Tasks complete</div></div>
+    <div class="stat"><div class="value">165 / 165</div><div class="label">Tests passing</div></div>
+    <div class="stat"><div class="value">9</div><div class="label">Test suites</div></div>
+    <div class="stat"><div class="value">8</div><div class="label">Stage packages</div></div>
+    <div class="stat"><div class="value">0</div><div class="label">Cross-stage _internal</div></div>
+    <div class="stat"><div class="value">5414 / 5414</div><div class="label">Compat edge match</div></div>
+    <div class="stat"><div class="value">10.71</div><div class="label">Sparse ratio (cap 14)</div></div>
+  </div>
+
+  <h2>Architecture (implemented)</h2>
+  <pre class="diagram">CaptureBundle
+   │
+   ▼
+ReconstructionAdapter ──► SceneRepresentationBundle
+   │                       (data) + runtime SceneRepresentation
+   │                       + render_view capability
+   ▼
+InstanceExtractor ──────► EntityArtifacts
+   │                       (object_uid + StructuralSurfaces)
+   ▼
+GraphBuilder ──────────► SceneGraphBundle + BuildDiagnostics
+   │                       (physical + logical edge totals)
+   ▼
+QueryCompiler ──────────► AST
+   │
+   ▼
+ASTExecutor ────────────► Bindings | empty | unknown | abstain | parser_failure
+   │ ▲
+   │ │ reads CompletenessProfile via ExecutionContext to choose
+   │ │ empty vs unknown (oracle / measured / unknown source)
+   │
+   ▼
+Verbalizer ─────────────► Answer (text + cited_uids + cited_edges)</pre>
+
+  <h2>Phase 1 exit gate</h2>
+  <table>
+    <thead><tr><th>Condition</th><th>Status</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>P1.08 compat reproduction (diff empty)</td><td><span class="pass-badge">PASS</span></td><td class="code">missing=[], extra=[], 5414/5414</td></tr>
+      <tr><td>P1.09 sparse density (ratio ≤ 14)</td><td><span class="pass-badge">PASS</span></td><td class="code">10.71 / 14</td></tr>
+      <tr><td>No cross-stage <code>_internal</code> imports</td><td><span class="pass-badge">PASS</span></td><td class="code">0 violations</td></tr>
+      <tr><td>Schema round-trip suite</td><td><span class="pass-badge">PASS</span></td><td class="code">15 / 15</td></tr>
+      <tr><td>Oracle pipeline suite</td><td><span class="pass-badge">PASS</span></td><td class="code">15 / 15</td></tr>
+      <tr><td>Relation extractors suite</td><td><span class="pass-badge">PASS</span></td><td class="code">20 / 20</td></tr>
+      <tr><td>GraphBuilder suite</td><td><span class="pass-badge">PASS</span></td><td class="code">17 / 17</td></tr>
+      <tr><td>Benchmark runner + schema suite</td><td><span class="pass-badge">PASS</span></td><td class="code">38 / 38</td></tr>
+      <tr><td>Bundle correspondence suite</td><td><span class="pass-badge">PASS</span></td><td class="code">24 / 24</td></tr>
+      <tr><td>Artifact gates suite</td><td><span class="pass-badge">PASS</span></td><td class="code">7 / 7</td></tr>
+      <tr><td>Reasoner pipeline suite</td><td><span class="pass-badge">PASS</span></td><td class="code">22 / 22</td></tr>
+      <tr><td>Bathroom wrapper suite</td><td><span class="pass-badge">PASS</span></td><td class="code">7 / 7</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Test suites — distribution</h2>
+  <table>
+    <thead><tr><th>Suite</th><th>Tests</th><th>Coverage</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">benchmark/test_runner_and_schema</td><td class="mono">38</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num">38 / 38</div></div></td></tr>
+      <tr><td class="mono">eval/test_bundle_correspondence</td><td class="mono">24</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:63%"></div></div><div class="bar-num">24 / 38</div></div></td></tr>
+      <tr><td class="mono">reasoner/test_reasoner_pipeline</td><td class="mono">22</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:58%"></div></div><div class="bar-num">22 / 38</div></div></td></tr>
+      <tr><td class="mono">relations/test_directional_proximity</td><td class="mono">20</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:53%"></div></div><div class="bar-num">20 / 38</div></div></td></tr>
+      <tr><td class="mono">graph/test_builder</td><td class="mono">17</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:45%"></div></div><div class="bar-num">17 / 38</div></div></td></tr>
+      <tr><td class="mono">schema/test_round_trip</td><td class="mono">15</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:39%"></div></div><div class="bar-num">15 / 38</div></div></td></tr>
+      <tr><td class="mono">oracle_replica/test_oracle_pipeline</td><td class="mono">15</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:39%"></div></div><div class="bar-num">15 / 38</div></div></td></tr>
+      <tr><td class="mono">gates/test_phase1_gates</td><td class="mono">7</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:18%"></div></div><div class="bar-num">7 / 38</div></div></td></tr>
+      <tr><td class="mono">fixtures/test_bathroom_wrapper</td><td class="mono">7</td><td><div class="bar-container"><div class="bar-track"><div class="bar-fill" style="width:18%"></div></div><div class="bar-num">7 / 38</div></div></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Task accounting</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Task</th><th>Status</th><th>Tests</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">P1.01</td><td>Base interfaces &amp; dataclasses</td><td><span class="pass-badge">DONE</span></td><td class="mono">—</td></tr>
+      <tr><td class="mono">P1.02</td><td>Schema round-trip tests</td><td><span class="pass-badge">DONE</span></td><td class="mono">15</td></tr>
+      <tr><td class="mono">P1.03</td><td>Bundle correspondence (shared_source_ref, iou_match, manual)</td><td><span class="pass-badge">DONE</span></td><td class="mono">24</td></tr>
+      <tr><td class="mono">P1.04</td><td>Replica oracle adapter + mesh representation</td><td><span class="pass-badge">DONE</span></td><td class="mono">15*</td></tr>
+      <tr><td class="mono">P1.05</td><td>Replica oracle instance extractor</td><td><span class="pass-badge">DONE</span></td><td class="mono">15*</td></tr>
+      <tr><td class="mono">P1.06</td><td>Directional + proximity (compat + sparse modes)</td><td><span class="pass-badge">DONE</span></td><td class="mono">20</td></tr>
+      <tr><td class="mono">P1.07</td><td>GraphBuilder</td><td><span class="pass-badge">DONE</span></td><td class="mono">17</td></tr>
+      <tr><td class="mono">P1.08</td><td>Compat reproduction gate (artifact emitter)</td><td><span class="pass-badge">DONE</span></td><td class="mono">7*</td></tr>
+      <tr><td class="mono">P1.09</td><td>Sparse density gate (artifact emitter)</td><td><span class="pass-badge">DONE</span></td><td class="mono">7*</td></tr>
+      <tr><td class="mono">P1.10</td><td>Rules compiler + executor + verbalizer + router</td><td><span class="pass-badge">DONE</span></td><td class="mono">22</td></tr>
+      <tr><td class="mono">P1.11</td><td>Benchmark fixes (schema v0.1→v0.2, any_of_subset, scalars)</td><td><span class="pass-badge">DONE</span></td><td class="mono">38</td></tr>
+      <tr><td class="mono">P1.11.post</td><td>v0.1 → v0.2 comparison artifact</td><td><span class="pass-badge">DONE</span></td><td class="mono">—</td></tr>
+      <tr><td class="mono">P1.12</td><td>Bathroom wrapper + Phase 1 exit gate</td><td><span class="pass-badge">DONE</span></td><td class="mono">7</td></tr>
+    </tbody>
+  </table>
+  <div class="meta" style="font-size:11px; margin-top:6px">* shared suite covers multiple tasks</div>
+
+  <h2>Key contracts (Phase 1)</h2>
+  <div class="callout">
+    <div class="title">Identity — per-bundle, not cross-bundle</div>
+    <code>EntityIdentity.object_uid</code> is immutable <strong>within</strong> an <code>EntityArtifacts</code> bundle only. Cross-bundle comparison requires an explicit <code>BundleCorrespondence</code>. Edges use typed <code>GraphRef(kind="entity"|"surface", uid=...)</code> on both sides.
+  </div>
+  <div class="callout">
+    <div class="title">empty vs unknown — externalized via CompletenessProfile</div>
+    <code>oracle</code> source → <code>empty</code> when no bindings. <code>unknown</code> source → <code>unknown</code>. <code>measured</code> source → <code>empty</code> iff <code>min(touched recall priors) ≥ empty_recall_threshold</code>, else <code>unknown</code>. The executor reads <code>ExecutionContext</code>; extractor diagnostics stay observational.
+  </div>
+  <div class="callout">
+    <div class="title">Compat vs sparse — physically separate code paths</div>
+    <code>compat</code> is a faithful port of <code>relations/compute.py</code>; the gate is byte-for-byte reproduction of the 5,414-edge legacy artifact. <code>sparse</code> is the desired graph: canonical-only directional, NEAR once per pair, density <code>logical / entity ≤ 14</code>. No shared branch logic between them.
+  </div>
+  <div class="callout">
+    <div class="title">Benchmark semantics changed (NOT a model improvement)</div>
+    P1.11 fixed <code>any_of_subset</code> (now requires zero false positives) and added scalar <code>count</code> / <code>yes_no</code> scoring. v0.1 metrics from prior runs are NOT comparable to v0.2. See <code>runs/p1_11_post/comparison.json</code> for the documented delta.
+  </div>
+
+  <h2>Artifact gates produced</h2>
+  <table>
+    <thead><tr><th>Artifact</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>scenes/replica_room_0/eval/oracle_adapter_repro_diff.json</code></td>
+        <td><span class="pass-badge">PASS</span> · pass=true, missing=[], extra=[], 5414/5414</td>
+      </tr>
+      <tr>
+        <td><code>scenes/replica_room_0/eval/sparse_density_report.json</code></td>
+        <td><span class="pass-badge">PASS</span> · pass=true, ratio 10.71, limit 14</td>
+      </tr>
+      <tr>
+        <td><code>runs/p1_11_post/comparison.json</code></td>
+        <td><span class="pass-badge">RECORDED</span> · change_type=benchmark_semantics_change; replica policy_satisfied_rate 0.5→0.1 (v1) and 0.7→0.1 (v2), all attributed any_of_subset_fix</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Real findings recorded</h2>
+  <div class="two-col">
+    <div class="panel">
+      <h3>Sparse defaults are Replica-calibrated</h3>
+      <code>DirectionalConfig.sparse_max_distance=2.5</code> was chosen because room_0 (73 entities) lands at 14.52 with 3.0 — over the guardrail. 2.5 fits. Phase 3 measured precision/recall will replace this density heuristic.
+    </div>
+    <div class="panel">
+      <h3>Cabinet against the wall</h3>
+      Replica room_0 has 1 cabinet at (-0.58, 1.11, 0.34), bbox extending to x=-1.58. Has 0 <code>LEFT_OF</code> neighbors. Reasoner test uses <code>NEAR(cabinet)</code> instead (6 matches).
+    </div>
+    <div class="panel">
+      <h3>Identity contract verified across processes</h3>
+      Two oracle Replica reruns match all 73 entities via both <code>iou_match</code> (IoU=1.0) and <code>shared_source_ref</code>. Confirms <code>object_uid</code> + <code>source_instance_ref</code> survive deterministically.
+    </div>
+    <div class="panel">
+      <h3>"What is left of the sink?" exit demo</h3>
+      Replica has no sink. Under oracle context → <code>empty</code> ("Nothing in the scene matches that"). Under unknown context → <code>unknown</code> ("I don't have enough evidence..."). The decision rule works end-to-end.
+    </div>
+  </div>
+
+  <h2>Stage modules (Phase 1 deliverables)</h2>
+  <pre class="diagram">common/
+  types.py          — Vec3, Quaternion, Plane, OrientedBBox, CameraPose, SceneFrame, JSON
+  serde.py          — shared primitive encoders; SchemaVersionError; npy sidecars
+  equality.py       — array_aware_equal (dtype + shape + values; tuple/list significant)
+
+adapters/
+  base.py           — ReconstructionAdapter Protocol, CaptureBundle
+  oracle_replica.py — OracleReplicaAdapter (wraps pre-imported Replica state)
+
+representations/
+  base.py           — SceneRepresentationBundle (data) + SceneRepresentation (runtime)
+  mesh.py           — MeshRepresentation; Phase 1 render_view raises NotImplementedError
+  serde.py          — bundle ↔ JSON
+
+extractors/
+  base.py           — InstanceExtractor Protocol, EntityArtifacts, StructuralSurface
+  oracle_replica.py — OracleReplicaExtractor (73 entities, stable object_uids)
+  serde.py          — bundle ↔ JSON + embedding .npy sidecars
+
+graph/
+  schema.py         — GraphRef, Node, Edge, SceneGraphBundle, BuildDiagnostics
+  serde.py          — bundle ↔ JSON
+  builder.py        — GraphBuilder (mode validation, duplicates, density guardrail)
+  relations/
+    base.py         — RelationExtractor Protocol; count_logical_edges; edge_key
+    directional.py  — DirectionalExtractor (compat + sparse, separate functions)
+    proximity.py    — ProximityExtractor (compat + sparse)
+
+reasoner/
+  ast.py            — QueryAST primitives (Aggregation, EdgeConstraint, ...)
+  base.py           — QueryCompiler / ASTExecutor / Verbalizer Protocols
+                      + CompletenessProfile + ExecutionContext + Answer
+  serde.py          — CompletenessProfile + ExecutionContext ↔ JSON
+  compiler_rules.py — RulesCompiler (regex templates)
+  executor.py       — RulesExecutor (canonical/inverse/symmetric handling)
+  verbalizer.py     — StandardVerbalizer (empty vs unknown distinct strings)
+  router.py         — Router (compiler → executor → verbalizer; LLM stub for Phase 4)
+
+eval/
+  bundle_correspondence.py — shared_source_ref, iou_match, manual
+  fixtures/
+    bathroom_v1.py  — load_bathroom_bundle (regression smoke fixture)
+
+benchmark/
+  schema.py         — Question (v0.2: + expected_count, expected_yes_no)
+  runner.py         — score_output (scalar dispatch; any_of_subset fix)
+  categories.py     — unchanged</pre>
+
+  <h2>Runnable entry points</h2>
+  <table>
+    <thead><tr><th>Purpose</th><th>Command</th></tr></thead>
+    <tbody>
+      <tr><td>Blocking Phase 1 exit gate</td><td class="code">python tools/phase1_exit_gate.py</td></tr>
+      <tr><td>Re-emit artifact gates only</td><td class="code">python tools/phase1_gates.py</td></tr>
+      <tr><td>Re-emit v0.1 → v0.2 comparison</td><td class="code">python tools/compare_runner_semantics.py</td></tr>
+      <tr><td>Run a single test suite</td><td class="code">python tests/&lt;suite&gt;/test_*.py</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Phase 2 candidates</h2>
+  <ul>
+    <li>Importer extension: structural surfaces (floor / wall / ceiling) + world-frame OBBs.</li>
+    <li>Spike at least one learned reconstruction + extraction backend trio against §10 adoption gates G1–G6.</li>
+    <li>Begin hand-labeled relation ground truth for Replica (sampling protocol in §8.1) so the density heuristic can be replaced by measured precision/recall.</li>
+  </ul>
+
+  <div class="footer">
+    surgical-graph-rag · Phase 1 complete · 2026-05-31 · see <a href="phase1_summary.md" style="color:var(--accent)">phase1_summary.md</a> for the Obsidian source · contracts in <a href="phase0_design.md" style="color:var(--accent)">phase0_design.md</a>
+  </div>
+
+</div>
+</body>
+</html>

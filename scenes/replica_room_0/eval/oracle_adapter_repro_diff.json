@@ -1,0 +1,18 @@
+{
+  "gate": "compat_reproduction",
+  "exported_at": "2026-05-31T06:00:18.014909+00:00",
+  "scene_id": "replica_room_0",
+  "legacy_artifact": "scenes/replica_room_0/computed_relations/scene_graph.json",
+  "produced_total": 5414,
+  "expected_total": 5414,
+  "missing": [],
+  "extra": [],
+  "pass": true,
+  "graph_bundle_hash": "graph_efccd306caf4f4a3",
+  "entity_bundle_hash": "ent_oracle_replica_6ebc00e922d6d6b6",
+  "extractor_versions": {
+    "directional": "0.1",
+    "proximity": "0.1"
+  },
+  "mode": "compat"
+}

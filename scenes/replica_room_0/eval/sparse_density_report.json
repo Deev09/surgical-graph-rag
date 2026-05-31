@@ -1,0 +1,52 @@
+{
+  "gate": "sparse_density",
+  "exported_at": "2026-05-31T06:00:18.016418+00:00",
+  "scene_id": "replica_room_0",
+  "entity_count": 73,
+  "limit_ratio": 14,
+  "pass": true,
+  "build_error": null,
+  "physical_edges_total": 782,
+  "logical_edges_total": 782,
+  "actual_ratio": 10.712328767123287,
+  "physical_edges_per_type": {
+    "ABOVE": 116,
+    "LEFT_OF": 285,
+    "BEHIND": 268,
+    "NEAR": 113
+  },
+  "per_family": [
+    {
+      "extractor": "directional",
+      "version": "0.1",
+      "mode": "sparse",
+      "physical_edges_per_type": {
+        "ABOVE": 116,
+        "LEFT_OF": 285,
+        "BEHIND": 268
+      },
+      "physical_edges_total": 669,
+      "logical_edges_total": 669,
+      "rejections_per_type": {
+        "LEFT_OF": 1959
+      },
+      "runtime_ms": 1
+    },
+    {
+      "extractor": "proximity",
+      "version": "0.1",
+      "mode": "sparse",
+      "physical_edges_per_type": {
+        "NEAR": 113
+      },
+      "physical_edges_total": 113,
+      "logical_edges_total": 113,
+      "rejections_per_type": {
+        "NEAR": 2515
+      },
+      "runtime_ms": 0
+    }
+  ],
+  "graph_bundle_hash": "graph_987f3ba4256ab596",
+  "mode": "sparse"
+}

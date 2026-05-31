@@ -111,7 +111,20 @@ def _policy_satisfied(
     expected_canonical_ids: list[str],
     abstained: bool,
     answer_count: int,
+    false_positives: int,
 ) -> bool:
+    """Decide whether the runner's output satisfies the question's
+    ambiguity policy.
+
+    P1.11 semantic changes (NOT comparable to v0.1 scoring):
+      - any_of_subset now requires at least one expected hit AND zero
+        false positives. (v0.1 was buggy — identical to one_of.)
+      - one_of is preserved: one expected hit is enough; additional
+        noise in the answer set does not invalidate it.
+      - all_of preserved: requires every expected covered; false
+        positives still tolerated (kept conservative pending an
+        explicit user decision).
+    """
     if policy == "none":
         return abstained or answer_count == 0
     if policy == "abstain_ok":
@@ -119,10 +132,98 @@ def _policy_satisfied(
     if policy == "one_of":
         return len(expected_covered) >= 1
     if policy == "any_of_subset":
-        return len(expected_covered) >= 1
+        return len(expected_covered) >= 1 and false_positives == 0
     if policy == "all_of":
         return expected_covered == set(expected_canonical_ids)
     return False
+
+
+def _attribute_from_error(error: str | None) -> FailureAttribution | None:
+    if error is None:
+        return None
+    if error == "unparseable":
+        return "parser"
+    if error.lower().startswith("vlm_format"):
+        return "vlm_format"
+    if error.lower().startswith("vlm_hallucination"):
+        return "vlm_hallucination"
+    return None
+
+
+def _score_scalar(
+    question: Question,
+    output: RunnerOutput,
+    *,
+    runner_name: str,
+    runner_config: dict[str, Any],
+    actual: Any,
+    expected: Any,
+) -> ScoredResult:
+    """Scalar scoring for answer_type in {count, yes_no}.
+
+    For scalar types, top1_correct, topk_correct, and policy_satisfied
+    are the same exact-match result: there is no notion of "top-k" for
+    a single scalar value. expected_total is always 1; expected_covered
+    is 1 iff correct.
+
+    Failure attribution:
+      - error string takes precedence (parser / vlm_*)
+      - abstained on a real expected value → abstention
+      - answered with wrong type (no scalar field set) → scene_graph
+      - answered with wrong value → scorer
+    """
+    err_attr = _attribute_from_error(output.error)
+
+    if output.abstained:
+        return ScoredResult(
+            question_id=question.question_id,
+            scene_id=question.scene_id,
+            runner_name=runner_name,
+            runner_config=runner_config,
+            output=output,
+            top1_correct=False,
+            topk_correct=False,
+            policy_satisfied=False,
+            abstention_outcome="wrong_abstain",
+            false_positives=0,
+            expected_covered=0,
+            expected_total=1,
+            failure_attribution=err_attr or "abstention",
+        )
+
+    if actual is None:
+        return ScoredResult(
+            question_id=question.question_id,
+            scene_id=question.scene_id,
+            runner_name=runner_name,
+            runner_config=runner_config,
+            output=output,
+            top1_correct=False,
+            topk_correct=False,
+            policy_satisfied=False,
+            abstention_outcome="miss",
+            false_positives=0,
+            expected_covered=0,
+            expected_total=1,
+            failure_attribution=err_attr or "scene_graph",
+        )
+
+    match = (actual == expected)
+    return ScoredResult(
+        question_id=question.question_id,
+        scene_id=question.scene_id,
+        runner_name=runner_name,
+        runner_config=runner_config,
+        output=output,
+        top1_correct=match,
+        topk_correct=match,
+        policy_satisfied=match,
+        abstention_outcome="true_answer" if match else "miss",
+        false_positives=0 if match else 1,
+        expected_covered=1 if match else 0,
+        expected_total=1,
+        failure_attribution=err_attr or ("none" if match else "scorer"),
+    )
 
 
 def score_output(
@@ -133,6 +234,22 @@ def score_output(
     runner_name: str,
     runner_config: dict[str, Any],
 ) -> ScoredResult:
+    # Scalar dispatch (P1.11): count / yes_no scored from RunnerOutput
+    # scalar fields, NOT from answer_entity_ids.
+    if question.answer_type == "count":
+        return _score_scalar(
+            question, output,
+            runner_name=runner_name, runner_config=runner_config,
+            actual=output.answer_count, expected=question.expected_count,
+        )
+    if question.answer_type == "yes_no":
+        return _score_scalar(
+            question, output,
+            runner_name=runner_name, runner_config=runner_config,
+            actual=output.answer_yes_no, expected=question.expected_yes_no,
+        )
+
+    # Entity-based scoring (entity / entity_list / location / none).
     answers = list(output.answer_entity_ids)
     targets = question.expected_targets
     expected_count = len(targets)
@@ -173,6 +290,7 @@ def score_output(
         expected_canonical,
         output.abstained,
         len(answers),
+        false_positives,
     )
 
     if output.abstained:
@@ -183,12 +301,9 @@ def score_output(
         abst = "true_answer" if topk_ok else "miss"
 
     fail: FailureAttribution = "none"
-    if output.error == "unparseable":
-        fail = "parser"
-    elif output.error and output.error.lower().startswith("vlm_format"):
-        fail = "vlm_format"
-    elif output.error and output.error.lower().startswith("vlm_hallucination"):
-        fail = "vlm_hallucination"
+    err_attr = _attribute_from_error(output.error)
+    if err_attr is not None:
+        fail = err_attr
     elif expected_count == 0 and answers:
         fail = "scorer"
     elif expected_count > 0 and not topk_ok:

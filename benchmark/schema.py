@@ -1,31 +1,38 @@
 """Benchmark schema for spatial-QA evaluation.
 
-This module defines the question/expected-target schema used by the cross-runner
-evaluator (graph / vlm / hybrid). The schema is intentionally richer than the
-v1 expected_answers.json (a flat dict[query, list[label]]):
+P1.11 bump: v0.1 → v0.2.
 
-  - question_id      stable id, lets us track per-question regressions
-  - paraphrases      alt phrasings of the same question
-  - category         which kind of spatial reasoning the question tests
-  - answer_type      what shape the answer should take
-  - expected_targets structured (canonical_id + display_label + aliases + kind)
-  - ambiguity_policy how to score a partial-match answer
-  - requires_3d      hypothesis: can a VLM-from-photos answer this at all
-  - notes            free text for the author's reasoning
+  v0.1: entity / entity_list / location / none questions. count and
+        yes_no answer_types existed in the schema but the runner never
+        scored them (bug — see phase0_design.md §7.1).
+  v0.2: count and yes_no are first-class. Adds optional
+        expected_count: int | None and expected_yes_no: bool | None
+        fields to Question. Validation requires the scalar field that
+        matches the answer_type and forbids the mismatched scalar.
 
-A v1-compat reducer (`to_legacy_dict`) flattens a list of Questions back to the
-original dict[query, list[str]] form so the existing eval_scene.py, run_benchmark,
-and node_matches_expectation continue to work without modification.
+Backward compatibility:
+  - v0.1 files load with a DeprecationWarning. Old questions had no
+    scalar fields; defaulting them to None means entity-type questions
+    still load cleanly. Old v0.1 files with count or yes_no answer_type
+    were never scoreable and will fail validation on load — that is the
+    correct breaking change; their historical "metrics" were 0.0 by bug,
+    not by design.
+  - Save always writes the current SCHEMA_VERSION (v0.2). Loading an old
+    file and saving promotes it.
+  - Old frozen JSON eval artifacts in baselines/ and scenes/*/eval/ are
+    NOT re-scored automatically. Their historical metrics remain in
+    place as artifacts of v0.1 scoring; new runs produce v0.2 metrics
+    that are NOT directly comparable.
 
-Benchmark-definition note: this is a richer schema than v1's expected_answers.json.
-Old evaluation_table results are not directly comparable. Re-run with
-`to_legacy_dict(load_questions(...))` fed to eval_scene.py to reproduce v1
-numbers bit-identically.
+The cross-runner evaluator stores results-side fields in
+benchmark/runner.py. Their semantics changed in P1.11 (any_of_subset
+fix; count/yes_no scoring); see runner module for details.
 """
 
 from __future__ import annotations
 
 import json
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -33,7 +40,8 @@ from typing import Any, Literal
 from benchmark.categories import CATEGORIES
 
 
-SCHEMA_VERSION = "v0.1"
+SCHEMA_VERSION = "v0.2"
+SUPPORTED_VERSIONS = ("v0.1", "v0.2")
 
 AnswerType = Literal["entity", "entity_list", "count", "yes_no", "location", "none"]
 AmbiguityPolicy = Literal["one_of", "all_of", "any_of_subset", "none", "abstain_ok"]
@@ -68,6 +76,9 @@ class Question:
     expected_targets: list[ExpectedTarget] = field(default_factory=list)
     paraphrases: list[str] = field(default_factory=list)
     notes: str = ""
+    # P1.11 v0.2 additions:
+    expected_count: int | None = None
+    expected_yes_no: bool | None = None
 
 
 def validate_question(q: Question) -> None:
@@ -79,11 +90,45 @@ def validate_question(q: Question) -> None:
         raise ValueError(f"{q.question_id}: unknown ambiguity_policy {q.ambiguity_policy!r}")
     if q.answer_type == "none" and q.expected_targets:
         raise ValueError(f"{q.question_id}: answer_type=none must have empty expected_targets")
-    if q.answer_type != "none" and q.ambiguity_policy != "none" and not q.expected_targets:
+    if (
+        q.answer_type not in ("none", "count", "yes_no")
+        and q.ambiguity_policy != "none"
+        and not q.expected_targets
+    ):
         raise ValueError(f"{q.question_id}: missing expected_targets")
     for t in q.expected_targets:
         if t.target_kind not in _VALID_TARGET_KINDS:
             raise ValueError(f"{q.question_id}: bad target_kind {t.target_kind!r}")
+
+    # P1.11 v0.2: scalar expected values are present only for their
+    # matching answer_type. Mismatches are rejected upfront.
+    if q.answer_type == "count":
+        if q.expected_count is None:
+            raise ValueError(
+                f"{q.question_id}: answer_type=count requires expected_count to be set"
+            )
+        if q.expected_yes_no is not None:
+            raise ValueError(
+                f"{q.question_id}: answer_type=count must not set expected_yes_no"
+            )
+    elif q.answer_type == "yes_no":
+        if q.expected_yes_no is None:
+            raise ValueError(
+                f"{q.question_id}: answer_type=yes_no requires expected_yes_no to be set"
+            )
+        if q.expected_count is not None:
+            raise ValueError(
+                f"{q.question_id}: answer_type=yes_no must not set expected_count"
+            )
+    else:
+        if q.expected_count is not None:
+            raise ValueError(
+                f"{q.question_id}: answer_type={q.answer_type} must not set expected_count"
+            )
+        if q.expected_yes_no is not None:
+            raise ValueError(
+                f"{q.question_id}: answer_type={q.answer_type} must not set expected_yes_no"
+            )
 
 
 def _target_to_dict(t: ExpectedTarget) -> dict[str, Any]:
@@ -96,7 +141,7 @@ def _target_to_dict(t: ExpectedTarget) -> dict[str, Any]:
 
 
 def _question_to_dict(q: Question) -> dict[str, Any]:
-    return {
+    payload: dict[str, Any] = {
         "question_id": q.question_id,
         "scene_id": q.scene_id,
         "text": q.text,
@@ -107,10 +152,13 @@ def _question_to_dict(q: Question) -> dict[str, Any]:
         "expected_targets": [_target_to_dict(t) for t in q.expected_targets],
         "paraphrases": list(q.paraphrases),
         "notes": q.notes,
+        "expected_count": q.expected_count,
+        "expected_yes_no": q.expected_yes_no,
     }
+    return payload
 
 
-def _question_from_dict(d: dict[str, Any]) -> Question:
+def _question_from_dict(d: dict[str, Any], source_version: str) -> Question:
     targets = [
         ExpectedTarget(
             canonical_id=t["canonical_id"],
@@ -131,6 +179,8 @@ def _question_from_dict(d: dict[str, Any]) -> Question:
         expected_targets=targets,
         paraphrases=list(d.get("paraphrases", [])),
         notes=d.get("notes", ""),
+        expected_count=d.get("expected_count"),
+        expected_yes_no=d.get("expected_yes_no"),
     )
     validate_question(q)
     return q
@@ -138,11 +188,22 @@ def _question_from_dict(d: dict[str, Any]) -> Question:
 
 def load_questions(path: Path | str) -> list[Question]:
     raw = json.loads(Path(path).read_text(encoding="utf-8"))
-    if raw.get("schema_version") != SCHEMA_VERSION:
+    version = raw.get("schema_version")
+    if version not in SUPPORTED_VERSIONS:
         raise ValueError(
-            f"schema_version {raw.get('schema_version')!r} != expected {SCHEMA_VERSION!r}"
+            f"schema_version {version!r} not supported; "
+            f"expected one of {SUPPORTED_VERSIONS}"
         )
-    return [_question_from_dict(entry) for entry in raw["questions"]]
+    if version != SCHEMA_VERSION:
+        warnings.warn(
+            f"Loaded questions from {path} at schema_version {version!r}; "
+            f"current is {SCHEMA_VERSION!r}. v0.1 metrics from prior runs are "
+            "NOT comparable to v0.2 metrics (any_of_subset semantics fixed; "
+            "count and yes_no now scored). Save to promote to v0.2.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    return [_question_from_dict(entry, version) for entry in raw["questions"]]
 
 
 def save_questions(scene_id: str, questions: list[Question], path: Path | str) -> None:
@@ -160,5 +221,8 @@ def save_questions(scene_id: str, questions: list[Question], path: Path | str) -
 
 def to_legacy_dict(questions: list[Question]) -> dict[str, list[str]]:
     """Reduce a Question list to the v1 expected_answers.json shape:
-    {query: [canonical_id, ...]}. Plug into eval_scene.py to reproduce v1 numbers."""
+    {query: [canonical_id, ...]}. Plug into eval_scene.py to reproduce v1
+    numbers. Only entity-typed questions contribute targets; count and
+    yes_no questions produce an empty list (the legacy shape can't
+    represent them)."""
     return {q.text: [t.canonical_id for t in q.expected_targets] for q in questions}
