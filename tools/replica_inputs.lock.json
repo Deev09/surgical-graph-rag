@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "data_root_relative_to_repo": "data/replica/room_0",
+  "files": [
+    {
+      "relpath": "habitat/info_semantic.json",
+      "size": 76790,
+      "sha256": "23d3411755d0c55bdd3451121a647495cc94e76340c1b3cf3ad3963b71f15a66"
+    },
+    {
+      "relpath": "habitat/mesh_semantic.ply",
+      "size": 43890939,
+      "sha256": "104cc7fe28bee178537e8034859e8f121f89a166ea37132b4574e10050947d98"
+    }
+  ]
+}
