@@ -11,15 +11,19 @@ from pathlib import Path
 from typing import Any, get_args
 
 from common.serde import (
-    check_schema_version, obb_from_dict, obb_to_dict, scene_frame_from_dict,
-    scene_frame_to_dict, vec3_from_list, vec3_to_list,
+    check_schema_version, obb_from_dict, obb_to_dict, plane_from_dict,
+    plane_to_dict, scene_frame_from_dict, scene_frame_to_dict,
+    vec3_from_list, vec3_to_list,
 )
 from graph.schema import (
     BuildDiagnostics, Edge, EdgeRejection, EdgeType, GraphRef, Node,
-    SceneGraphBundle,
+    SceneGraphBundle, SurfaceRecord,
 )
 
-CURRENT_SCHEMA_VERSION = 1
+CURRENT_SCHEMA_VERSION = 2  # P2.10 C1: SceneGraphBundle gained structural_surfaces
+
+_VALID_SURFACE_TYPES = ("floor", "wall", "ceiling")
+_VALID_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")
 
 _VALID_EDGE_TYPES = frozenset(get_args(EdgeType))
 _VALID_FRAMES = ("world", "viewpoint", "scene_canonical")
@@ -41,6 +45,41 @@ def graphref_from_dict(d: dict[str, Any]) -> GraphRef:
     if kind not in _VALID_REF_KINDS:
         raise ValueError(f"unknown GraphRef kind {kind!r}")
     return GraphRef(kind=kind, uid=str(d["uid"]))
+
+
+def _surface_record_to_dict(s: SurfaceRecord) -> dict[str, Any]:
+    return {
+        "uid": s.uid,
+        "surface_type": s.surface_type,
+        "plane": plane_to_dict(s.plane),
+        "polygon": (
+            [vec3_to_list(v) for v in s.polygon] if s.polygon is not None else None
+        ),
+        "source": s.source,
+        "confidence": s.confidence,
+    }
+
+
+def _surface_record_from_dict(d: dict[str, Any]) -> SurfaceRecord:
+    stype = d["surface_type"]
+    if stype not in _VALID_SURFACE_TYPES:
+        raise ValueError(f"unknown SurfaceRecord surface_type {stype!r}")
+    src = d.get("source")
+    if src not in _VALID_SURFACE_SOURCES:
+        raise ValueError(
+            f"unknown SurfaceRecord source {src!r}; allowed: {_VALID_SURFACE_SOURCES}"
+        )
+    poly = d.get("polygon")
+    return SurfaceRecord(
+        uid=str(d["uid"]),
+        surface_type=stype,
+        plane=plane_from_dict(d["plane"]),
+        polygon=(
+            [vec3_from_list(v) for v in poly] if poly is not None else None
+        ),
+        source=src,
+        confidence=float(d["confidence"]),
+    )
 
 
 def _node_to_dict(n: Node) -> dict[str, Any]:
@@ -70,6 +109,34 @@ def _node_from_dict(d: dict[str, Any]) -> Node:
         attributes=dict(d.get("attributes", {})),
         provenance={str(k): str(v) for k, v in d.get("provenance", {}).items()},
     )
+
+
+def _validate_scene_graph_bundle(bundle: SceneGraphBundle) -> None:
+    node_ids = [node.id for node in bundle.nodes]
+    surface_uids = [surface.uid for surface in bundle.structural_surfaces]
+    if len(node_ids) != len(set(node_ids)):
+        raise ValueError("SceneGraphBundle contains duplicate Node.id values")
+    if len(surface_uids) != len(set(surface_uids)):
+        raise ValueError("SceneGraphBundle contains duplicate SurfaceRecord.uid values")
+    if bundle.structural_surface_refs != surface_uids:
+        raise ValueError(
+            "SceneGraphBundle.structural_surface_refs must equal the ordered "
+            "SurfaceRecord uid list"
+        )
+    node_id_set = set(node_ids)
+    surface_uid_set = set(surface_uids)
+    for edge in bundle.edges:
+        for ref in (edge.source, edge.target):
+            if ref.kind == "entity" and ref.uid not in node_id_set:
+                raise ValueError(
+                    f"edge {edge.edge_id!r} references unknown entity uid {ref.uid!r}"
+                )
+            if ref.kind == "surface" and ref.uid not in surface_uid_set:
+                raise ValueError(
+                    f"edge {edge.edge_id!r} references unknown surface uid {ref.uid!r}"
+                )
+            if ref.kind not in _VALID_REF_KINDS:
+                raise ValueError(f"edge {edge.edge_id!r} has unknown GraphRef kind {ref.kind!r}")
 
 
 def _edge_to_dict(e: Edge) -> dict[str, Any]:
@@ -177,6 +244,9 @@ def _build_diagnostics_to_dict(b: BuildDiagnostics) -> dict[str, Any]:
         "physical_edges_total": b.physical_edges_total,
         "logical_edges_total": b.logical_edges_total,
         "mode": b.mode,
+        "density_policy": b.density_policy,
+        "density_ratio": b.density_ratio,
+        "sparse_density_limit": b.sparse_density_limit,
     }
 
 
@@ -184,6 +254,10 @@ def _build_diagnostics_from_dict(d: dict[str, Any]) -> BuildDiagnostics:
     mode = d.get("mode", "sparse")
     if mode not in ("compat", "sparse"):
         raise ValueError(f"unknown BuildDiagnostics mode {mode!r}")
+    policy = d.get("density_policy", "phase1_block")
+    if policy not in ("phase1_block", "phase2_telemetry_only"):
+        raise ValueError(f"unknown density_policy {policy!r}")
+    raw_ratio = d.get("density_ratio")
     return BuildDiagnostics(
         extractor_versions={str(k): str(v) for k, v in d.get("extractor_versions", {}).items()},
         edges_emitted_per_type={
@@ -200,10 +274,14 @@ def _build_diagnostics_from_dict(d: dict[str, Any]) -> BuildDiagnostics:
         physical_edges_total=int(d.get("physical_edges_total", 0)),
         logical_edges_total=int(d.get("logical_edges_total", 0)),
         mode=mode,
+        density_policy=policy,
+        density_ratio=float(raw_ratio) if raw_ratio is not None else None,
+        sparse_density_limit=float(d.get("sparse_density_limit", 14.0)),
     )
 
 
 def dump_scene_graph_bundle(bundle: SceneGraphBundle, out_dir: Path) -> Path:
+    _validate_scene_graph_bundle(bundle)
     out_dir.mkdir(parents=True, exist_ok=True)
     payload = {
         "schema_version": bundle.schema_version,
@@ -214,6 +292,7 @@ def dump_scene_graph_bundle(bundle: SceneGraphBundle, out_dir: Path) -> Path:
         "nodes": [_node_to_dict(n) for n in bundle.nodes],
         "edges": [_edge_to_dict(e) for e in bundle.edges],
         "structural_surface_refs": list(bundle.structural_surface_refs),
+        "structural_surfaces": [_surface_record_to_dict(s) for s in bundle.structural_surfaces],
     }
     manifest = out_dir / "manifest.json"
     manifest.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
@@ -226,7 +305,7 @@ def load_scene_graph_bundle(in_dir: Path) -> SceneGraphBundle:
     check_schema_version(
         int(payload["schema_version"]), CURRENT_SCHEMA_VERSION, "SceneGraphBundle",
     )
-    return SceneGraphBundle(
+    bundle = SceneGraphBundle(
         schema_version=int(payload["schema_version"]),
         bundle_hash=str(payload["bundle_hash"]),
         scene_id=str(payload["scene_id"]),
@@ -235,7 +314,12 @@ def load_scene_graph_bundle(in_dir: Path) -> SceneGraphBundle:
         nodes=[_node_from_dict(n) for n in payload["nodes"]],
         edges=[_edge_from_dict(e) for e in payload["edges"]],
         structural_surface_refs=[str(x) for x in payload.get("structural_surface_refs", [])],
+        structural_surfaces=[
+            _surface_record_from_dict(s) for s in payload.get("structural_surfaces", [])
+        ],
     )
+    _validate_scene_graph_bundle(bundle)
+    return bundle
 
 
 def dump_build_diagnostics(b: BuildDiagnostics, out_path: Path) -> Path:

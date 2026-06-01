@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 2 — Geometry Enrichment Plan</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a1f2e;
+    --panel-2: #232a3d;
+    --text: #e6e6e6;
+    --muted: #8a93a8;
+    --accent: #7dd3fc;
+    --pass: #10b981;
+    --warn: #f59e0b;
+    --warn-bg: rgba(245, 158, 11, 0.12);
+    --border: #2a3142;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .container { max-width: 1120px; margin: 0 auto; padding: 32px 24px 48px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 {
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    font-size: 18px;
+    margin: 32px 0 12px;
+    padding-bottom: 8px;
+  }
+  h3 { color: var(--text); font-size: 15px; margin: 20px 0 6px; }
+  h4 {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    margin: 12px 0 4px;
+    text-transform: uppercase;
+  }
+  a { color: var(--accent); }
+  .meta { color: var(--muted); margin-bottom: 24px; }
+  .banner {
+    background: linear-gradient(135deg, var(--warn-bg), rgba(125, 211, 252, 0.08));
+    border: 1px solid var(--warn);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+  }
+  .banner .label {
+    background: var(--warn);
+    border-radius: 4px;
+    color: #2d1b00;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 8px;
+    padding: 2px 10px;
+  }
+  .banner.amended {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(125, 211, 252, 0.08));
+    border-color: var(--pass);
+  }
+  .banner.amended .label {
+    background: var(--pass);
+    color: #03271d;
+  }
+  .stat-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    margin: 18px 0 24px;
+  }
+  .stat, .panel, .task {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .stat .value {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .stat .label {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .two-col {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .task { margin: 10px 0; }
+  .task h3 { color: var(--accent); margin-top: 0; }
+  .done {
+    border-left: 3px solid var(--pass);
+    margin-top: 10px;
+    padding: 4px 0 4px 10px;
+  }
+  .done strong { color: var(--pass); }
+  .callout {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    margin: 10px 0;
+    padding: 10px 14px;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout .title {
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .callout.warn .title { color: var(--warn); }
+  table { border-collapse: collapse; width: 100%; }
+  th, td {
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  code {
+    background: var(--panel-2);
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 1px 5px;
+  }
+  pre.diagram, pre.code {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    overflow-x: auto;
+    padding: 16px;
+  }
+  ul, ol { margin: 8px 0; padding-left: 20px; }
+  li { margin: 4px 0; }
+  .badge {
+    background: rgba(125, 211, 252, 0.14);
+    border-radius: 3px;
+    color: var(--accent);
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+  }
+  .footer {
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 40px;
+    padding-top: 16px;
+  }
+  @media (max-width: 760px) {
+    .two-col { grid-template-columns: 1fr; }
+    th, td { padding: 7px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Phase 2 — Geometry Enrichment</h1>
+  <div class="meta">surgical-graph-rag · amended v2 plan · 2026-05-31 · source: <a href="phase2_plan.md">phase2_plan.md</a></div>
+
+  <div class="banner amended">
+    <span class="label">AMENDED V2</span>
+    Conditional sign-off received. The P2.01 verifier and data inventory are in place. Canonical geometry work remains gated until the raw Replica inputs are present locally and pinned.
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="value">10</div><div class="label">Planned tasks</div></div>
+    <div class="stat"><div class="value">7</div><div class="label">Pre-registered gates</div></div>
+    <div class="stat"><div class="value">v1 → v2</div><div class="label">Sparse config evolution</div></div>
+    <div class="stat"><div class="value">8</div><div class="label">Review amendments folded in</div></div>
+  </div>
+
+  <h2>Purpose</h2>
+  <p>Phase 2 builds the geometry substrate that Phase 3 support, containment, and attachment relations will rely on. Phase 1 proved that a normalized entity bundle can feed a sparse graph and a deterministic reasoner. Phase 2 enriches that bundle with world-frame oriented boxes and stable structural surfaces.</p>
+  <div class="callout">
+    <div class="title">Scope Alignment</div>
+    This phase enables later questions such as “what is on the chair?” and “what is near the wall?” It does not prove spatial-reasoning quality. That starts in Phase 3 when support, containment, and attachment extractors are evaluated against labeled edges.
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <h3>In scope</h3>
+      <ul>
+        <li>World-frame oriented bounding boxes (OBBs).</li>
+        <li>Stable floor, wall, and ceiling surfaces.</li>
+        <li>Geometry validators and round-trip verification.</li>
+        <li>Surface-distance helpers.</li>
+        <li>Opt-in <code>sparse_v2</code> proximity.</li>
+        <li><code>NEAR_SURFACE</code> extraction.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Explicitly deferred</h3>
+      <ul>
+        <li><code>ON_TOP_OF</code>, <code>SUPPORTS</code>, <code>ATTACHED_TO</code>.</li>
+        <li><code>INSIDE</code> and <code>CONTAINS</code>.</li>
+        <li>Learned NeRF, 3DGS, OpenMask3D, LangSplat, or OpenSplat3D backends.</li>
+        <li>Reasoner and benchmark schema changes.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Review Amendments</h2>
+  <table>
+    <thead><tr><th>#</th><th>Required amendment now folded into the plan</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge">A1</span></td><td>Keep the Phase 1 replay fixture byte-frozen. Write enriched importer output to <code>scenes/replica_room_0/enriched/v2/</code>.</td></tr>
+      <tr><td><span class="badge">A2</span></td><td>Correct the <code>NEAR</code> expectation: surface distance usually yields more edges than centroid distance at the same threshold.</td></tr>
+      <tr><td><span class="badge">A3</span></td><td>Treat room-bbox surface synthesis as a tagged experiment only, never canonical structural ground truth.</td></tr>
+      <tr><td><span class="badge">A4</span></td><td>Use non-negative bbox-to-plane distance and Euclidean positive-axis gaps for AABB-to-AABB surface distance.</td></tr>
+      <tr><td><span class="badge">A5</span></td><td>Use exact AABB surface distance in Phase 2. Defer robust OBB-to-OBB SAT/GJK distance to Phase 3 if needed.</td></tr>
+      <tr><td><span class="badge">A6</span></td><td>Retain every structural surface in the graph and reject edges referencing unknown entity or surface UIDs.</td></tr>
+      <tr><td><span class="badge">A7</span></td><td>Add per-surface provenance: <code>habitat_label</code>, <code>mesh_ransac</code>, or <code>synth_bbox_fallback</code>.</td></tr>
+      <tr><td><span class="badge">A8</span></td><td>Require both positive and negative <code>NEAR_SURFACE</code> smoke cases.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Hard Constraints</h2>
+  <table>
+    <thead><tr><th>Constraint</th><th>Implication</th></tr></thead>
+    <tbody>
+      <tr><td>Raw Replica inputs are external</td><td>Verify local paths, pinned SHA-256 hashes, and sizes. A synthesized fallback is allowed only as a clearly labeled experiment, never as oracle ground truth.</td></tr>
+      <tr><td>Phase 1 files are byte-frozen</td><td>Write enriched importer output under <code>scenes/replica_room_0/enriched/v2/</code>. Do not modify the original replay fixture paths.</td></tr>
+      <tr><td>Phase 1 compatibility remains exact</td><td>The compat reproduction gate must continue to match the legacy 5,414-edge artifact with an empty diff.</td></tr>
+      <tr><td>New behavior is opt-in</td><td><code>sparse_v1</code> remains frozen. Geometry-aware proximity belongs to <code>sparse_v2</code>.</td></tr>
+      <tr><td>Surfaces need stable identity</td><td>Every structural surface carries a deterministic <code>surface_uid</code>.</td></tr>
+      <tr><td>Surfaces need provenance</td><td>Every surface records <code>source</code>. Canonical gates exclude <code>synth_bbox_fallback</code> surfaces.</td></tr>
+      <tr><td>No learned signal</td><td>All Phase 2 output is derived geometrically from oracle inputs.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Post-Amendment Clarification</h2>
+  <div class="callout">
+    <div class="title">C1 · Graph-Level Surface Record</div>
+    <p><code>SceneGraphBundle.structural_surface_refs</code> currently stores UIDs only. To preserve geometry and provenance without pretending surfaces are entity nodes, Phase 2 adds a dedicated graph-side <code>SurfaceRecord</code>.</p>
+  </div>
+  <pre class="code">@dataclass(frozen=True)
+class SurfaceRecord:
+    uid: str
+    surface_type: Literal["floor", "wall", "ceiling"]
+    plane: Plane
+    polygon: list[Vec3] | None
+    source: Literal["habitat_label", "mesh_ransac", "synth_bbox_fallback"]
+    confidence: float</pre>
+  <ul>
+    <li>Add <code>structural_surfaces: list[SurfaceRecord]</code> to <code>SceneGraphBundle</code>.</li>
+    <li>Keep <code>structural_surface_refs</code> as a compatibility view derived from those records.</li>
+    <li>Round-trip the new records in P2.05 and require them for G7.</li>
+    <li>C1 does not block P2.01, but it must land before P2.10.</li>
+  </ul>
+
+  <h2>Architecture Additions</h2>
+  <pre class="diagram">importers/
+  replica.py                         EXTEND: emit OBBs + structural surfaces +
+                                     per-surface provenance to enriched/v2/
+
+extractors/
+  base.py                            EXTEND: StructuralSurface.source
+  oracle_replica.py                  EXTEND: opt-in enriched/v2/ read path
+
+geometry/                            NEW: pure functions only
+  obb.py                             OBB construction + world-frame operations
+  plane.py                           normalized planes + point/bbox distance
+  surface_distance.py                exact AABB gap + bbox-to-plane helpers
+  validators.py                      gravity, OBB, plane, provenance, hash checks
+
+graph/
+  schema.py                          EXTEND: SurfaceRecord + full surface list
+  builder.py                         EXTEND: retain all surfaces + reject bad refs
+  relations/
+    proximity.py                     EXTEND: opt-in sparse_v2 path
+    surface.py                       NEW: NEAR_SURFACE extractor
+
+tools/
+  verify_replica_inputs.py           NEW: hashes, sizes, 0/1 verification
+  phase2_gates.py                    NEW: Phase 2 artifact gates
+  phase2_exit_gate.py                NEW: blocking exit assertion script</pre>
+
+  <h2>Task Plan</h2>
+
+  <div class="task">
+    <h3>P2.01 — Acquire or reference raw Replica inputs</h3>
+    <p>Document local paths, provenance, SHA-256 hashes, and sizes for <code>room_0</code> semantic metadata and mesh inputs. Add <code>tools/verify_replica_inputs.py</code>.</p>
+    <div class="callout warn"><div class="title">Current status</div>Verifier and inventory landed. Waiting for local <code>info_semantic.json</code> and <code>mesh_semantic.ply</code>, then a one-time <code>--init</code> pin.</div>
+    <div class="done"><strong>Done when:</strong> the verification tool prints hashes and sizes and exits successfully. Missing raw data must fail explicitly.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.02 — Extend the raw Replica importer with world-frame OBBs</h3>
+    <p>Preserve Habitat orientation quaternions, derive OBB centers and half-extents, and derive tight world-frame AABBs from transformed OBB corners. Write only to <code>scenes/replica_room_0/enriched/v2/</code> with <code>schema_version: 2</code>.</p>
+    <div class="done"><strong>Done when:</strong> every retained entity has a populated OBB and tight derived AABB, while original Phase 1 fixture checksums remain unchanged.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.03 — Emit stable structural surfaces</h3>
+    <p>Produce at least one floor, two walls, and one ceiling. Prefer Habitat structural labels, then mesh RANSAC. Bbox synthesis is experiment-only. Each surface has a deterministic <code>surface_uid</code>, provenance <code>source</code>, a normalized plane, and a bounded polygon when extents are available.</p>
+    <div class="done"><strong>Done when:</strong> canonical surface identities remain stable across importer reruns, geometry validation passes, and no synth fallback enters canonical output.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.04 — Add geometry validators</h3>
+    <p>Validate gravity, OBB extents and quaternions, normalized planes, bounded polygons, surface provenance, canonical surface sets, and deterministic hashes.</p>
+    <div class="done"><strong>Done when:</strong> each validator has a passing case and at least one typed failure test.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.05 — Verify enriched serialization</h3>
+    <p>Exercise existing explicit serde against enriched real oracle data, including OBB-derived AABBs and structural surfaces.</p>
+    <div class="done"><strong>Done when:</strong> the enriched oracle bundle round-trips with <code>array_aware_equal</code>.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.06 — Surface enriched geometry through the oracle extractor</h3>
+    <p>Add an opt-in <code>enriched_path</code>. On that path, populate entity OBBs, replace approximate AABBs, surface structural planes with provenance, and update capability flags. The default path remains Phase-1-identical.</p>
+    <div class="done"><strong>Done when:</strong> all 73 enriched-path oracle entities carry OBBs and valid surfaces, while the default extractor bundle hash remains bit-identical to Phase 1.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.07 — Add surface-distance helpers</h3>
+    <p>Implement pure helpers for signed point-to-plane, non-negative point-to-AABB, exact AABB-to-AABB surface gap, non-negative bbox-to-plane distance, and point-to-OBB. OBB-to-OBB distance is deferred to Phase 3.</p>
+    <div class="done"><strong>Done when:</strong> property-style tests pass, including diagonal AABB separation where two unit cubes offset by <code>(2,2,2)</code> have distance <code>sqrt(3)</code>.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.08 — Add opt-in <code>sparse_v2</code> proximity</h3>
+    <p>Extend <code>ProximityConfig</code> with <code>sparse_version: Literal[1, 2] = 1</code>. Keep <code>sparse_v1</code> byte-frozen. The new v2 path uses exact AABB surface distance and is expected to emit more neighbors at the same threshold.</p>
+    <div class="done"><strong>Done when:</strong> v1 stays bit-identical, v2 is deterministic, and per-pair distances, edge totals, and density are recorded as telemetry.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.09 — Add <code>NEAR_SURFACE</code></h3>
+    <p>Emit directional <code>NEAR_SURFACE(entity, surface)</code> edges with non-negative bbox-to-plane distance evidence and provisional per-surface thresholds. Skip synth fallback surfaces on the canonical path.</p>
+    <div class="done"><strong>Done when:</strong> the frozen hand-checked smoke fixture passes with both positive and negative controls and surface proximity output is deterministic.</div>
+  </div>
+
+  <div class="task">
+    <h3>P2.10 — Add Phase 2 exit gates</h3>
+    <p>Run the Phase 1 compat gate unchanged and add structural-surface, OBB, deterministic replay, <code>NEAR_SURFACE</code>, and builder-reference checks. Record sparse-v2 density as telemetry only.</p>
+    <div class="done"><strong>Done when:</strong> blocking gates G1–G5 and G7, the full test sweeps, artifact gates, and cross-stage import check are green. G6 telemetry is recorded.</div>
+  </div>
+
+  <h2>Config Versioning Policy</h2>
+  <pre class="code">ProximityConfig(
+    mode: Literal["compat", "sparse"],
+    sparse_version: Literal[1, 2] = 1,
+    sparse_near_threshold: float = 1.0,
+)</pre>
+  <ul>
+    <li><code>sparse_v1</code> remains the Phase 1 default and is never silently changed.</li>
+    <li><code>sparse_v2</code> is explicitly selected and uses exact AABB surface distance.</li>
+    <li>Phase 1 gates continue to execute v1. Phase 2 gates execute v2.</li>
+    <li><code>sparse_v2</code> density is recorded as telemetry, not blocked against the Phase 1 cap.</li>
+  </ul>
+
+  <h2>Pre-Registered Exit Gates</h2>
+  <table>
+    <thead><tr><th>Gate</th><th>Purpose</th><th>Pass condition</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge">G1</span></td><td>Structural surfaces</td><td>At least 1 floor, 2 walls, and 1 ceiling; no synth fallback surfaces.</td><td>BLOCK</td></tr>
+      <tr><td><span class="badge">G2</span></td><td>World-frame OBBs</td><td>Every eligible oracle entity has a non-null OBB on the v2 path.</td><td>BLOCK</td></tr>
+      <tr><td><span class="badge">G3</span></td><td>Phase 1 compatibility</td><td>Legacy compat artifact remains exactly 5,414 / 5,414 with <code>missing=[]</code> and <code>extra=[]</code>.</td><td>BLOCK</td></tr>
+      <tr><td><span class="badge">G4</span></td><td>Deterministic enriched bundle</td><td>Two runs produce the same entity-bundle hash and round-trip equivalently through serde.</td><td>BLOCK</td></tr>
+      <tr><td><span class="badge">G5</span></td><td><code>NEAR_SURFACE</code> smoke</td><td>Frozen smoke list passes with at least 4 <code>near</code> and 4 <code>not_near</code> cases.</td><td>BLOCK</td></tr>
+      <tr><td><span class="badge">G6</span></td><td><code>sparse_v2</code> density</td><td>Record absolute edge counts and <code>logical_v2 / entity_count</code> ratio against the v1 baseline.</td><td>TELEMETRY</td></tr>
+      <tr><td><span class="badge">G7</span></td><td>Builder surface completeness</td><td>Retain all surfaces and reject edges referencing unknown entity or surface UIDs.</td><td>BLOCK</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Resolved Decisions</h2>
+  <table>
+    <thead><tr><th>#</th><th>Issue</th><th>Decision</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge">Q1</span></td><td>Raw Replica inputs</td><td>User supplies locally. Verification failure gates Phase 2. No silent canonical fallback.</td></tr>
+      <tr><td><span class="badge">Q2</span></td><td>Importer schema version</td><td>Add <code>schema_version: 2</code> under the versioned enriched-output path.</td></tr>
+      <tr><td><span class="badge">Q3</span></td><td>Surface fitting</td><td>Habitat labels first, mesh RANSAC second. Bbox synthesis is experiment-only.</td></tr>
+      <tr><td><span class="badge">Q4</span></td><td><code>NEAR_SURFACE</code> thresholds</td><td>Use <code>0.05 / 0.30 / 0.10m</code> as provisional recorded values, not quality evidence.</td></tr>
+      <tr><td><span class="badge">Q5</span></td><td>Pairwise object surface distance</td><td>Use exact AABB surface distance for Phase 2. Defer robust OBB SAT/GJK distance.</td></tr>
+      <tr><td><span class="badge">Q6</span></td><td><code>sparse_v2</code> density</td><td>Record telemetry. Do not block v2 on the frozen sparse-v1 <code>&lt;= 14</code> cap.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <div class="title">Preservation Rule</div>
+    Preserve the original Phase 1 fixture bytes, bundle hashes, and behavior. New enriched artifacts live under <code>enriched/v2/</code>, and new sparse behavior remains opt-in through <code>sparse_v2</code>.
+  </div>
+
+  <h2>Preservation Map</h2>
+  <table>
+    <thead><tr><th>Asset</th><th>Phase 2 disposition</th></tr></thead>
+    <tbody>
+      <tr><td><code>importers/replica.py</code></td><td>Extended to write a new <code>enriched/v2/</code> artifact. Original Phase 1 files remain byte-frozen.</td></tr>
+      <tr><td>Original Replica replay fixture</td><td>Unchanged. Any modification would silently change Phase 1 bundle hashes.</td></tr>
+      <tr><td><code>extractors/base.py</code></td><td><code>StructuralSurface</code> gains a provenance <code>source</code> field.</td></tr>
+      <tr><td><code>extractors/oracle_replica.py</code></td><td>Extended with an opt-in v2 read path. Default behavior remains Phase-1-identical.</td></tr>
+      <tr><td><code>graph/builder.py</code></td><td>Retains every structural surface and rejects unknown graph references.</td></tr>
+      <tr><td>Phase 1 <code>sparse_v1</code></td><td>Frozen forever. New behavior is opt-in through v2.</td></tr>
+      <tr><td><code>graph/relations/proximity.py</code></td><td>Add a separate <code>extract_sparse_v2</code> path. Do not rewrite v1.</td></tr>
+      <tr><td><code>geometry/surface_distance.py</code></td><td>Add exact AABB and bbox-to-plane helpers. OBB-to-OBB distance stays deferred.</td></tr>
+      <tr><td>Phase 1 gate tools and artifacts</td><td>Remain unchanged as the historical Phase 1 record.</td></tr>
+      <tr><td>Bathroom v1 wrapper</td><td>Unchanged and non-blocking.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Review Checklist</h2>
+  <ol>
+    <li>Geometry enrichment only; support, containment, attachment, and learned backends remain deferred.</li>
+    <li>Ten tasks cover acquisition, importer enrichment, validators, serde, extraction, distance helpers, v2 proximity, surface proximity, and exit gates.</li>
+    <li>New geometry code remains pure and local to <code>geometry/</code>.</li>
+    <li><code>sparse_v1</code> remains frozen and <code>sparse_v2</code> is opt-in.</li>
+    <li>Exit gates G1–G7 are frozen before implementation begins; G6 is telemetry-only.</li>
+    <li>Raw Replica inputs are supplied locally and verified before canonical implementation proceeds.</li>
+    <li>Phase 1 artifacts and bundle hashes remain untouched.</li>
+    <li>Phase 3 and Phase 4 scope remains explicitly deferred.</li>
+  </ol>
+
+  <div class="footer">
+    surgical-graph-rag · Phase 2 amended v2 · 2026-05-31 · source: <a href="phase2_plan.md">phase2_plan.md</a> · previous phase: <a href="phase1_summary.html">phase1_summary.html</a> · contracts: <a href="phase0_design.md">phase0_design.md</a>
+  </div>
+
+</div>
+</body>
+</html>

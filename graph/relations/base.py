@@ -151,3 +151,7 @@ def make_edge_id(
 
 def make_entity_ref(uid: str) -> GraphRef:
     return GraphRef(kind="entity", uid=uid)
+
+
+def make_surface_ref(uid: str) -> GraphRef:
+    return GraphRef(kind="surface", uid=uid)

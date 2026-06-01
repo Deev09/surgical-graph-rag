@@ -1,0 +1,100 @@
+{
+  "schema": "phase2_near_surface_smoke",
+  "schema_version": 1,
+  "scene_id": "replica_room_0",
+  "initial_fixture_frozen_before_extractor_code": true,
+  "post_implementation_amended": true,
+  "thresholds_m": {
+    "floor": 0.05,
+    "wall": 0.30,
+    "ceiling": 0.10
+  },
+  "policy": {
+    "include_synth_fallback": false,
+    "rationale": "Canonical extractor excludes synth_bbox_fallback surfaces per A3."
+  },
+  "cases": [
+    {
+      "entity_uid": "obj_60",
+      "surface_uid": "floor_25",
+      "expectation": "near",
+      "rationale": "rug; tight AABB z=(0.015, 0.088) straddles floor plane z=0.043 → bbox_to_plane=0"
+    },
+    {
+      "entity_uid": "obj_9",
+      "surface_uid": "floor_25",
+      "expectation": "near",
+      "rationale": "sofa_1 sits on the floor; AABB z=(0.019, 0.939) intersects floor plane"
+    },
+    {
+      "entity_uid": "obj_75",
+      "surface_uid": "floor_25",
+      "expectation": "near",
+      "rationale": "basket on the floor; AABB z=(0.038, 0.378) intersects floor plane"
+    },
+    {
+      "entity_uid": "obj_64",
+      "surface_uid": "ceiling_88",
+      "expectation": "near",
+      "rationale": "ceiling vent; AABB z=(2.770, 2.791); ceiling plane z≈2.735; surface distance ≈ 0.035 m"
+    },
+    {
+      "entity_uid": "obj_49",
+      "surface_uid": "ceiling_88",
+      "expectation": "near",
+      "rationale": "ceiling lamp; AABB z=(2.744, 2.774); surface distance ≈ 0.011 m"
+    },
+    {
+      "entity_uid": "obj_82",
+      "surface_uid": "wall_57_yminus",
+      "expectation": "near",
+      "rationale": "wall-plug; AABB-to-wall-plane distance ≈ 0.004 m"
+    },
+    {
+      "entity_uid": "obj_92",
+      "surface_uid": "floor_25",
+      "expectation": "not_near",
+      "rationale": "book on a table; AABB z=(0.645, 0.681); ≈ 0.6 m above floor plane"
+    },
+    {
+      "entity_uid": "obj_92",
+      "surface_uid": "ceiling_88",
+      "expectation": "not_near",
+      "rationale": "book on a table; AABB top 0.681 ≈ 2.05 m below ceiling plane"
+    },
+    {
+      "entity_uid": "obj_60",
+      "surface_uid": "ceiling_88",
+      "expectation": "not_near",
+      "rationale": "rug; AABB top 0.088 ≈ 2.65 m below ceiling plane"
+    },
+    {
+      "entity_uid": "obj_82",
+      "surface_uid": "floor_25",
+      "expectation": "not_near",
+      "rationale": "wall-plug at AABB z≈(0.434, 0.555); ≈ 0.4 m above floor — exceeds 0.05 m threshold"
+    },
+    {
+      "entity_uid": "obj_87",
+      "surface_uid": "floor_25",
+      "expectation": "not_near",
+      "rationale": "table-lamp_1 body z≈(0.708, 1.435); ≈ 0.66 m above floor — exceeds 0.05 m threshold"
+    },
+    {
+      "entity_uid": "obj_92",
+      "surface_uid": "wall_57_yminus",
+      "expectation": "not_near",
+      "rationale": "book on a table; AABB-to-wall-plane distance ≈ 0.79 m — exceeds 0.30 m threshold"
+    }
+  ],
+  "counts": {
+    "near": 6,
+    "not_near": 6
+  },
+  "notes": [
+    "Initial 10-case fixture frozen 2026-06-01, BEFORE any code in graph/relations/surface.py was written.",
+    "Amended during P2.09 review after implementation: added one wall-positive and one wall-negative case because the initial fixture did not exercise the wall family. This is a benchmark-fixture definition change.",
+    "AABBs cited above are from the enriched-v2 importer output. The extractor must replicate these expectations exactly.",
+    "≥4 near and ≥4 not_near cases per A8."
+  ]
+}

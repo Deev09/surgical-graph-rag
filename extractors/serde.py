@@ -20,9 +20,10 @@ from extractors.base import (
     ExtractionDiagnostics, SemanticHypothesis, StructuralSurface,
 )
 
-CURRENT_SCHEMA_VERSION = 1
+CURRENT_SCHEMA_VERSION = 2  # P2.06: StructuralSurface gained a `source` field
 
 _VALID_SURFACE_TYPES = ("floor", "wall", "ceiling")
+_VALID_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")
 
 
 def _identity_to_dict(i: EntityIdentity) -> dict[str, Any]:
@@ -62,6 +63,7 @@ def _surface_to_dict(s: StructuralSurface) -> dict[str, Any]:
         "plane": plane_to_dict(s.plane),
         "polygon": [vec3_to_list(v) for v in s.polygon] if s.polygon is not None else None,
         "confidence": s.confidence,
+        "source": s.source,
     }
 
 
@@ -69,6 +71,18 @@ def _surface_from_dict(d: dict[str, Any]) -> StructuralSurface:
     st = d["surface_type"]
     if st not in _VALID_SURFACE_TYPES:
         raise ValueError(f"unknown surface_type {st!r}")
+    if "source" not in d:
+        raise ValueError(
+            f"StructuralSurface manifest missing 'source' field "
+            f"(present in serde schema v{CURRENT_SCHEMA_VERSION}); "
+            f"re-dump or migrate the bundle."
+        )
+    src = d["source"]
+    if src not in _VALID_SURFACE_SOURCES:
+        raise ValueError(
+            f"unknown StructuralSurface source {src!r}; "
+            f"allowed: {_VALID_SURFACE_SOURCES}"
+        )
     poly = d.get("polygon")
     return StructuralSurface(
         surface_uid=str(d["surface_uid"]),
@@ -76,6 +90,7 @@ def _surface_from_dict(d: dict[str, Any]) -> StructuralSurface:
         plane=plane_from_dict(d["plane"]),
         polygon=[vec3_from_list(v) for v in poly] if poly is not None else None,
         confidence=float(d["confidence"]),
+        source=src,
     )
 
 

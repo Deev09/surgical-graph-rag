@@ -1,0 +1,74 @@
+{
+  "gate": "phase2_exit_gate",
+  "scene_id": "replica_room_0",
+  "entity_count": 73,
+  "blocking_gates": {
+    "G1_structural_surfaces": {
+      "pass": true,
+      "counts_per_type": {
+        "ceiling": 1,
+        "floor": 1,
+        "wall": 5
+      },
+      "sources_observed": [
+        "habitat_label"
+      ],
+      "synth_fallback_present": false
+    },
+    "G2_world_frame_obbs": {
+      "pass": true,
+      "entity_count": 73,
+      "with_bbox_obb": 73,
+      "missing_bbox_obb": []
+    },
+    "G3_phase1_compat_reproduction": {
+      "pass": true,
+      "produced_total": 5414,
+      "expected_total": 5414,
+      "missing_count": 0,
+      "extra_count": 0
+    },
+    "G4_deterministic_and_replayable": {
+      "pass": true,
+      "two_run_hash_match": true,
+      "round_trip_equal": true,
+      "bundle_hash": "graph_f5a3accd580d83b9"
+    },
+    "G5_near_surface_smoke": {
+      "pass": true,
+      "near_cases": 6,
+      "not_near_cases": 6,
+      "failures": []
+    },
+    "G7_builder_structural_completeness": {
+      "pass": true,
+      "full_surface_records_retained": true,
+      "refs_derived_from_full_set": true,
+      "unknown_surface_ref_rejected": true,
+      "unknown_entity_ref_rejected": true,
+      "expected_surface_count": 7,
+      "actual_surface_count": 7
+    }
+  },
+  "telemetry_gates": {
+    "G6_sparse_v2_plus_near_surface_density": {
+      "logical_edges_total": 1179,
+      "entity_count": 73,
+      "density_ratio_per_entity": 16.15068493150685,
+      "phase1_sparse_density_limit": 14,
+      "exceeds_phase1_cap": true,
+      "density_policy_used": "phase2_telemetry_only",
+      "note": "Phase 1 cap stays blocking for sparse-v1 only. Phase 2 candidate explicitly opts into telemetry."
+    }
+  },
+  "limitations_recorded_for_phase3": [
+    "NEAR_SURFACE measures distance to the INFINITE plane, not clipped to polygon extents. An entity above the same plane but well outside the polygon footprint still registers as NEAR. Acceptable for Phase 2; Phase 3 may add polygon-clipped variants.",
+    "OBB-to-OBB distance is deferred to Phase 3 (P2.07 A5). Phase 2 uses exact AABB surface distance."
+  ],
+  "policy_decisions_recorded": [
+    "Phase 1 density cap (<=14) stays BLOCKING for sparse-v1 only.",
+    "Phase 2 candidate (sparse-v2 + NEAR_SURFACE) uses density_policy='phase2_telemetry_only'. The cap is recorded, not silently raised.",
+    "Canonical NEAR_SURFACE extractor excludes synth_bbox_fallback surfaces; opt-in via include_synth_fallback=True only."
+  ],
+  "overall_blocking_pass": true
+}

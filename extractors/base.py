@@ -38,12 +38,19 @@ class SemanticHypothesis:
 class StructuralSurface:
     """First-class non-entity surface (floor / wall / ceiling). Edges may
     target a StructuralSurface via GraphRef(kind="surface", uid=surface_uid).
-    surface_uid is stable within this EntityArtifacts bundle only."""
+    surface_uid is stable within this EntityArtifacts bundle only.
+
+    `source` (P2.06 / A7) records how the surface was produced. Canonical
+    Phase 2 emits 'habitat_label' for floor/wall/ceiling instances drawn
+    from the Habitat semantic JSON. 'mesh_ransac' is reserved for future
+    RANSAC-fit fallback. 'synth_bbox_fallback' marks the labeled
+    experiment-only path; it is excluded from the canonical exit gates."""
     surface_uid: str
     surface_type: Literal["floor", "wall", "ceiling"]
     plane: Plane
     polygon: list[Vec3] | None
     confidence: float
+    source: Literal["habitat_label", "mesh_ransac", "synth_bbox_fallback"]
 
 
 @dataclass(frozen=True)

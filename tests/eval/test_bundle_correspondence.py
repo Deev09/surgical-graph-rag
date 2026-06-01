@@ -63,6 +63,7 @@ def _surface(uid: str, kind: str = "floor") -> StructuralSurface:
     return StructuralSurface(
         surface_uid=uid, surface_type=kind,
         plane=Plane(a=0.0, b=0.0, c=1.0, d=0.0), polygon=None, confidence=1.0,
+        source="habitat_label",
     )
 
 

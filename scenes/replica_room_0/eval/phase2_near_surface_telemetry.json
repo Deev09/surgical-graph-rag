@@ -1,0 +1,54 @@
+{
+  "gate": "phase2_near_surface_telemetry",
+  "scene_id": "replica_room_0",
+  "entity_count": 73,
+  "config": {
+    "floor_threshold_m": 0.05,
+    "wall_threshold_m": 0.3,
+    "ceiling_threshold_m": 0.1,
+    "include_synth_fallback": false,
+    "distance_metric": "bbox_to_plane",
+    "threshold_comparison": "less_than_or_equal"
+  },
+  "near_surface": {
+    "physical_edges": 98,
+    "logical_edges": 98,
+    "edges_per_surface_type": {
+      "ceiling": 24,
+      "floor": 19,
+      "wall": 55
+    },
+    "edges_per_surface_uid": {
+      "ceiling_88": 24,
+      "floor_25": 19,
+      "wall_23_xplus": 9,
+      "wall_33_yplus": 9,
+      "wall_48_xplus": 10,
+      "wall_57_yminus": 20,
+      "wall_89_xminus": 7
+    },
+    "skipped_synth_fallback_surfaces": 0
+  },
+  "combined_density_versus_phase1_guardrail": {
+    "phase1_sparse_density_limit": 14,
+    "directional_sparse_logical": 669,
+    "proximity_v1_logical": 113,
+    "proximity_v2_logical": 412,
+    "near_surface_logical": 98,
+    "combined_v1_plus_near_surface": {
+      "logical_edges": 880,
+      "density_ratio_per_entity": 12.054794520547945,
+      "exceeds_phase1_guardrail": false
+    },
+    "combined_v2_plus_near_surface": {
+      "logical_edges": 1179,
+      "density_ratio_per_entity": 16.15068493150685,
+      "exceeds_phase1_guardrail": true
+    }
+  },
+  "notes": [
+    "Recorded for the P2.10 version-aware guardrail decision (per the P2.09 sign-off). NEAR_SURFACE is NOT yet wired into any default builder run.",
+    "Per A8, the frozen smoke list at eval/questions/phase2_near_surface_smoke.json must continue to pass; any change to thresholds/policy that breaks it is a behavior change, not a tuning step.",
+    "Thresholds (0.05/0.30/0.10 m) are provisional Replica-calibrated config values per Q4 \u2014 not generalization evidence."
+  ]
+}

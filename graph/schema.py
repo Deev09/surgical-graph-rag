@@ -12,7 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Literal
 
-from common.types import JSON, OrientedBBox, SceneFrame, Vec3
+from common.types import JSON, OrientedBBox, Plane, SceneFrame, Vec3
 
 
 EdgeType = Literal[
@@ -99,6 +99,34 @@ class BuildDiagnostics:
     physical_edges_total: int = 0
     logical_edges_total: int = 0
     mode: Literal["compat", "sparse"] = "sparse"
+    # P2.10 additions: explicit density-policy bookkeeping.
+    density_policy: Literal["phase1_block", "phase2_telemetry_only"] = "phase1_block"
+    density_ratio: float | None = None
+    sparse_density_limit: float = 14.0
+
+
+@dataclass(frozen=True)
+class SurfaceRecord:
+    """Graph-level structural-surface record (C1).
+
+    Surfaces are NOT graph nodes — edges reference them via
+    GraphRef(kind="surface", uid=...). This record carries the geometry
+    and provenance forward from EntityArtifacts.StructuralSurface so the
+    graph alone is sufficient for downstream consumers (no need to
+    re-load the entity bundle to look up a surface's plane or source).
+
+    NEAR_SURFACE limitation: the Phase 2 NEAR_SURFACE extractor measures
+    distance to the INFINITE plane defined by `plane`, NOT clipped to
+    `polygon` extents. An entity above the same plane but well outside
+    the polygon footprint will still register as NEAR. This is recorded
+    as a Phase 2 limitation; Phase 3 may add polygon-clipped variants.
+    """
+    uid: str
+    surface_type: Literal["floor", "wall", "ceiling"]
+    plane: Plane
+    polygon: list[Vec3] | None
+    source: Literal["habitat_label", "mesh_ransac", "synth_bbox_fallback"]
+    confidence: float
 
 
 @dataclass(frozen=True)
@@ -111,6 +139,12 @@ class SceneGraphBundle:
     nodes: list[Node]
     edges: list[Edge]
     structural_surface_refs: list[str]
+    # C1 (P2.10): full structural-surface retention. Populated from
+    # EntityArtifacts.structural_surfaces by the builder (NOT derived
+    # from the edge set). `structural_surface_refs` is kept as a derived
+    # view = [s.uid for s in structural_surfaces] for back-compat read
+    # paths; the builder enforces the equality.
+    structural_surfaces: list[SurfaceRecord] = field(default_factory=list)
 
 
 def find_node(bundle: SceneGraphBundle, uid: str) -> Node | None:

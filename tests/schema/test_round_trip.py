@@ -41,6 +41,7 @@ from extractors.serde import (
 )
 from graph.schema import (
     BuildDiagnostics, Edge, EdgeRejection, GraphRef, Node, SceneGraphBundle,
+    SurfaceRecord,
 )
 from graph.serde import (
     CURRENT_SCHEMA_VERSION as GRAPH_SCHEMA_VERSION,
@@ -151,6 +152,7 @@ def make_entity_artifacts() -> EntityArtifacts:
                 plane=Plane(a=0.0, b=0.0, c=1.0, d=0.0),
                 polygon=[(0.0, 0.0, 0.0), (5.0, 0.0, 0.0), (5.0, 5.0, 0.0), (0.0, 5.0, 0.0)],
                 confidence=1.0,
+                source="habitat_label",
             ),
             StructuralSurface(
                 surface_uid="surf_wall_n",
@@ -158,6 +160,7 @@ def make_entity_artifacts() -> EntityArtifacts:
                 plane=Plane(a=0.0, b=1.0, c=0.0, d=-5.0),
                 polygon=None,
                 confidence=0.9,
+                source="habitat_label",
             ),
         ],
         geometry_store_path=Path("geom"),
@@ -222,6 +225,16 @@ def make_scene_graph_bundle() -> SceneGraphBundle:
             ),
         ],
         structural_surface_refs=["surf_floor"],
+        structural_surfaces=[
+            SurfaceRecord(
+                uid="surf_floor",
+                surface_type="floor",
+                plane=Plane(a=0.0, b=0.0, c=1.0, d=0.0),
+                polygon=[(0.0, 0.0, 0.0), (5.0, 0.0, 0.0), (5.0, 5.0, 0.0), (0.0, 5.0, 0.0)],
+                source="habitat_label",
+                confidence=1.0,
+            ),
+        ],
     )
 
 
@@ -445,6 +458,40 @@ def test_graph_ref_uses_correct_kind() -> None:
             raise AssertionError(f"surface ref uid lost: {edge.target.uid!r}")
 
 
+def _mutate_graph_manifest_and_expect_value_error(mutate) -> None:
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(make_scene_graph_bundle(), out)
+        manifest = out / "manifest.json"
+        payload = json.loads(manifest.read_text())
+        mutate(payload)
+        manifest.write_text(json.dumps(payload))
+        try:
+            load_scene_graph_bundle(out)
+        except ValueError:
+            return
+        raise AssertionError("expected ValueError for invalid SceneGraphBundle manifest")
+
+
+def test_graph_load_rejects_mismatched_surface_refs() -> None:
+    _mutate_graph_manifest_and_expect_value_error(
+        lambda payload: payload.update({"structural_surface_refs": []}),
+    )
+
+
+def test_graph_load_rejects_duplicate_surface_records() -> None:
+    def mutate(payload) -> None:
+        payload["structural_surfaces"].append(dict(payload["structural_surfaces"][0]))
+        payload["structural_surface_refs"].append("surf_floor")
+    _mutate_graph_manifest_and_expect_value_error(mutate)
+
+
+def test_graph_load_rejects_unknown_edge_surface_ref() -> None:
+    def mutate(payload) -> None:
+        payload["edges"][0]["target"]["uid"] = "ghost_surface"
+    _mutate_graph_manifest_and_expect_value_error(mutate)
+
+
 TESTS = [
     test_scene_repr_bundle_roundtrip,
     test_entity_artifacts_roundtrip,
@@ -461,6 +508,9 @@ TESTS = [
     test_array_aware_equality_shape_sensitive,
     test_array_aware_equality_tuple_vs_list,
     test_graph_ref_uses_correct_kind,
+    test_graph_load_rejects_mismatched_surface_refs,
+    test_graph_load_rejects_duplicate_surface_records,
+    test_graph_load_rejects_unknown_edge_surface_ref,
 ]
 
 

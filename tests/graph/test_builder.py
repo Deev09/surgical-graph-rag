@@ -21,7 +21,7 @@ import json
 import sys
 import tempfile
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -40,7 +40,8 @@ from extractors.base import (
 )
 from extractors.oracle_replica import OracleReplicaExtractor
 from graph.builder import (
-    ExtractorRun, GraphBuildError, SPARSE_DENSITY_LIMIT, build_graph,
+    ExtractorRun, GraphBuildError, SPARSE_DENSITY_LIMIT, _build_bundle_hash,
+    build_graph,
 )
 from graph.relations.base import (
     RelationExtractorConfig, RelationExtractorDiagnostics, edge_key,
@@ -49,8 +50,10 @@ from graph.relations.base import (
 from graph.relations.directional import (
     DirectionalConfig, DirectionalExtractor,
 )
-from graph.relations.proximity import ProximityConfig, ProximityExtractor
-from graph.schema import Edge, EdgeType
+from graph.relations.proximity import (
+    SPARSE_V2_VERSION, ProximityConfig, ProximityExtractor,
+)
+from graph.schema import Edge, EdgeType, GraphRef, SurfaceRecord
 from graph.serde import dump_scene_graph_bundle, load_scene_graph_bundle
 from representations.mesh import MeshRepresentation
 
@@ -217,16 +220,23 @@ def test_sparse_bundle_round_trips() -> None:
 # ---------- density enforcement ----------
 
 def test_sparse_density_guardrail_raises_when_exceeded() -> None:
-    """Construct a stub extractor that emits more edges than the limit."""
-    entities = _make_synthetic_entities([("a", (0.0, 0.0, 0.0)), ("b", (1.0, 0.0, 0.0))])
-    # 2 entities * 14 = 28 max. Emit 30 distinct edge keys to exceed.
-    edges = [
-        _stub_edge("stub", "0.1", f"a", "LEFT_OF", f"x_{i}")
-        for i in range(30)
-    ]
+    """Construct a stub extractor that emits more edges than the limit.
+
+    Need density > 14: with N entities and NEAR for every unordered pair,
+    logical edges = N(N-1)/2 and density = (N-1)/2. N=30 → density 14.5,
+    just past the cap. All edges reference valid entity UIDs so the G7
+    unknown-ref check does not fire first."""
+    n = 30
+    entities = _make_synthetic_entities([
+        (f"e_{i}", (float(i), 0.0, 0.0)) for i in range(n)
+    ])
+    edges = []
+    for i in range(n):
+        for j in range(i + 1, n):
+            edges.append(_stub_edge("stub", "0.1", f"e_{i}", "NEAR", f"e_{j}"))
     stub = StubExtractor(
         name="stub", version="0.1", edges=edges,
-        edge_types=frozenset({"LEFT_OF"}),
+        edge_types=frozenset({"NEAR"}),
     )
     runs = [ExtractorRun(stub, StubConfig(mode="sparse"))]
     try:
@@ -463,6 +473,23 @@ def test_extractor_versions_and_runtime_reported() -> None:
         )
 
 
+def test_sparse_v2_effective_version_reported_by_builder() -> None:
+    entities = _make_synthetic_entities([
+        ("a", (0.0, 0.0, 0.0)),
+        ("b", (0.5, 0.0, 0.0)),
+    ])
+    _, diag = build_graph(entities, [
+        ExtractorRun(
+            ProximityExtractor(),
+            ProximityConfig(mode="sparse", sparse_version=2),
+        ),
+    ])
+    if diag.extractor_versions != {"proximity": SPARSE_V2_VERSION}:
+        raise AssertionError(
+            f"builder lost effective sparse-v2 version: {diag.extractor_versions!r}"
+        )
+
+
 # ---------- bundle hash inputs ----------
 
 def test_bundle_hash_changes_with_config() -> None:
@@ -488,6 +515,269 @@ def test_bundle_hash_changes_with_entity_bundle() -> None:
         raise AssertionError("bundle_hash should change when entity_bundle_hash changes")
 
 
+def test_bundle_hash_uses_effective_extractor_version() -> None:
+    run = ExtractorRun(
+        ProximityExtractor(),
+        ProximityConfig(mode="sparse", sparse_version=2),
+    )
+    legacy_version_hash = _build_bundle_hash(
+        "ent_synth",
+        "sparse",
+        [run],
+        effective_versions={"proximity": "0.1"},
+    )
+    effective_version_hash = _build_bundle_hash(
+        "ent_synth",
+        "sparse",
+        [run],
+        effective_versions={"proximity": SPARSE_V2_VERSION},
+    )
+    if legacy_version_hash == effective_version_hash:
+        raise AssertionError("bundle_hash ignored effective extractor version")
+
+
+def test_phase1_default_graph_bundle_hashes_remain_frozen() -> None:
+    artifacts = _build_oracle_artifacts()
+    expected = {
+        "compat": "graph_efccd306caf4f4a3",
+        "sparse": "graph_987f3ba4256ab596",
+    }
+    for mode, expected_hash in expected.items():
+        bundle, _ = build_graph(artifacts, [
+            ExtractorRun(DirectionalExtractor(), DirectionalConfig(mode=mode)),
+            ExtractorRun(ProximityExtractor(), ProximityConfig(mode=mode)),
+        ])
+        if bundle.bundle_hash != expected_hash:
+            raise AssertionError(
+                f"Phase 1 {mode} graph hash drifted: "
+                f"expected {expected_hash}, got {bundle.bundle_hash}"
+            )
+
+
+# --- P2.10 C1 + G7 + density policy tests ---------------------------------
+
+
+def _make_synthetic_surface(uid: str, surface_type: str = "floor",
+                            source: str = "habitat_label"):
+    from common.types import Plane
+    from extractors.base import StructuralSurface
+    return StructuralSurface(
+        surface_uid=uid, surface_type=surface_type,
+        plane=Plane(a=0.0, b=0.0, c=1.0, d=0.0),
+        polygon=None, confidence=1.0, source=source,
+    )
+
+
+def test_c1_builder_retains_all_surfaces_from_entity_bundle() -> None:
+    entities = _make_synthetic_entities([("a", (0.0, 0.0, 0.0))])
+    s1 = _make_synthetic_surface("floor_1", "floor")
+    s2 = _make_synthetic_surface("ceiling_1", "ceiling")
+    # Replace structural_surfaces on the bundle.
+    bundle = EntityArtifacts(
+        schema_version=entities.schema_version,
+        bundle_hash=entities.bundle_hash, scene_id=entities.scene_id,
+        frame=entities.frame, representation_hash=entities.representation_hash,
+        extractor_name=entities.extractor_name,
+        extractor_version=entities.extractor_version,
+        entities=entities.entities, structural_surfaces=[s1, s2],
+        geometry_store_path=None, diagnostics=entities.diagnostics, notes={},
+    )
+    runs = [ExtractorRun(StubExtractor(
+        name="stub", version="0.1", edges=[],
+        edge_types=frozenset({"NEAR"}),
+    ), StubConfig(mode="sparse"))]
+    graph, _diag = build_graph(bundle, runs)
+    if len(graph.structural_surfaces) != 2:
+        raise AssertionError(
+            f"C1 violated: bundle has 2 surfaces, graph retained "
+            f"{len(graph.structural_surfaces)}"
+        )
+    expected_records = [
+        SurfaceRecord(
+            uid=s.surface_uid,
+            surface_type=s.surface_type,
+            plane=s.plane,
+            polygon=s.polygon,
+            source=s.source,
+            confidence=s.confidence,
+        )
+        for s in [s1, s2]
+    ]
+    if graph.structural_surfaces != expected_records:
+        raise AssertionError(
+            f"C1 record projection drifted: {graph.structural_surfaces!r}"
+        )
+    if graph.structural_surface_refs != ["floor_1", "ceiling_1"]:
+        raise AssertionError(
+            f"refs must derive from full set: {graph.structural_surface_refs}"
+        )
+
+
+def test_g7_unknown_entity_uid_rejected() -> None:
+    entities = _make_synthetic_entities([("a", (0.0, 0.0, 0.0))])
+    edges = [_stub_edge("stub", "0.1", "ghost", "NEAR", "a")]
+    stub = StubExtractor(
+        name="stub", version="0.1", edges=edges,
+        edge_types=frozenset({"NEAR"}),
+    )
+    runs = [ExtractorRun(stub, StubConfig(mode="sparse"))]
+    try:
+        build_graph(entities, runs)
+    except GraphBuildError as e:
+        if "unknown entity" not in str(e):
+            raise AssertionError(f"unexpected error: {e}")
+        return
+    raise AssertionError("expected GraphBuildError for unknown entity uid")
+
+
+def test_g7_unknown_surface_uid_rejected() -> None:
+    entities = _make_synthetic_entities([("a", (0.0, 0.0, 0.0))])
+    # Edge targets a surface but bundle has zero surfaces.
+    from graph.schema import GraphRef
+    edge = Edge(
+        edge_id="e_test", source=make_entity_ref("a"),
+        type="NEAR_SURFACE", target=GraphRef(kind="surface", uid="ghost_floor"),
+        frame="world", weight=1.0, confidence=1.0,
+        extractor="stub", extractor_version="0.1", evidence={},
+    )
+    stub = StubExtractor(
+        name="stub", version="0.1", edges=[edge],
+        edge_types=frozenset({"NEAR_SURFACE"}),
+    )
+    runs = [ExtractorRun(stub, StubConfig(mode="sparse"))]
+    try:
+        build_graph(entities, runs)
+    except GraphBuildError as e:
+        if "unknown surface" not in str(e):
+            raise AssertionError(f"unexpected error: {e}")
+        return
+    raise AssertionError("expected GraphBuildError for unknown surface uid")
+
+
+def test_g7_duplicate_entity_uid_rejected() -> None:
+    entities = _make_synthetic_entities([
+        ("a", (0.0, 0.0, 0.0)),
+        ("a", (1.0, 0.0, 0.0)),
+    ])
+    stub = StubExtractor(
+        name="stub", version="0.1", edges=[],
+        edge_types=frozenset({"NEAR"}),
+    )
+    try:
+        build_graph(entities, [ExtractorRun(stub, StubConfig(mode="sparse"))])
+    except GraphBuildError as e:
+        if "duplicate entity uid" not in str(e):
+            raise AssertionError(f"unexpected error: {e}")
+        return
+    raise AssertionError("expected GraphBuildError for duplicate entity uid")
+
+
+def test_g7_duplicate_surface_uid_rejected() -> None:
+    entities = _make_synthetic_entities([("a", (0.0, 0.0, 0.0))])
+    surface = _make_synthetic_surface("floor_1")
+    entities = replace(entities, structural_surfaces=[surface, surface])
+    stub = StubExtractor(
+        name="stub", version="0.1", edges=[],
+        edge_types=frozenset({"NEAR"}),
+    )
+    try:
+        build_graph(entities, [ExtractorRun(stub, StubConfig(mode="sparse"))])
+    except GraphBuildError as e:
+        if "duplicate surface uid" not in str(e):
+            raise AssertionError(f"unexpected error: {e}")
+        return
+    raise AssertionError("expected GraphBuildError for duplicate surface uid")
+
+
+def test_g7_unknown_graph_ref_kind_rejected() -> None:
+    entities = _make_synthetic_entities([("a", (0.0, 0.0, 0.0))])
+    edge = Edge(
+        edge_id="e_bad_kind",
+        source=GraphRef(kind="region", uid="zone_1"),  # type: ignore[arg-type]
+        type="NEAR",
+        target=make_entity_ref("a"),
+        frame="world", weight=1.0, confidence=1.0,
+        extractor="stub", extractor_version="0.1", evidence={},
+    )
+    stub = StubExtractor(
+        name="stub", version="0.1", edges=[edge],
+        edge_types=frozenset({"NEAR"}),
+    )
+    try:
+        build_graph(entities, [ExtractorRun(stub, StubConfig(mode="sparse"))])
+    except GraphBuildError as e:
+        if "unknown GraphRef kind" not in str(e):
+            raise AssertionError(f"unexpected error: {e}")
+        return
+    raise AssertionError("expected GraphBuildError for unknown GraphRef kind")
+
+
+def test_phase2_telemetry_only_policy_does_not_raise_on_high_density() -> None:
+    """Density policy `phase2_telemetry_only` records the ratio without
+    raising. The same construction that raised under phase1_block now
+    succeeds, with diagnostics.density_ratio recorded."""
+    n = 30  # density 14.5 — would raise under phase1_block
+    entities = _make_synthetic_entities([
+        (f"e_{i}", (float(i), 0.0, 0.0)) for i in range(n)
+    ])
+    edges = []
+    for i in range(n):
+        for j in range(i + 1, n):
+            edges.append(_stub_edge("stub", "0.1", f"e_{i}", "NEAR", f"e_{j}"))
+    stub = StubExtractor(
+        name="stub", version="0.1", edges=edges,
+        edge_types=frozenset({"NEAR"}),
+    )
+    runs = [ExtractorRun(stub, StubConfig(mode="sparse"))]
+    _bundle, diag = build_graph(entities, runs, density_policy="phase2_telemetry_only")
+    if diag.density_policy != "phase2_telemetry_only":
+        raise AssertionError(f"policy not recorded: {diag.density_policy!r}")
+    if diag.density_ratio is None or diag.density_ratio <= SPARSE_DENSITY_LIMIT:
+        raise AssertionError(
+            f"density_ratio missing or under cap: {diag.density_ratio}"
+        )
+
+
+def test_phase1_block_is_default_and_still_raises() -> None:
+    """Default policy is phase1_block; existing call sites get the same
+    behavior they had pre-P2.10."""
+    n = 30
+    entities = _make_synthetic_entities([
+        (f"e_{i}", (float(i), 0.0, 0.0)) for i in range(n)
+    ])
+    edges = []
+    for i in range(n):
+        for j in range(i + 1, n):
+            edges.append(_stub_edge("stub", "0.1", f"e_{i}", "NEAR", f"e_{j}"))
+    stub = StubExtractor(
+        name="stub", version="0.1", edges=edges,
+        edge_types=frozenset({"NEAR"}),
+    )
+    runs = [ExtractorRun(stub, StubConfig(mode="sparse"))]
+    try:
+        build_graph(entities, runs)  # default density_policy="phase1_block"
+    except GraphBuildError as e:
+        if "sparse density guardrail" not in str(e):
+            raise AssertionError(f"unexpected error: {e}")
+        return
+    raise AssertionError("default policy must still raise on density violation")
+
+
+def test_unknown_density_policy_rejected() -> None:
+    entities = _make_synthetic_entities([("a", (0.0, 0.0, 0.0))])
+    runs = [ExtractorRun(StubExtractor(
+        name="stub", version="0.1", edges=[],
+        edge_types=frozenset({"NEAR"}),
+    ), StubConfig(mode="sparse"))]
+    try:
+        build_graph(entities, runs, density_policy="loose")  # type: ignore[arg-type]
+    except GraphBuildError as e:
+        if "unknown density_policy" not in str(e):
+            raise AssertionError(f"unexpected error: {e}")
+        return
+    raise AssertionError("expected GraphBuildError for unknown density_policy")
+
+
 TESTS = [
     test_compat_full_reproduction_through_builder,
     test_sparse_builder_is_deterministic,
@@ -504,8 +794,21 @@ TESTS = [
     test_extractor_order_is_honored_and_deterministic,
     test_per_family_and_overall_totals_reported,
     test_extractor_versions_and_runtime_reported,
+    test_sparse_v2_effective_version_reported_by_builder,
     test_bundle_hash_changes_with_config,
     test_bundle_hash_changes_with_entity_bundle,
+    test_bundle_hash_uses_effective_extractor_version,
+    test_phase1_default_graph_bundle_hashes_remain_frozen,
+    # P2.10 C1 + G7 + density policy:
+    test_c1_builder_retains_all_surfaces_from_entity_bundle,
+    test_g7_unknown_entity_uid_rejected,
+    test_g7_unknown_surface_uid_rejected,
+    test_g7_duplicate_entity_uid_rejected,
+    test_g7_duplicate_surface_uid_rejected,
+    test_g7_unknown_graph_ref_kind_rejected,
+    test_phase2_telemetry_only_policy_does_not_raise_on_high_density,
+    test_phase1_block_is_default_and_still_raises,
+    test_unknown_density_policy_rejected,
 ]
 
 

@@ -1,4 +1,4 @@
-"""Proximity relation extractor (compat + sparse).
+"""Proximity relation extractor (compat + sparse v1 + sparse v2).
 
 Compat: faithful port of relations/compute.py NEAR logic.
   - LEGACY_NEAR_THRESHOLD = 1.0 (centroid distance, strict less-than)
@@ -6,22 +6,30 @@ Compat: faithful port of relations/compute.py NEAR logic.
     NEAR(a, b) and NEAR(b, a). This duplication is preserved exactly
     for legacy reproduction.
 
-Sparse: emits NEAR ONCE per unordered pair within threshold, with
-evidence flag symmetric=True. Centroid distance only — surface-to-
-surface NEAR depends on world-frame OBBs that arrive in Phase 2
-per phase0_design.md §11.1.
+Sparse v1 (default): centroid-to-centroid distance. Emits NEAR ONCE per
+unordered pair within threshold with evidence flag symmetric=True.
+**Byte-frozen** — do not modify. Phase 1 compat reproduction and the
+sparse-density gate depend on this code path.
 
-FAR is intentionally not emitted by either mode. FAR is a query-time
+Sparse v2 (opt-in via ProximityConfig.sparse_version=2): exact
+AABB-to-AABB surface distance via geometry.surface_distance.
+aabb_to_aabb_surface (P2.07). Physically separate function
+(extract_sparse_v2) so the v1 path cannot drift. Edges carry
+distance_metric="aabb_surface", sparse_version=2 in evidence, and the
+truthful extractor_version SPARSE_V2_VERSION.
+
+FAR is intentionally not emitted by any mode. FAR is a query-time
 operator over a centroid index (phase0_design.md §6).
 """
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from math import sqrt
 from typing import Literal
 
 from extractors.base import EntityArtifact, EntityArtifacts
+from geometry.surface_distance import aabb_to_aabb_surface
 from graph.relations.base import (
     RelationExtractorConfig, RelationExtractorDiagnostics,
     count_logical_edges, make_edge_id, make_entity_ref,
@@ -30,6 +38,7 @@ from graph.schema import Edge, EdgeRejection, EdgeType
 
 
 LEGACY_NEAR_THRESHOLD = 1.0   # frozen for compat; do not change
+SPARSE_V2_VERSION = "0.2-sparse_v2"   # truthful v2 algorithm version
 
 PROXIMITY_TYPES: frozenset[EdgeType] = frozenset({"NEAR"})
 
@@ -37,7 +46,11 @@ PROXIMITY_TYPES: frozenset[EdgeType] = frozenset({"NEAR"})
 @dataclass(frozen=True)
 class ProximityConfig:
     mode: Literal["compat", "sparse"]
-    sparse_near_threshold: float = 1.0   # centroid distance, strict less-than
+    sparse_near_threshold: float = 1.0   # threshold; interpretation depends on sparse_version
+    sparse_version: Literal[1, 2] = field(
+        default=1,
+        metadata={"hash_omit_if_default": True},
+    )   # 1 = centroid (Phase 1, byte-frozen); 2 = aabb_surface
 
 
 def _euclid_3d(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
@@ -140,6 +153,70 @@ def extract_sparse(
     return edges, counts, rejections, rejection_counts
 
 
+# ----- sparse v2 path (opt-in, physically separate from v1) -----
+
+def extract_sparse_v2(
+    entities: list[EntityArtifact],
+    *,
+    extractor: str,
+    sparse_near_threshold: float,
+) -> tuple[list[Edge], dict[EdgeType, int], list[EdgeRejection], dict[EdgeType, int]]:
+    """Sparse NEAR using exact AABB-to-AABB surface distance (P2.07 A4).
+    Emits ONCE per unordered pair, symmetric=True. Edge provenance:
+      - extractor_version = SPARSE_V2_VERSION ("0.2-sparse_v2")
+      - evidence["distance_metric"] = "aabb_surface"
+      - evidence["sparse_version"] = 2
+
+    Threshold semantics: strict-less-than against the surface-to-surface
+    distance (not centroid-to-centroid). Per A2 the surface distance is
+    bounded above by the centroid distance, so v2 typically yields more
+    edges than v1 at the same threshold. Do not retune silently — log
+    telemetry first.
+
+    Requires every entity to have a populated bbox_aabb (Phase 1 default
+    AABBs work for the math; the v2 enriched bundle provides tight
+    world-frame AABBs)."""
+    edges: list[Edge] = []
+    counts: dict[EdgeType, int] = {"NEAR": 0}
+    rejections: list[EdgeRejection] = []
+    rejection_counts: dict[EdgeType, int] = {}
+    max_rejection_samples = 64
+    n = len(entities)
+    for i in range(n):
+        for j in range(i + 1, n):
+            a = entities[i]
+            b = entities[j]
+            distance = aabb_to_aabb_surface(a.bbox_aabb, b.bbox_aabb)
+            if distance < sparse_near_threshold:
+                edges.append(_build_near(
+                    a, b, extractor=extractor, version=SPARSE_V2_VERSION,
+                    evidence={
+                        "distance_m": distance,
+                        "distance_metric": "aabb_surface",
+                        "sparse_version": 2,
+                        "symmetric": True,
+                    },
+                ))
+                counts["NEAR"] += 1
+            else:
+                rejection_counts["NEAR"] = rejection_counts.get("NEAR", 0) + 1
+                if len(rejections) < max_rejection_samples:
+                    rejections.append(EdgeRejection(
+                        source=make_entity_ref(a.identity.object_uid),
+                        type="NEAR",
+                        target=make_entity_ref(b.identity.object_uid),
+                        extractor=extractor,
+                        rejected_reason="distance_exceeds_sparse_near_threshold",
+                        evidence={
+                            "distance_m": distance,
+                            "distance_metric": "aabb_surface",
+                            "sparse_near_threshold": sparse_near_threshold,
+                            "sparse_version": 2,
+                        },
+                    ))
+    return edges, counts, rejections, rejection_counts
+
+
 class ProximityExtractor:
     name: str = "proximity"
     version: str = "0.1"
@@ -162,17 +239,30 @@ class ProximityExtractor:
             )
             rejections: list[EdgeRejection] = []
             rejection_counts: dict[EdgeType, int] = {}
+            reported_version = self.version
         elif config.mode == "sparse":
-            edges, counts, rejections, rejection_counts = extract_sparse(
-                entities.entities, extractor=self.name, version=self.version,
-                sparse_near_threshold=config.sparse_near_threshold,
-            )
+            if config.sparse_version == 1:
+                edges, counts, rejections, rejection_counts = extract_sparse(
+                    entities.entities, extractor=self.name, version=self.version,
+                    sparse_near_threshold=config.sparse_near_threshold,
+                )
+                reported_version = self.version
+            elif config.sparse_version == 2:
+                edges, counts, rejections, rejection_counts = extract_sparse_v2(
+                    entities.entities, extractor=self.name,
+                    sparse_near_threshold=config.sparse_near_threshold,
+                )
+                reported_version = SPARSE_V2_VERSION
+            else:
+                raise ValueError(
+                    f"unknown sparse_version {config.sparse_version!r}; supported: 1, 2"
+                )
         else:
             raise ValueError(f"unknown mode {config.mode!r}")
         runtime_ms = int((time.perf_counter() - start) * 1000)
         return edges, RelationExtractorDiagnostics(
             extractor=self.name,
-            version=self.version,
+            version=reported_version,
             mode=config.mode,
             physical_edges_per_type=counts,
             physical_edges_total=len(edges),
