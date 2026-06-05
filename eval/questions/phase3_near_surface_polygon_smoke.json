@@ -1,0 +1,200 @@
+{
+  "schema": "phase3_near_surface_polygon_smoke",
+  "schema_version": 1,
+  "fixture_id": "synthetic_p3_v1__plus__replica_room_0",
+  "initial_fixture_frozen_before_extractor_code": true,
+  "thresholds_m": {
+    "floor": 0.05,
+    "wall": 0.30,
+    "ceiling": 0.10
+  },
+  "policy": {
+    "include_synth_fallback": false,
+    "rationale": "Phase 2 A3 default; S8 fallback case uses a non-synth surface (source=mesh_ransac) with polygon=null per Phase 3 A7 option (a)."
+  },
+  "expected_disagreement_count_min": 3,
+  "numeric_tolerance_m": 0.0001,
+  "synthetic_room_convention": {
+    "description": "Right-handed frame with gravity = -z. Synthetic room is a 2x2x2 m cube spanning x,y,z in (0, 2). Floor at z=0 (interior-facing normal +z), north wall at y=2 (interior-facing normal -y), east wall at x=2 (interior-facing normal -x), ceiling at z=2 (interior-facing normal -z). Plane equation a*x + b*y + c*z + d = 0; (a,b,c) is the interior-facing normal.",
+    "thresholds_match_phase2_defaults": true
+  },
+  "cases": [
+    {
+      "id": "R1",
+      "synthetic": false,
+      "scene_id": "replica_room_0",
+      "entity_uid": "obj_60",
+      "surface_uid": "floor_25",
+      "phase2_expectation": "near",
+      "phase3_expectation": "near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "rationale": "rug on the floor; AABB straddles floor plane and is well inside floor polygon footprint. Real Replica data; grounds the fixture. Numeric gap fields omitted because the canonical bundle is the source of truth for this entity's AABB."
+    },
+    {
+      "id": "S1",
+      "synthetic": true,
+      "entity_aabb": {"min": [0.95, 1.85, 0.95], "max": [1.05, 2.05, 1.05]},
+      "surface_record": {
+        "uid": "synth_wall_north",
+        "surface_type": "wall",
+        "plane": {"a": 0.0, "b": -1.0, "c": 0.0, "d": 2.0},
+        "polygon": [[0.0, 2.0, 0.0], [2.0, 2.0, 0.0], [2.0, 2.0, 2.0], [0.0, 2.0, 2.0]],
+        "source": "habitat_label",
+        "confidence": 1.0
+      },
+      "phase2_expectation": "near",
+      "phase3_expectation": "near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "expected_normal_gap_m": 0.0,
+      "expected_in_plane_gap_m": 0.0,
+      "expected_distance_m": 0.0,
+      "rationale": "Entity AABB straddles wall plane (y from 1.85 to 2.05 contains y=2) and lies fully within wall polygon extent in plane-local (x, z) coords. Both modes: NEAR."
+    },
+    {
+      "id": "S2",
+      "synthetic": true,
+      "entity_aabb": {"min": [5.0, 5.0, 0.02], "max": [5.1, 5.1, 0.07]},
+      "surface_record": {
+        "uid": "synth_floor",
+        "surface_type": "floor",
+        "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+        "polygon": [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [2.0, 2.0, 0.0], [0.0, 2.0, 0.0]],
+        "source": "habitat_label",
+        "confidence": 1.0
+      },
+      "phase2_expectation": "near",
+      "phase3_expectation": "not_near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "expected_normal_gap_m": 0.02,
+      "expected_in_plane_gap_m": 4.2426,
+      "expected_distance_m": 4.2427,
+      "rationale": "AABB sits entirely above floor (min_z=0.02), so normal_gap=0.02 (NOT straddling). Footprint (5..5.1, 5..5.1) is 3*sqrt(2) m from polygon corner (2,2), so in_plane_gap = sqrt(18) ~= 4.2426. Final = hypot(4.2426, 0.02) ~= 4.2427. Phase 2 mode: NEAR (bbox_to_plane=0.02 <= 0.05 floor threshold). Phase 3 mode: NOT_NEAR (distance_m=4.2427 >> 0.05)."
+    },
+    {
+      "id": "S3",
+      "synthetic": true,
+      "entity_aabb": {"min": [5.0, 1.95, 0.9], "max": [5.1, 2.05, 1.1]},
+      "surface_record": {
+        "uid": "synth_wall_north",
+        "surface_type": "wall",
+        "plane": {"a": 0.0, "b": -1.0, "c": 0.0, "d": 2.0},
+        "polygon": [[0.0, 2.0, 0.0], [2.0, 2.0, 0.0], [2.0, 2.0, 2.0], [0.0, 2.0, 2.0]],
+        "source": "habitat_label",
+        "confidence": 1.0
+      },
+      "phase2_expectation": "near",
+      "phase3_expectation": "not_near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "expected_normal_gap_m": 0.0,
+      "expected_in_plane_gap_m": 3.0,
+      "expected_distance_m": 3.0,
+      "rationale": "AABB straddles wall plane (y 1.95..2.05 contains y=2). In plane-local (x, z) the AABB projects to (x=5..5.1, z=0.9..1.1). Wall polygon spans x=0..2, z=0..2; closest polygon point in (x,z) is (2, z in 0.9..1.1), in-plane distance 3.0. Final = hypot(3.0, 0.0) = 3.0. Phase 2 mode: NEAR (normal_gap=0). Phase 3 mode: NOT_NEAR (3.0 >> 0.30 wall threshold)."
+    },
+    {
+      "id": "S4",
+      "synthetic": true,
+      "entity_aabb": {"min": [5.0, 5.0, 1.95], "max": [5.1, 5.1, 1.99]},
+      "surface_record": {
+        "uid": "synth_ceiling",
+        "surface_type": "ceiling",
+        "plane": {"a": 0.0, "b": 0.0, "c": -1.0, "d": 2.0},
+        "polygon": [[0.0, 0.0, 2.0], [2.0, 0.0, 2.0], [2.0, 2.0, 2.0], [0.0, 2.0, 2.0]],
+        "source": "habitat_label",
+        "confidence": 1.0
+      },
+      "phase2_expectation": "near",
+      "phase3_expectation": "not_near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "expected_normal_gap_m": 0.01,
+      "expected_in_plane_gap_m": 4.2426,
+      "expected_distance_m": 4.2426,
+      "rationale": "AABB max_z=1.99 below ceiling plane z=2.0 (normal_gap=0.01 <= 0.10 ceiling threshold). Footprint (5..5.1, 5..5.1) is 3*sqrt(2) m from ceiling polygon corner (2,2). Final = hypot(4.2426, 0.01) ~= 4.2426. Phase 2 mode: NEAR (normal_gap=0.01). Phase 3 mode: NOT_NEAR."
+    },
+    {
+      "id": "S5",
+      "synthetic": true,
+      "entity_aabb": {"min": [1.9, 0.5, 0.02], "max": [2.1, 0.7, 0.04]},
+      "surface_record": {
+        "uid": "synth_floor",
+        "surface_type": "floor",
+        "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+        "polygon": [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [2.0, 2.0, 0.0], [0.0, 2.0, 0.0]],
+        "source": "habitat_label",
+        "confidence": 1.0
+      },
+      "phase2_expectation": "near",
+      "phase3_expectation": "near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "expected_normal_gap_m": 0.02,
+      "expected_in_plane_gap_m": 0.0,
+      "expected_distance_m": 0.02,
+      "rationale": "AABB footprint (1.9..2.1, 0.5..0.7) partially overlaps floor polygon (0..2, 0..2) at x in (1.9, 2.0); in_plane_gap = 0. AABB min_z=0.02; normal_gap=0.02. Final = 0.02. Both modes: NEAR (0.02 <= 0.05). Exercises the boundary-overlap branch of dist_2d (overlap detected via vertex-in-polygon check)."
+    },
+    {
+      "id": "S6",
+      "synthetic": true,
+      "entity_aabb": {"min": [10.0, 10.0, 10.0], "max": [10.5, 10.5, 10.5]},
+      "surface_record": {
+        "uid": "synth_floor",
+        "surface_type": "floor",
+        "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+        "polygon": [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [2.0, 2.0, 0.0], [0.0, 2.0, 0.0]],
+        "source": "habitat_label",
+        "confidence": 1.0
+      },
+      "phase2_expectation": "not_near",
+      "phase3_expectation": "not_near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "rationale": "Far from both plane (min_z=10) and polygon. Sanity check: both modes correctly say NOT_NEAR. Numeric gaps omitted because the case asserts boolean only."
+    },
+    {
+      "id": "S7",
+      "synthetic": true,
+      "entity_aabb": {"min": [2.04, 0.95, 0.03], "max": [2.09, 1.05, 0.08]},
+      "surface_record": {
+        "uid": "synth_floor",
+        "surface_type": "floor",
+        "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+        "polygon": [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [2.0, 2.0, 0.0], [0.0, 2.0, 0.0]],
+        "source": "habitat_label",
+        "confidence": 1.0
+      },
+      "phase2_expectation": "near",
+      "phase3_expectation": "near",
+      "expected_distance_metric": "polygon_clipped",
+      "expected_polygon_clipping_applied": true,
+      "expected_normal_gap_m": 0.03,
+      "expected_in_plane_gap_m": 0.04,
+      "expected_distance_m": 0.05,
+      "rationale": "Hypot arithmetic case. AABB min_z=0.03 above floor (normal_gap=0.03). Footprint (2.04..2.09, 0.95..1.05) is 0.04 m past polygon edge x=2 in plane-local x; in_plane_gap=0.04. Final = sqrt(0.04^2 + 0.03^2) = 0.05, exactly at floor threshold (<= semantics). Phase 2 mode: NEAR (bbox_to_plane=0.03 <= 0.05). Phase 3 mode: NEAR (distance_m=0.05 <= 0.05). This case asserts numeric evidence (normal_gap_m, in_plane_gap_m, distance_m), not just the boolean — exists to catch arithmetic regressions in the hypot combination at the threshold boundary."
+    },
+    {
+      "id": "S8",
+      "synthetic": true,
+      "entity_aabb": {"min": [0.95, 0.95, 0.0], "max": [1.05, 1.05, 0.04]},
+      "surface_record": {
+        "uid": "synth_floor_meshransac",
+        "surface_type": "floor",
+        "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+        "polygon": null,
+        "source": "mesh_ransac",
+        "confidence": 0.85
+      },
+      "phase2_expectation": "near",
+      "phase3_expectation": "near",
+      "expected_distance_metric": "bbox_to_plane",
+      "expected_polygon_clipping_applied": false,
+      "expected_fallback_reason": "polygon_none",
+      "expected_normal_gap_m": 0.0,
+      "expected_distance_m": 0.0,
+      "rationale": "Surface has polygon=null and source=mesh_ransac (non-synth, so SurfaceProximityExtractor does not skip it under default policy per A7 option a). Dispatcher falls back to bbox_to_plane. evidence['distance_metric']='bbox_to_plane', evidence['polygon_clipping_applied']=False, evidence['fallback_reason']='polygon_none'. AABB z=(0.0, 0.04) straddles floor plane; normal_gap=0; distance_m=0; NEAR."
+    }
+  ]
+}
