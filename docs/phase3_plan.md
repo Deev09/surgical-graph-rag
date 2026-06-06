@@ -148,8 +148,8 @@ Whichever option is chosen, the fixture entry documents the rationale in a `note
 | P3.03 | Wire `use_polygon_clip` opt-in into NEAR_SURFACE (A4 byte-equality test) | `graph/relations/surface.py`, `tests/relations/test_near_surface_polygon.py` | P3.02    | ✅ done (commit fe0507c). A5 (distinct extractor version + richer evidence) folded into P3.03 per sign-off — emitting opt-in edges with version "0.1" would have collided with Phase 2 edge_ids. |
 | P3.04 | Update extractor version + evidence schema (A5)                        | `graph/relations/surface.py`                                                  | P3.03    | ✅ no-code closeout — A5 materially landed in P3.03 (`POLYGON_CLIPPED_VERSION="0.2-near_surface_polygon_clipped"`; opt-in edges carry `normal_gap_m`, `in_plane_gap_m` / `fallback_reason`, `polygon_clipping_applied`, `distance_metric`; verified by `tests/relations/test_near_surface_polygon.py`). |
 | P3.05 | Polygon-clip telemetry + monotonicity report (A6)                      | `tools/phase3_polygon_clip_telemetry.py`, `tests/tools/test_phase3_polygon_clip_telemetry.py`, `scenes/replica_room_0/eval/phase3_polygon_clip_telemetry.json` | P3.03 (P3.04 folded in)    | ✅ done. Replica room_0 result: 98 plane-mode edges → 76 polygon-mode edges (22 plane-only false positives removed); A6 subset claim holds with 0 violations; A4 bundle_hash equivalence holds at full-scene scale; deterministic + timestamp-free + byte-identical on rerun. Also loosened `POLYGON_ON_PLANE_TOL_M` from 1e-6 to 1e-4 m after surveying real-data drift (worst case 3e-6 m). |
-| P3.06 | Decide: promote polygon-clip to default or keep opt-in                 | docs only (this file → closeout section)                                      | P3.05    | pending |
-| P3.07 | Phase 3 exit gate (G1–G7 ported + new G8)                              | `tools/phase3_exit_gate.py`                                                   | P3.06    | pending |
+| P3.06 | Decide: promote polygon-clip to default or keep opt-in                 | docs only (this file → closeout section)                                      | P3.05    | ✅ done — **keep opt-in**. See "P3.06 closeout" section below for evidence, reasoning, and promotion gate for a future phase. |
+| P3.07 | Phase 3 exit gate (G1–G7 ported + new G8)                              | `tools/phase3_exit_gate.py`                                                   | P3.06    | pending — must assert both Phase 2 byte-equivalence on the default path AND polygon candidate readiness on the opt-in path (per P3.06 closeout). |
 
 ---
 
@@ -219,6 +219,44 @@ None of these are committed in Phase 3.
 
 ---
 
+## P3.06 closeout — default vs opt-in decision
+
+**Decision: keep `use_polygon_clip` opt-in. Do not promote to default in Phase 3.**
+
+### Evidence (from `scenes/replica_room_0/eval/phase3_polygon_clip_telemetry.json`)
+
+- Plane mode: **98** NEAR_SURFACE edges (19 floor / 55 wall / 24 ceiling).
+- Polygon mode: **76** edges (19 floor / 46 wall / 11 ceiling).
+- Flipped near → not_near: **22** (0 floor / 9 wall / 13 ceiling). Flipped not_near → near: **0**.
+- A6 subset claim on polygoned surfaces: **0 violations**.
+- A4 byte-equivalence at GraphBuilder bundle_hash level: holds.
+
+### Why not promote yet
+
+- One scene, one importer (Replica room_0 via the oracle adapter), one relation family (NEAR_SURFACE). The 22-edge reduction is geometrically sound but is not corroborated by a second scene or by a downstream relation-eval result.
+- Promotion changes default graph contents. The Phase 2 baseline assumptions, the canonical exit-gate artifact, and any downstream eval table that joins on edge sets would shift. The discipline this repo has held since Phase 1 — default paths stay comparable, candidate paths are explicit — is the discipline this commit preserves.
+- The ceiling-polygon flips (13 / 22) are concentrated in a small number of room-geometry-specific configurations. There is no per-relation human-labeled "true near" set against which to verify that those 13 are *all* false positives versus a few being borderline-true near-ceiling cases the polygon clip dropped too aggressively. Until such a check exists, the conservative reading is "polygon mode is a better candidate" — not "polygon mode is the new ground truth."
+
+### Promotion gate (for a future phase)
+
+Promote `use_polygon_clip=True` to the default `SurfaceProximityConfig` only after **both** of the following land:
+
+1. A downstream relation-eval (or QA evaluation that exercises NEAR_SURFACE-derived behavior) shows no regression — i.e., the 22 dropped edges do not include cases the downstream system was relying on as true positives.
+2. At least one additional scene OR a hand-labeled NEAR_SURFACE relation set confirms the false-positive reduction generalizes beyond Replica room_0.
+
+Until both gates clear, polygon mode remains the explicit candidate. The constants `PLANE_MODE_VERSION` / `POLYGON_CLIPPED_VERSION` and the `hash_omit_if_default` metadata mean opting in or out is a one-line config flip with no Phase 2 byte impact.
+
+### Implications for P3.07 (Phase 3 exit gate)
+
+P3.07 must assert **both** claims simultaneously:
+
+- Phase 2 default behavior remains byte-equivalent (default config produces the Phase 2 baseline graph hash; default-path NEAR_SURFACE edge_id set matches the Phase 2 reference exactly).
+- Polygon candidate passes G8 (determinism + A6 subset monotonicity + A4 hash divergence proving opt-in is hashed) and is ready for future promotion.
+
+The honest framing: polygon mode is better geometry, but not yet the new baseline.
+
+---
+
 ## Closing note
 
-Phase 3 is a geometry-correctness phase, not a reasoning phase. Its win is a more faithful proximity graph and a removed limitation. The Phase 2 → Phase 3 diff should look like *fewer*, more honest, NEAR_SURFACE edges on cases where the infinite plane was lying. Anything else — claiming reasoning improvements or accuracy lifts on the 10-query baseline — would be a benchmark-semantics change dressed as a model improvement.
+Phase 3 is a geometry-correctness phase, not a reasoning phase. Its win is a more faithful proximity graph and a removed limitation. The Phase 2 → Phase 3 diff should look like *fewer*, more honest, NEAR_SURFACE edges on cases where the infinite plane was lying — visible only when callers opt in. Anything else — claiming reasoning improvements or accuracy lifts on the 10-query baseline — would be a benchmark-semantics change dressed as a model improvement.
