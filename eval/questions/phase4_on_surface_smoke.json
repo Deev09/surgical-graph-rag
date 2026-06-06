@@ -1,0 +1,248 @@
+{
+  "schema": "phase4_on_surface_smoke",
+  "schema_version": 1,
+  "fixture_id": "synthetic_p4_v1__plus__replica_room_0",
+  "initial_fixture_frozen_before_extractor_code": true,
+  "numeric_tolerance_m": 0.0001,
+  "relation": "ON_SURFACE",
+  "config_defaults": {
+    "contact_threshold_m": 0.02,
+    "penetration_tolerance_m": 0.03,
+    "max_tilt_deg": 30,
+    "footprint_tolerance_m": 0.0,
+    "near_surface_threshold_m_floor": 0.05,
+    "subset_guard": "hypot(contact_threshold_m, footprint_tolerance_m) = 0.02 <= near_surface_threshold_m_floor = 0.05"
+  },
+  "threshold_calibration": {
+    "penetration_tolerance_m": 0.03,
+    "limitation": "penetration_tolerance_m = 0.03 is Replica-calibrated to absorb observed floor-plane fit bias. It is NOT a physical claim that 3 cm penetration is acceptable. Future importer/floor refit work should revisit this threshold.",
+    "floor_plane_fit_bias_observed": {
+      "surface_uid": "floor_25",
+      "fitted_plane_height_z_m_approx": 0.043,
+      "candidate_set": "19 entities whose footprint clips the floor polygon (in_plane_gap == 0) with centroid above the plane",
+      "bottom_gap_min_m": -0.05689,
+      "bottom_gap_max_m": -0.01451,
+      "bottom_gap_median_m": -0.02801,
+      "all_candidates_negative": true
+    },
+    "pass_count_table": [
+      {"penetration_tolerance_m": 0.01, "candidates_contact_pass": 0, "total": 19},
+      {"penetration_tolerance_m": 0.02, "candidates_contact_pass": 4, "total": 19, "note": "mostly structural columns/door"},
+      {"penetration_tolerance_m": 0.03, "candidates_contact_pass": 11, "total": 19, "note": "chosen — clean furniture cluster incl. basket + tables"},
+      {"penetration_tolerance_m": 0.05, "candidates_contact_pass": 17, "total": 19},
+      {"penetration_tolerance_m": 0.06, "candidates_contact_pass": 19, "total": 19}
+    ],
+    "candidate_selection_note": "Candidate floor pairs were inspected by measurement, not intuition. Rug (obj_60) is excluded because it is flat and ambiguous under the fitted plane (lowest corner -0.057 m and centroid effectively at/below the fitted floor). Structural columns/door (obj_46, obj_36, obj_84) are excluded as poor 'on floor' exemplars despite passing. F1 = obj_39 (stool): least-negative non-structural bottom_gap (-0.0152 m), clear resting-on-floor semantics, not flat, not structural; passes at penetration_tolerance >= 0.02 so the fixture does not force the looser 0.05."
+  },
+  "synthetic_room_convention": {
+    "description": "Right-handed frame, gravity = (0,0,-1), up = (0,0,1). Synthetic surfaces use exact geometry (no fit bias). Floor at z=0 (interior/up normal +z), north wall at y=2 (interior normal -y), ceiling at z=2 (interior normal -z). Plane equation a*x+b*y+c*z+d=0; (a,b,c) is the interior/up-facing normal. Synthetic entity centroids are given explicitly because ON_SURFACE consumes the centroid.",
+    "clause_glossary": {
+      "support_capable": "dot((a,b,c)_unit, up) >= cos(max_tilt_deg)",
+      "centroid_on_support_side": "signed_distance(centroid, plane) >= 0",
+      "bottom_gap": "min over 8 AABB corners of signed_distance(corner, plane) (== sd_min)",
+      "contact": "bottom_gap <= contact_threshold_m AND bottom_gap >= -penetration_tolerance_m",
+      "footprint_ok": "aabb_to_polygon_planar(aabb, plane, polygon) <= footprint_tolerance_m",
+      "ON_SURFACE": "support_capable AND centroid_on_support_side AND contact AND footprint_ok"
+    }
+  },
+  "synthetic_surfaces": {
+    "synth_floor": {
+      "surface_uid": "synth_floor",
+      "surface_type": "floor",
+      "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+      "polygon": [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [2.0, 2.0, 0.0], [0.0, 2.0, 0.0]],
+      "source": "habitat_label",
+      "confidence": 1.0
+    },
+    "synth_wall_north": {
+      "surface_uid": "synth_wall_north",
+      "surface_type": "wall",
+      "plane": {"a": 0.0, "b": -1.0, "c": 0.0, "d": 2.0},
+      "polygon": [[0.0, 2.0, 0.0], [2.0, 2.0, 0.0], [2.0, 2.0, 2.0], [0.0, 2.0, 2.0]],
+      "source": "habitat_label",
+      "confidence": 1.0
+    },
+    "synth_ceiling": {
+      "surface_uid": "synth_ceiling",
+      "surface_type": "ceiling",
+      "plane": {"a": 0.0, "b": 0.0, "c": -1.0, "d": 2.0},
+      "polygon": [[0.0, 0.0, 2.0], [2.0, 0.0, 2.0], [2.0, 2.0, 2.0], [0.0, 2.0, 2.0]],
+      "source": "habitat_label",
+      "confidence": 1.0
+    }
+  },
+  "cases": [
+    {
+      "id": "F1",
+      "synthetic": false,
+      "scene_id": "replica_room_0",
+      "entity_uid": "obj_39",
+      "entity_label": "stool",
+      "surface_uid": "floor_25",
+      "expected_on_surface": true,
+      "expected_failed_clauses": [],
+      "measured_clauses": {
+        "support_capable": true,
+        "centroid_on_support_side": true,
+        "sd_centroid_m": 0.22191,
+        "bottom_gap_m": -0.01525,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": true
+      },
+      "rationale": "Real Replica floor-rest positive, grounded by measurement. Stool resting on floor_25: footprint inside the floor polygon (in_plane_gap == 0), centroid well above the fitted plane, bottom_gap -0.0152 m (within the [-0.03, 0.02] contact band). Least-negative non-structural candidate. Numeric clause values recorded for audit; the assertion is the boolean (exact AABB comes from the live enriched-v2 bundle, so the test recomputes from the bundle and asserts ON_SURFACE == true)."
+    },
+    {
+      "id": "F2",
+      "synthetic": true,
+      "surface_ref": "synth_floor",
+      "entity_aabb": {"min": [0.8, 0.8, -0.01], "max": [1.2, 1.2, 0.30]},
+      "entity_centroid": [1.0, 1.0, 0.145],
+      "expected_on_surface": true,
+      "expected_failed_clauses": [],
+      "expected_clauses": {
+        "support_capable": true,
+        "centroid_on_support_side": true,
+        "sd_centroid_m": 0.145,
+        "bottom_gap_m": -0.01,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": true
+      },
+      "rationale": "Synthetic floor positive with slight penetration. bottom_gap = -0.01 (inside the penetration band -0.03); footprint inside the floor polygon; centroid above. Pins the shallow-penetration positive on exact geometry (no fit bias)."
+    },
+    {
+      "id": "F3",
+      "synthetic": true,
+      "surface_ref": "synth_floor",
+      "entity_aabb": {"min": [0.8, 0.8, 0.04], "max": [1.2, 1.2, 0.40]},
+      "entity_centroid": [1.0, 1.0, 0.22],
+      "expected_on_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "expected_clauses": {
+        "support_capable": true,
+        "centroid_on_support_side": true,
+        "bottom_gap_m": 0.04,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": false
+      },
+      "expected_polygon_mode_near": true,
+      "rationale": "Floating above the floor: bottom_gap = 0.04 > contact_threshold 0.02, so contact fails (clean single-clause hover rejection). This is the NEAR-but-not-ON case: polygon-mode NEAR distance = hypot(0.04, 0) = 0.04 <= 0.05 (NEAR yes), but ON_SURFACE no."
+    },
+    {
+      "id": "F4",
+      "synthetic": true,
+      "surface_ref": "synth_floor",
+      "entity_aabb": {"min": [3.0, 1.0, 0.00], "max": [3.2, 1.2, 0.30]},
+      "entity_centroid": [3.1, 1.1, 0.15],
+      "expected_on_surface": false,
+      "expected_failed_clauses": ["footprint_ok"],
+      "expected_clauses": {
+        "support_capable": true,
+        "centroid_on_support_side": true,
+        "bottom_gap_m": 0.0,
+        "in_plane_gap_m": 1.0,
+        "footprint_ok": false,
+        "contact": true
+      },
+      "rationale": "At resting height (bottom_gap 0, contact passes) but laterally outside the floor polygon: footprint at x in [3.0, 3.2] is 1.0 m beyond the polygon edge x=2, so in_plane_gap = 1.0 and footprint_ok fails (clean single-clause footprint rejection)."
+    },
+    {
+      "id": "F5",
+      "synthetic": true,
+      "surface_ref": "synth_floor",
+      "entity_aabb": {"min": [0.8, 0.8, -0.50], "max": [1.2, 1.2, -0.20]},
+      "entity_centroid": [1.0, 1.0, -0.35],
+      "expected_on_surface": false,
+      "expected_failed_clauses": ["centroid_on_support_side", "contact"],
+      "expected_clauses": {
+        "support_capable": true,
+        "centroid_on_support_side": false,
+        "sd_centroid_m": -0.35,
+        "bottom_gap_m": -0.50,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": false
+      },
+      "rationale": "Entity entirely below the floor (wrong side). Centroid below the plane (centroid_on_support_side fails) AND bottom_gap -0.50 well past -penetration_tolerance (contact fails). Multi-clause by construction; labeled as such."
+    },
+    {
+      "id": "F6",
+      "synthetic": true,
+      "surface_ref": "synth_wall_north",
+      "entity_aabb": {"min": [0.8, 1.90, 0.50], "max": [1.2, 2.00, 0.90]},
+      "entity_centroid": [1.0, 1.95, 0.70],
+      "expected_on_surface": false,
+      "expected_failed_clauses": ["support_capable"],
+      "expected_clauses": {
+        "support_capable": false,
+        "centroid_on_support_side": true,
+        "sd_centroid_m": 0.05,
+        "bottom_gap_m": 0.0,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": true
+      },
+      "rationale": "Entity flush against the north wall: in contact (bottom_gap 0), centroid on the interior side, footprint within the wall polygon — yet support_capable fails because dot(wall_normal (0,-1,0), up (0,0,1)) = 0 < cos(30). Clean single-clause role rejection: the up-facing gate excludes verticals even when contact/side/footprint pass."
+    },
+    {
+      "id": "F7",
+      "synthetic": true,
+      "surface_ref": "synth_ceiling",
+      "entity_aabb": {"min": [0.8, 0.8, 1.90], "max": [1.2, 1.2, 1.99]},
+      "entity_centroid": [1.0, 1.0, 1.945],
+      "expected_on_surface": false,
+      "expected_failed_clauses": ["support_capable"],
+      "expected_clauses": {
+        "support_capable": false,
+        "centroid_on_support_side": true,
+        "sd_centroid_m": 0.055,
+        "bottom_gap_m": 0.01,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": true
+      },
+      "rationale": "Flush ceiling contact: contact passes (bottom_gap 0.01 within band), centroid on interior side, footprint within the ceiling polygon — yet support_capable fails because dot(ceiling_normal (0,0,-1), up) = -1 < cos(30). Clean single-clause role rejection that ISOLATES the up-facing gate from the contact gate (a flush ceiling light is in contact but is not 'on' the ceiling in the support sense)."
+    },
+    {
+      "id": "F8",
+      "synthetic": true,
+      "surface_ref": "synth_ceiling",
+      "entity_aabb": {"min": [0.8, 0.8, 1.50], "max": [1.2, 1.2, 1.70]},
+      "entity_centroid": [1.0, 1.0, 1.60],
+      "expected_on_surface": false,
+      "expected_failed_clauses": ["support_capable", "contact"],
+      "expected_clauses": {
+        "support_capable": false,
+        "centroid_on_support_side": true,
+        "sd_centroid_m": 0.40,
+        "bottom_gap_m": 0.30,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": false
+      },
+      "rationale": "Entity below the ceiling but not touching it (bottom_gap 0.30, far beyond both contact and near thresholds): support_capable fails (downward normal) AND contact fails. Explicitly multi-clause under Design B (role gate + contact gate); F3 already covers the pure single-clause gap rejection, so this is a ceiling gap-rejected sanity case rather than a clean gap test."
+    },
+    {
+      "id": "F9",
+      "synthetic": true,
+      "surface_ref": "synth_floor",
+      "entity_aabb": {"min": [0.8, 0.8, -0.04], "max": [1.2, 1.2, 0.30]},
+      "entity_centroid": [1.0, 1.0, 0.13],
+      "expected_on_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "expected_clauses": {
+        "support_capable": true,
+        "centroid_on_support_side": true,
+        "sd_centroid_m": 0.13,
+        "bottom_gap_m": -0.04,
+        "in_plane_gap_m": 0.0,
+        "footprint_ok": true,
+        "contact": false
+      },
+      "threshold_pinning": "Passes at penetration_tolerance_m = 0.05, rejected at 0.03. Mirrors the real sofa (obj_9, bottom_gap -0.043).",
+      "rationale": "Deep-penetration single-clause rejection on the penetration side. bottom_gap = -0.04 is below -penetration_tolerance (0.03), so contact fails even though support/side/footprint pass. Makes the D6 threshold choice (0.03 not 0.05) auditable as a fixture assertion: a looser 0.05 would wrongly accept this; 0.03 correctly rejects it."
+    }
+  ]
+}
