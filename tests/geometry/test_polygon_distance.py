@@ -336,12 +336,17 @@ def test_rejects_polygon_with_less_than_three_vertices() -> None:
 
 
 def test_rejects_polygon_vertex_off_plane() -> None:
+    """Proves bad polygons are rejected. Offset is 1e-2 m (1 cm), two
+    orders of magnitude above POLYGON_ON_PLANE_TOL_M (1e-4 m / 0.1 mm).
+    The test encodes 'obviously off-plane', not the tolerance value
+    itself — see POLYGON_ON_PLANE_TOL_M in geometry/surface_distance.py
+    for the validation threshold rationale."""
     plane = Plane(a=0.0, b=0.0, c=1.0, d=0.0)
     aabb = ((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
     polygon = [
         (0.0, 0.0, 0.0),
         (2.0, 0.0, 0.0),
-        (2.0, 2.0, 0.5),  # off-plane
+        (2.0, 2.0, 1e-2),  # 1 cm off-plane; >> POLYGON_ON_PLANE_TOL_M
     ]
     _assert_value_error(aabb_to_polygon_planar, aabb, plane, polygon)
 

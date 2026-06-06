@@ -140,16 +140,16 @@ Whichever option is chosen, the fixture entry documents the rationale in a `note
 
 > P3.00 is gating. P3.01..P3.07 do not begin until P3.00 is committed.
 
-| ID    | Title                                                                  | Insertion point                                                              | Gates on |
-|-------|------------------------------------------------------------------------|------------------------------------------------------------------------------|----------|
-| P3.00 | Freeze Phase 3 smoke fixture (A1)                                      | `eval/questions/phase3_near_surface_polygon_smoke.json`                      | —        |
-| P3.01 | Implement `aabb_to_polygon_planar` (generic, A2) + monotonicity tests  | `geometry/surface_distance.py`, `tests/geometry/test_polygon_distance.py`     | P3.00    |
-| P3.02 | Implement `bbox_to_surface` dispatcher + evidence dict                 | `geometry/surface_distance.py`, `tests/geometry/test_bbox_to_surface.py`      | P3.01    |
-| P3.03 | Wire `use_polygon_clip` opt-in into NEAR_SURFACE (A4 byte-equality test) | `graph/relations/surface.py`, `tests/relations/test_near_surface_polygon.py` | P3.02    |
-| P3.04 | Update extractor version + evidence schema (A5)                        | `graph/relations/surface.py`                                                  | P3.03    |
-| P3.05 | Polygon-clip telemetry + monotonicity report (A6)                      | `tools/phase3_polygon_clip_telemetry.py`                                      | P3.04    |
-| P3.06 | Decide: promote polygon-clip to default or keep opt-in                 | docs only (this file → closeout section)                                      | P3.05    |
-| P3.07 | Phase 3 exit gate (G1–G7 ported + new G8)                              | `tools/phase3_exit_gate.py`                                                   | P3.06    |
+| ID    | Title                                                                  | Insertion point                                                              | Gates on | Status |
+|-------|------------------------------------------------------------------------|------------------------------------------------------------------------------|----------|--------|
+| P3.00 | Freeze Phase 3 smoke fixture (A1)                                      | `eval/questions/phase3_near_surface_polygon_smoke.json`                      | —        | ✅ done (commit 99af4dc; S7 amended in P3.05 commit, see `post_freeze_amendments` header) |
+| P3.01 | Implement `aabb_to_polygon_planar` (generic, A2) + monotonicity tests  | `geometry/surface_distance.py`, `tests/geometry/test_polygon_distance.py`     | P3.00    | ✅ done (commit fa76bff) |
+| P3.02 | Implement `bbox_to_surface` dispatcher + evidence dict                 | `geometry/surface_distance.py`, `tests/geometry/test_bbox_to_surface.py`      | P3.01    | ✅ done (commit ffed11d) |
+| P3.03 | Wire `use_polygon_clip` opt-in into NEAR_SURFACE (A4 byte-equality test) | `graph/relations/surface.py`, `tests/relations/test_near_surface_polygon.py` | P3.02    | ✅ done (commit fe0507c). A5 (distinct extractor version + richer evidence) folded into P3.03 per sign-off — emitting opt-in edges with version "0.1" would have collided with Phase 2 edge_ids. |
+| P3.04 | Update extractor version + evidence schema (A5)                        | `graph/relations/surface.py`                                                  | P3.03    | ✅ no-code closeout — A5 materially landed in P3.03 (`POLYGON_CLIPPED_VERSION="0.2-near_surface_polygon_clipped"`; opt-in edges carry `normal_gap_m`, `in_plane_gap_m` / `fallback_reason`, `polygon_clipping_applied`, `distance_metric`; verified by `tests/relations/test_near_surface_polygon.py`). |
+| P3.05 | Polygon-clip telemetry + monotonicity report (A6)                      | `tools/phase3_polygon_clip_telemetry.py`, `tests/tools/test_phase3_polygon_clip_telemetry.py`, `scenes/replica_room_0/eval/phase3_polygon_clip_telemetry.json` | P3.03 (P3.04 folded in)    | ✅ done. Replica room_0 result: 98 plane-mode edges → 76 polygon-mode edges (22 plane-only false positives removed); A6 subset claim holds with 0 violations; A4 bundle_hash equivalence holds at full-scene scale; deterministic + timestamp-free + byte-identical on rerun. Also loosened `POLYGON_ON_PLANE_TOL_M` from 1e-6 to 1e-4 m after surveying real-data drift (worst case 3e-6 m). |
+| P3.06 | Decide: promote polygon-clip to default or keep opt-in                 | docs only (this file → closeout section)                                      | P3.05    | pending |
+| P3.07 | Phase 3 exit gate (G1–G7 ported + new G8)                              | `tools/phase3_exit_gate.py`                                                   | P3.06    | pending |
 
 ---
 

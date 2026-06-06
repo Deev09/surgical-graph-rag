@@ -61,7 +61,12 @@ import math
 from common.types import Plane, Vec3
 
 
-POLYGON_ON_PLANE_TOL_M = 1e-6
+POLYGON_ON_PLANE_TOL_M = 1e-4  # 0.1 mm; validation tolerance, not geometry threshold.
+# Sized to absorb float/importer round-off (Replica room_0 worst-case
+# vertex-off-plane drift is ~3e-6 m on plane-fit vs polygon-vertex
+# round-trip) while still catching genuinely-misregistered polygons
+# (~cm-scale errors). Loosened from 1e-6 m in P3.05 after surveying
+# real importer drift. Default plane mode never reaches this validator.
 
 
 def _validate_vec3(name: str, value: Vec3) -> None:

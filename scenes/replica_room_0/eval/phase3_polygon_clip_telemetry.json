@@ -1,0 +1,273 @@
+{
+  "config": {
+    "plane_mode": {
+      "ceiling_threshold_m": 0.1,
+      "extractor_version": "0.1",
+      "floor_threshold_m": 0.05,
+      "include_synth_fallback": false,
+      "use_polygon_clip": false,
+      "wall_threshold_m": 0.3
+    },
+    "polygon_mode": {
+      "ceiling_threshold_m": 0.1,
+      "extractor_version": "0.2-near_surface_polygon_clipped",
+      "floor_threshold_m": 0.05,
+      "include_synth_fallback": false,
+      "use_polygon_clip": true,
+      "wall_threshold_m": 0.3
+    }
+  },
+  "determinism": {
+    "method": "extractor invoked twice with the same config; sorted edge_id lists compared",
+    "plane_mode_edge_id_count": 98,
+    "plane_mode_two_runs_byte_equal": true,
+    "polygon_mode_edge_id_count": 76,
+    "polygon_mode_two_runs_byte_equal": true
+  },
+  "edge_counts": {
+    "by_surface_type": {
+      "ceiling": {
+        "delta": -13,
+        "plane": 24,
+        "polygon": 11
+      },
+      "floor": {
+        "delta": 0,
+        "plane": 19,
+        "polygon": 19
+      },
+      "wall": {
+        "delta": -9,
+        "plane": 55,
+        "polygon": 46
+      }
+    },
+    "delta_polygon_minus_plane": -22,
+    "plane_mode_total": 98,
+    "polygon_mode_total": 76
+  },
+  "entity_count": 73,
+  "flipped_edges": {
+    "near_to_not_near": [
+      {
+        "entity_uid": "obj_15",
+        "plane_mode_distance_m": 0.045086692441000054,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_19",
+        "plane_mode_distance_m": 0.05060128552600007,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_2",
+        "plane_mode_distance_m": 0.0,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_21",
+        "plane_mode_distance_m": 0.05403339183700018,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_22",
+        "plane_mode_distance_m": 0.05183343158699971,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_28",
+        "plane_mode_distance_m": 0.0,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_29",
+        "plane_mode_distance_m": 0.0,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_3",
+        "plane_mode_distance_m": 0.19823889151899998,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_30",
+        "plane_mode_distance_m": 0.060140349849000074,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_34",
+        "plane_mode_distance_m": 0.054052373228000494,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_36",
+        "plane_mode_distance_m": 0.06986752960800002,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_38",
+        "plane_mode_distance_m": 0.00018777982300033358,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_4",
+        "plane_mode_distance_m": 0.210045834516,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_42",
+        "plane_mode_distance_m": 0.0,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_45",
+        "plane_mode_distance_m": 0.196496254227,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_46",
+        "plane_mode_distance_m": 0.17838771180000002,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_50",
+        "plane_mode_distance_m": 0.05395351063100007,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_58",
+        "plane_mode_distance_m": 0.06186528386299983,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_62",
+        "plane_mode_distance_m": 0.0,
+        "plane_mode_threshold_m": 0.1,
+        "polygon_present": true,
+        "surface_type": "ceiling",
+        "surface_uid": "ceiling_88"
+      },
+      {
+        "entity_uid": "obj_65",
+        "plane_mode_distance_m": 0.19599157028199987,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_79",
+        "plane_mode_distance_m": 0.20826261712799998,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      },
+      {
+        "entity_uid": "obj_85",
+        "plane_mode_distance_m": 0.182657577048,
+        "plane_mode_threshold_m": 0.3,
+        "polygon_present": true,
+        "surface_type": "wall",
+        "surface_uid": "wall_23_xplus"
+      }
+    ],
+    "near_to_not_near_count": 22,
+    "not_near_to_near": [],
+    "not_near_to_near_count": 0
+  },
+  "gate": "phase3_polygon_clip_telemetry",
+  "notes": [
+    "Closeout reference for P3.04: A5 (distinct extractor version + richer evidence for opt-in mode) materially landed in P3.03, verified by tests/relations/test_near_surface_polygon.py. The polygon-mode bundle_hash here differs from plane-mode by design \u2014 use_polygon_clip=True is hashed, plane vs polygon are honestly distinct modes.",
+    "Per A6, polygon-mode edges are expected to be a subset of plane-mode edges for surfaces with polygon present. A non-zero violation_count would indicate a geometry bug, not a tuning issue, and must block Phase 3 closeout.",
+    "Polygon=None surfaces are excluded from the subset claim because the dispatcher falls back to bbox_to_plane for those, making the edge sets coincide on them by construction.",
+    "Phase 2 NEAR_SURFACE remains the default. This artifact is decision input for P3.06 (promote opt-in to default or keep opt-in); no promotion happens in P3.05.",
+    "No timestamp is recorded; the file is byte-stable when the underlying scene, thresholds, and geometry helpers are unchanged. Drift against the committed copy is signal."
+  ],
+  "phase2_byte_equivalence": {
+    "default_bundle_hash": "graph_74d256e2001ec04b",
+    "default_equals_explicit_false": true,
+    "explicit_false_bundle_hash": "graph_74d256e2001ec04b",
+    "method": "GraphBuilder.bundle_hash on a NEAR_SURFACE-only run against real Replica room_0 artifacts",
+    "polygon_mode_bundle_hash": "graph_7715661c558e0896",
+    "polygon_mode_differs": true
+  },
+  "polygon_on_plane_drift": {
+    "max_polygon_off_plane_drift_m": 3.024424000130921e-06,
+    "polygon_on_plane_tolerance_m": 0.0001,
+    "within_tolerance": true
+  },
+  "scene_id": "replica_room_0",
+  "subset_claim_for_surfaces_with_polygons": {
+    "applicable_surface_count": 7,
+    "plane_mode_pair_count_on_polygoned_surfaces": 98,
+    "polygon_mode_pair_count_on_polygoned_surfaces": 76,
+    "subset_holds": true,
+    "violation_count": 0,
+    "violations": []
+  },
+  "surface_counts": {
+    "by_surface_type": {
+      "ceiling": 1,
+      "floor": 1,
+      "wall": 5
+    },
+    "polygon_none": 0,
+    "polygon_present": 7,
+    "total": 7
+  }
+}
