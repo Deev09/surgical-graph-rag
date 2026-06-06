@@ -1,0 +1,147 @@
+{
+  "blocking_gates": {
+    "G1_structural_surfaces": {
+      "counts_per_type": {
+        "ceiling": 1,
+        "floor": 1,
+        "wall": 5
+      },
+      "pass": true,
+      "sources_observed": [
+        "habitat_label"
+      ],
+      "synth_fallback_present": false
+    },
+    "G2_world_frame_obbs": {
+      "entity_count": 73,
+      "missing_bbox_obb": [],
+      "pass": true,
+      "with_bbox_obb": 73
+    },
+    "G3_phase1_compat_reproduction": {
+      "expected_total": 5414,
+      "extra_count": 0,
+      "missing_count": 0,
+      "pass": true,
+      "produced_total": 5414
+    },
+    "G4_deterministic_and_replayable_both_candidates": {
+      "pass": true,
+      "plane_mode_bundle_hash": "graph_f5a3accd580d83b9",
+      "plane_mode_round_trip_equal": true,
+      "plane_mode_two_run_hash_match": true,
+      "polygon_mode_bundle_hash": "graph_352b43a0bd5495d7",
+      "polygon_mode_round_trip_equal": true,
+      "polygon_mode_two_run_hash_match": true
+    },
+    "G5a_phase2_smoke_under_default_config": {
+      "config_used": "SurfaceProximityConfig()",
+      "failures": [],
+      "near_cases": 6,
+      "not_near_cases": 6,
+      "pass": true,
+      "smoke_path": "eval/questions/phase2_near_surface_smoke.json"
+    },
+    "G5b_phase3_polygon_smoke_under_opt_in_config": {
+      "cases_checked": {
+        "replica": 1,
+        "synthetic": 8
+      },
+      "config_used": "SurfaceProximityConfig(use_polygon_clip=True)",
+      "failures": [],
+      "pass": true,
+      "smoke_path": "eval/questions/phase3_near_surface_polygon_smoke.json",
+      "total_cases": 9
+    },
+    "G7_builder_structural_completeness": {
+      "actual_surface_count": 7,
+      "expected_surface_count": 7,
+      "full_surface_records_retained": true,
+      "pass": true,
+      "refs_derived_from_full_set": true,
+      "unknown_entity_ref_rejected": true,
+      "unknown_surface_ref_rejected": true
+    },
+    "G8_polygon_clip_invariants_and_phase2_byte_equivalence": {
+      "a_polygon_mode_two_runs_byte_equal": true,
+      "b_default_equals_explicit_false_bundle_hash": true,
+      "bundle_hashes": {
+        "default": "graph_74d256e2001ec04b",
+        "explicit_false": "graph_74d256e2001ec04b",
+        "polygon": "graph_7715661c558e0896"
+      },
+      "c_polygon_mode_bundle_hash_differs": true,
+      "d_subset_holds_on_polygoned_surfaces": true,
+      "d_subset_violations": [],
+      "e_no_not_near_to_near_flips_globally": true,
+      "e_not_near_to_near_pairs": [],
+      "edge_counts": {
+        "near_to_not_near_count": 22,
+        "not_near_to_near_count": 0,
+        "plane_mode_total": 98,
+        "polygon_mode_total": 76
+      },
+      "f_artifact_mismatches": [],
+      "f_telemetry_artifact_agrees_with_gate": true,
+      "f_telemetry_artifact_present": true,
+      "g_phase3_policy": {
+        "default_behavior": "phase2_plane_mode",
+        "polygon_clip_status": "opt_in_candidate",
+        "rationale": "P3.06 closeout \u2014 keep opt-in until downstream QA + \u22652 scenes"
+      },
+      "g_phase3_policy_ok": true,
+      "pass": true
+    }
+  },
+  "entity_count": 73,
+  "extractor_versions": {
+    "plane_mode": "0.1",
+    "polygon_mode": "0.2-near_surface_polygon_clipped"
+  },
+  "gate": "phase3_exit_gate",
+  "limitations_recorded_for_phase4": [
+    "Polygon-clipped NEAR_SURFACE has been validated on Replica room_0 only. Generalization to other scenes is unverified.",
+    "OBB-to-OBB surface distance remains deferred (P2.07 A5 / P3 plan still parks it).",
+    "POLYGON_ON_PLANE_TOL_M is 1e-04 m, sized to absorb Replica importer drift (observed max 3.024e-06 m); future scenes with worse drift will need re-survey."
+  ],
+  "overall_blocking_pass": true,
+  "phase2_byte_equivalence_summary": {
+    "default_bundle_hash_equals_explicit_false": true,
+    "phase2_smoke_failures": [],
+    "phase2_smoke_passes_under_default_config": true
+  },
+  "policy_decisions_recorded": [
+    "P3.06 closeout: keep use_polygon_clip OPT-IN. Default SurfaceProximityConfig() retains Phase 2 plane-mode behavior. Polygon candidate is verified ready for future promotion but is not promoted in Phase 3.",
+    "Phase 2 byte-equivalence is asserted at both the direct extractor and GraphBuilder bundle_hash layers (G8(b) + G5a).",
+    "Promotion gate (per P3.06): downstream relation-eval + \u22651 additional scene OR hand-labeled NEAR_SURFACE relations."
+  ],
+  "polygon_candidate_readiness_summary": {
+    "phase3_smoke_failures": [],
+    "phase3_smoke_passes_under_opt_in_config": true,
+    "polygon_mode_bundle_hash_differs": true,
+    "polygon_mode_two_runs_byte_equal": true,
+    "subset_holds_on_polygoned_surfaces": true,
+    "telemetry_artifact_agrees": true
+  },
+  "polygon_on_plane_drift_observed_m": 3.024424000130921e-06,
+  "polygon_on_plane_tolerance_m": 0.0001,
+  "scene_id": "replica_room_0",
+  "telemetry_artifact_untouched_by_gate_run": true,
+  "telemetry_gates": {
+    "G6_combined_density_both_candidates": {
+      "entity_count": 73,
+      "note": "Phase 1 cap stays blocking for sparse-v1 only. Phase 2 candidate (plane-mode) and Phase 3 candidate (polygon-mode) both opt into telemetry. Recorded, never blocks.",
+      "phase1_sparse_density_limit": 14,
+      "plane_mode": {
+        "density_ratio_per_entity": 16.15068493150685,
+        "exceeds_phase1_cap": true,
+        "logical_edges_total": 1179
+      },
+      "polygon_mode": {
+        "density_ratio_per_entity": 15.849315068493151,
+        "exceeds_phase1_cap": true,
+        "logical_edges_total": 1157
+      }
+    }
+  }
+}
