@@ -1,4 +1,4 @@
-"""Phase 2 P2.07 + Phase 3 P3.01 — pure surface-distance helpers.
+"""Phase 2 P2.07 + Phase 3 P3.01 / P3.02 — pure surface-distance helpers.
 
 Phase 2 helpers (frozen, byte-equal):
 
@@ -17,6 +17,18 @@ Phase 3 helper (P3.01, added 2026-06-04):
       IN-PLANE 2D gap only — NOT the combined 3D distance. The dispatcher
       `bbox_to_surface` (P3.02) combines this with `bbox_to_plane` via
       `hypot` to produce the final 3D distance.
+
+Phase 3 dispatcher (P3.02, added 2026-06-06):
+
+  bbox_to_surface(aabb, plane, polygon) -> (distance, evidence)
+      Polygon-aware surface distance. With `polygon is not None` returns
+      `hypot(bbox_to_plane(...), aabb_to_polygon_planar(...))` and
+      evidence `{distance_metric: "polygon_clipped", polygon_clipping_applied: True, ...}`.
+      With `polygon is None` falls back to `bbox_to_plane(...)` and emits
+      evidence `{distance_metric: "bbox_to_plane", polygon_clipping_applied: False,
+      fallback_reason: "polygon_none"}`. The signature takes plane + optional
+      polygon (NOT a SurfaceRecord) so this module stays a pure-geometry
+      leaf; no `graph/` or `extractors/` imports.
 
 Math conventions per A4 / P2.07 / P3.01 / A2 sign-off:
 
@@ -438,3 +450,69 @@ def aabb_to_polygon_planar(
         _min_vertex_to_edge_distance_2d(hull_a, poly_b_2d),
         _min_vertex_to_edge_distance_2d(poly_b_2d, hull_a),
     )
+
+
+# --- Phase 3 P3.02 — polygon-aware surface dispatcher --------------------
+
+
+def bbox_to_surface(
+    aabb: tuple[Vec3, Vec3],
+    plane: Plane,
+    polygon: list[Vec3] | None,
+) -> tuple[float, dict]:
+    """Return (distance, evidence) for an AABB-to-surface measurement.
+
+    Pure-geometry signature (plane + optional polygon, not a SurfaceRecord)
+    so this module remains a leaf with no `graph/` or `extractors/`
+    imports. Caller-side adapters in the extractor layer pull
+    `surface.plane` and `surface.polygon` and pass them in.
+
+    With `polygon is not None`:
+        distance = hypot(bbox_to_plane(aabb, plane),
+                         aabb_to_polygon_planar(aabb, plane, polygon))
+        evidence = {
+            "distance_metric": "polygon_clipped",
+            "polygon_clipping_applied": True,
+            "normal_gap_m": <bbox_to_plane>,
+            "in_plane_gap_m": <aabb_to_polygon_planar>,
+            "distance_m": <hypot>,
+        }
+
+    With `polygon is None`:
+        distance = bbox_to_plane(aabb, plane)
+        evidence = {
+            "distance_metric": "bbox_to_plane",
+            "polygon_clipping_applied": False,
+            "normal_gap_m": <bbox_to_plane>,
+            "distance_m": <bbox_to_plane>,
+            "fallback_reason": "polygon_none",
+        }
+
+    Per A6: the returned `distance` is always >= `bbox_to_plane(aabb, plane)`.
+    The `in_plane_gap_m` key is intentionally absent in the fallback
+    evidence — there is no in-plane component when polygon is None, and
+    emitting a sentinel would muddle telemetry.
+    """
+    _validate_aabb("aabb", aabb)
+    _validate_plane_finite("plane", plane)
+
+    normal_gap = bbox_to_plane(aabb, plane)
+
+    if polygon is None:
+        return normal_gap, {
+            "distance_metric": "bbox_to_plane",
+            "polygon_clipping_applied": False,
+            "normal_gap_m": normal_gap,
+            "distance_m": normal_gap,
+            "fallback_reason": "polygon_none",
+        }
+
+    in_plane_gap = aabb_to_polygon_planar(aabb, plane, polygon)
+    distance = math.hypot(normal_gap, in_plane_gap)
+    return distance, {
+        "distance_metric": "polygon_clipped",
+        "polygon_clipping_applied": True,
+        "normal_gap_m": normal_gap,
+        "in_plane_gap_m": in_plane_gap,
+        "distance_m": distance,
+    }
