@@ -406,6 +406,51 @@ def test_schema_version_mismatch_raises_graph() -> None:
         raise AssertionError("expected SchemaVersionError")
 
 
+def test_on_surface_edge_roundtrips_under_v3() -> None:
+    """P4.02: ON_SURFACE is accepted by graph serde (EdgeType addition).
+    A bundle carrying an ON_SURFACE edge round-trips under schema v3."""
+    from dataclasses import replace
+    base = make_scene_graph_bundle()
+    on_edge = Edge(
+        edge_id="e_on_surface_1",
+        source=GraphRef(kind="entity", uid="obj_1"),
+        type="ON_SURFACE",
+        target=GraphRef(kind="surface", uid="surf_floor"),
+        frame="world",
+        weight=1.0,
+        confidence=1.0,
+        extractor="on_surface",
+        extractor_version="0.1",
+        evidence={"bottom_gap_m": -0.01, "contact": True, "polygon_clip_required": True},
+    )
+    original = replace(base, edges=list(base.edges) + [on_edge])
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        loaded = load_scene_graph_bundle(out)
+    _assert_equal(original, loaded, "SceneGraphBundle(ON_SURFACE)")
+    if not any(e.type == "ON_SURFACE" for e in loaded.edges):
+        raise AssertionError("ON_SURFACE edge lost in round-trip")
+
+
+def test_graph_schema_v2_rejected_under_v3() -> None:
+    """P4.02 / D5: strict v3 loader rejects a manually-downgraded v2 graph
+    manifest. No migration path; old graph bundles are not silently coerced."""
+    original = make_scene_graph_bundle()
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        m = out / "manifest.json"
+        payload = json.loads(m.read_text())
+        payload["schema_version"] = 2  # the pre-ON_SURFACE graph serde version
+        m.write_text(json.dumps(payload))
+        try:
+            load_scene_graph_bundle(out)
+        except SchemaVersionError:
+            return
+        raise AssertionError("expected SchemaVersionError for v2 under strict v3")
+
+
 def test_embedding_npy_sidecar_written_and_typed() -> None:
     original = make_entity_artifacts()
     with tempfile.TemporaryDirectory() as td:
@@ -503,6 +548,8 @@ TESTS = [
     test_schema_version_mismatch_raises_repr,
     test_schema_version_mismatch_raises_entity,
     test_schema_version_mismatch_raises_graph,
+    test_on_surface_edge_roundtrips_under_v3,
+    test_graph_schema_v2_rejected_under_v3,
     test_embedding_npy_sidecar_written_and_typed,
     test_array_aware_equality_dtype_sensitive,
     test_array_aware_equality_shape_sensitive,

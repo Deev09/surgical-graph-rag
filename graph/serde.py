@@ -20,7 +20,7 @@ from graph.schema import (
     SceneGraphBundle, SurfaceRecord,
 )
 
-CURRENT_SCHEMA_VERSION = 2  # P2.10 C1: SceneGraphBundle gained structural_surfaces
+CURRENT_SCHEMA_VERSION = 3  # P4.02: EdgeType gained ON_SURFACE (rest-contact). v2 bundles reject under strict v3 load (no migration path).
 
 _VALID_SURFACE_TYPES = ("floor", "wall", "ceiling")
 _VALID_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")
