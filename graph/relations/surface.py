@@ -2,21 +2,33 @@
 
 Emits NEAR_SURFACE(entity, surface) edges where `surface` is a
 StructuralSurface from the EntityArtifacts bundle and the entity's
-AABB-to-plane distance is within a per-surface-type threshold.
+AABB-to-surface distance is within a per-surface-type threshold.
 
-Edge semantics (A4 + P2.07):
-  - distance = bbox_to_plane(entity.bbox_aabb, surface.plane), non-negative,
-    0 when the plane intersects the box,
-  - emit iff distance <= threshold_for(surface.surface_type).
+Two modes, both selected via SurfaceProximityConfig.use_polygon_clip:
 
-Provenance on each edge (analogous to sparse_v2):
-  - extractor = "near_surface", version = "0.1",
-  - target = GraphRef(kind="surface", uid=surface_uid),
-  - evidence["distance_metric"] = "bbox_to_plane",
-  - evidence["distance_m"] = computed distance,
-  - evidence["surface_type"] = "floor"|"wall"|"ceiling",
-  - evidence["threshold_m"] = threshold used,
-  - evidence["source"] = surface.source.
+  Default (use_polygon_clip=False) — Phase 2 plane-mode (byte-frozen):
+    - distance = bbox_to_plane(entity.bbox_aabb, surface.plane),
+    - extractor_version = "0.1",
+    - evidence schema = {distance_m, distance_metric="bbox_to_plane",
+      threshold_m, surface_type, source} (unchanged from P2.09).
+
+  Opt-in (use_polygon_clip=True) — Phase 3 polygon-mode:
+    - distance, dispatcher_evidence = bbox_to_surface(
+          entity.bbox_aabb, surface.plane, surface.polygon),
+    - extractor_version = "0.2-near_surface_polygon_clipped"
+      (applied to ALL opt-in edges, including polygon=None fallbacks —
+      the mode is what changes, not the per-surface presence of a polygon),
+    - evidence = dispatcher_evidence merged with {threshold_m, surface_type,
+      source}. Per the dispatcher contract: polygon-present evidence carries
+      {normal_gap_m, in_plane_gap_m, polygon_clipping_applied=True,
+      distance_metric="polygon_clipped", distance_m}; polygon-None fallback
+      carries {normal_gap_m, polygon_clipping_applied=False,
+      distance_metric="bbox_to_plane", distance_m, fallback_reason="polygon_none"}.
+
+A4 byte-equality: SurfaceProximityConfig.use_polygon_clip is declared with
+`field(default=False, metadata={"hash_omit_if_default": True})` so that
+default Phase 2 configs serialize to the Phase 2 _config_hash_payload byte-
+for-byte. Tested in tests/relations/test_near_surface_polygon.py.
 
 Canonical policy (A3, A7): the extractor refuses to emit NEAR_SURFACE
 against surfaces whose `source == "synth_bbox_fallback"` unless
@@ -33,11 +45,11 @@ from __future__ import annotations
 
 import math
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 from extractors.base import EntityArtifact, EntityArtifacts, StructuralSurface
-from geometry.surface_distance import bbox_to_plane
+from geometry.surface_distance import bbox_to_plane, bbox_to_surface
 from graph.relations.base import (
     RelationExtractorConfig, RelationExtractorDiagnostics,
     count_logical_edges, make_edge_id, make_entity_ref, make_surface_ref,
@@ -51,17 +63,31 @@ DEFAULT_FLOOR_THRESHOLD_M = 0.05
 DEFAULT_WALL_THRESHOLD_M = 0.30
 DEFAULT_CEILING_THRESHOLD_M = 0.10
 
+PLANE_MODE_VERSION = "0.1"
+POLYGON_CLIPPED_VERSION = "0.2-near_surface_polygon_clipped"
+
 
 @dataclass(frozen=True)
 class SurfaceProximityConfig:
     """Per-surface-type thresholds; provisional Replica-calibrated defaults
     per Q4. include_synth_fallback gates the synth-bbox-fallback policy
-    (A3); leave False on the canonical path."""
+    (A3); leave False on the canonical path.
+
+    `use_polygon_clip` (Phase 3 A4): opt-in flag for polygon-aware distance.
+    Declared with metadata={"hash_omit_if_default": True} so that default
+    configs serialize to the Phase 2 _config_hash_payload byte-for-byte
+    (see graph/builder.py:_config_hash_payload). Enabling polygon clip
+    switches the extractor to a distinct version string and a richer
+    evidence schema; default Phase 2 plane-mode bytes are preserved."""
     mode: Literal["sparse"] = "sparse"
     floor_threshold_m: float = DEFAULT_FLOOR_THRESHOLD_M
     wall_threshold_m: float = DEFAULT_WALL_THRESHOLD_M
     ceiling_threshold_m: float = DEFAULT_CEILING_THRESHOLD_M
     include_synth_fallback: bool = False
+    use_polygon_clip: bool = field(
+        default=False,
+        metadata={"hash_omit_if_default": True},
+    )
 
 
 def _threshold_for(config: SurfaceProximityConfig, surface_type: str) -> float:
@@ -118,9 +144,42 @@ def _build_near_surface_edge(
     )
 
 
+def _build_near_surface_edge_polygon(
+    entity: EntityArtifact,
+    surface: StructuralSurface,
+    dispatcher_evidence: dict,
+    threshold: float,
+    *,
+    extractor: str,
+    version: str,
+) -> Edge:
+    """Polygon-mode edge builder (A5). The dispatcher_evidence already
+    carries distance_m, distance_metric, normal_gap_m, polygon_clipping_applied,
+    and (when polygon present) in_plane_gap_m; we layer the Phase 2
+    extractor-side keys (threshold_m, surface_type, source) on top."""
+    source = make_entity_ref(entity.identity.object_uid)
+    target = make_surface_ref(surface.surface_uid)
+    evidence = dict(dispatcher_evidence)
+    evidence["threshold_m"] = threshold
+    evidence["surface_type"] = surface.surface_type
+    evidence["source"] = surface.source
+    return Edge(
+        edge_id=make_edge_id(extractor, version, source, "NEAR_SURFACE", target),
+        source=source,
+        type="NEAR_SURFACE",
+        target=target,
+        frame="world",
+        weight=1.0,
+        confidence=1.0,
+        extractor=extractor,
+        extractor_version=version,
+        evidence=evidence,
+    )
+
+
 class SurfaceProximityExtractor:
     name: str = "near_surface"
-    version: str = "0.1"
+    version: str = PLANE_MODE_VERSION
     edge_types: frozenset[EdgeType] = NEAR_SURFACE_TYPES
 
     def extract(
@@ -135,6 +194,9 @@ class SurfaceProximityExtractor:
             )
         _validate_config(config)
         start = time.perf_counter()
+        effective_version = (
+            POLYGON_CLIPPED_VERSION if config.use_polygon_clip else PLANE_MODE_VERSION
+        )
         edges: list[Edge] = []
         rejections: list[EdgeRejection] = []
         rejection_counts: dict[EdgeType, int] = {}
@@ -170,37 +232,64 @@ class SurfaceProximityExtractor:
                     ))
             for surface in active_surfaces:
                 threshold = _threshold_for(config, surface.surface_type)
-                distance = bbox_to_plane(entity.bbox_aabb, surface.plane)
-                if distance <= threshold:
-                    edges.append(_build_near_surface_edge(
-                        entity, surface, distance, threshold,
-                        extractor=self.name, version=self.version,
-                    ))
-                else:
-                    rejection_counts["NEAR_SURFACE"] = (
-                        rejection_counts.get("NEAR_SURFACE", 0) + 1
+                if config.use_polygon_clip:
+                    distance, dispatcher_evidence = bbox_to_surface(
+                        entity.bbox_aabb, surface.plane, surface.polygon,
                     )
-                    if len(rejections) < max_rejection_samples:
-                        rejections.append(EdgeRejection(
-                            source=make_entity_ref(entity.identity.object_uid),
-                            type="NEAR_SURFACE",
-                            target=make_surface_ref(surface.surface_uid),
-                            extractor=self.name,
-                            rejected_reason="distance_exceeds_surface_threshold",
-                            evidence={
-                                "distance_m": distance,
-                                "distance_metric": "bbox_to_plane",
-                                "threshold_m": threshold,
-                                "surface_type": surface.surface_type,
-                                "source": surface.source,
-                            },
+                    if distance <= threshold:
+                        edges.append(_build_near_surface_edge_polygon(
+                            entity, surface, dispatcher_evidence, threshold,
+                            extractor=self.name, version=effective_version,
                         ))
+                    else:
+                        rejection_counts["NEAR_SURFACE"] = (
+                            rejection_counts.get("NEAR_SURFACE", 0) + 1
+                        )
+                        if len(rejections) < max_rejection_samples:
+                            rejection_evidence = dict(dispatcher_evidence)
+                            rejection_evidence["threshold_m"] = threshold
+                            rejection_evidence["surface_type"] = surface.surface_type
+                            rejection_evidence["source"] = surface.source
+                            rejections.append(EdgeRejection(
+                                source=make_entity_ref(entity.identity.object_uid),
+                                type="NEAR_SURFACE",
+                                target=make_surface_ref(surface.surface_uid),
+                                extractor=self.name,
+                                rejected_reason="distance_exceeds_surface_threshold",
+                                evidence=rejection_evidence,
+                            ))
+                else:
+                    distance = bbox_to_plane(entity.bbox_aabb, surface.plane)
+                    if distance <= threshold:
+                        edges.append(_build_near_surface_edge(
+                            entity, surface, distance, threshold,
+                            extractor=self.name, version=effective_version,
+                        ))
+                    else:
+                        rejection_counts["NEAR_SURFACE"] = (
+                            rejection_counts.get("NEAR_SURFACE", 0) + 1
+                        )
+                        if len(rejections) < max_rejection_samples:
+                            rejections.append(EdgeRejection(
+                                source=make_entity_ref(entity.identity.object_uid),
+                                type="NEAR_SURFACE",
+                                target=make_surface_ref(surface.surface_uid),
+                                extractor=self.name,
+                                rejected_reason="distance_exceeds_surface_threshold",
+                                evidence={
+                                    "distance_m": distance,
+                                    "distance_metric": "bbox_to_plane",
+                                    "threshold_m": threshold,
+                                    "surface_type": surface.surface_type,
+                                    "source": surface.source,
+                                },
+                            ))
 
         counts: dict[EdgeType, int] = {"NEAR_SURFACE": len(edges)}
         runtime_ms = int((time.perf_counter() - start) * 1000)
         return edges, RelationExtractorDiagnostics(
             extractor=self.name,
-            version=self.version,
+            version=effective_version,
             mode=config.mode,
             physical_edges_per_type=counts,
             physical_edges_total=len(edges),
