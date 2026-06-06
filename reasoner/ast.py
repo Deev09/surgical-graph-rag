@@ -32,7 +32,17 @@ class EntityRef:
     zone: str | None = None  # legacy; bathroom-fixture-only per §7.3
 
 
-Operand = Union[Variable, EntityRef]
+@dataclass(frozen=True)
+class SurfaceRef:
+    """A structural surface in the query (P4.04), resolved at execute time
+    against SceneGraphBundle.structural_surfaces by surface_type — NOT a
+    graph node. Used by support queries: SUPPORTS(SurfaceRef("floor"), ?x)
+    asks "what rests on the floor?". Floor is a structural surface, not an
+    entity node, so EntityRef would be conceptually wrong here."""
+    surface_type: Literal["floor", "wall", "ceiling"]
+
+
+Operand = Union[Variable, EntityRef, SurfaceRef]
 
 
 @dataclass(frozen=True)

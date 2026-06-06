@@ -26,8 +26,10 @@ from graph.relations.base import (
     CANONICAL_INVERSE_PAIRS, INVERSE_TO_CANONICAL, SYMMETRIC_EDGE_TYPES,
 )
 from graph.schema import Edge, EdgeType, GraphRef, Node, SceneGraphBundle
+from graph.views.support import support_facts
 from reasoner.ast import (
-    Aggregation, EdgeConstraint, EntityRef, Operand, QueryAST, Variable,
+    Aggregation, EdgeConstraint, EntityRef, Operand, QueryAST, SurfaceRef,
+    Variable,
 )
 from reasoner.base import ExecutionContext, ExecutionResult
 
@@ -154,6 +156,85 @@ class RulesExecutor:
     name: str = "executor_v1"
     version: str = "0.1"
 
+    def _execute_supports(
+        self,
+        constraint: EdgeConstraint,
+        graph: SceneGraphBundle,
+        ctx: ExecutionContext,
+    ) -> ExecutionResult:
+        """SUPPORTS(SurfaceRef(type), ?x) -> entities resting on a surface
+        of that type, derived from support_facts (no stored SUPPORTS edges).
+        Evidence cites the originating ON_SURFACE edges. Coverage/empty-
+        unknown uses the ON_SURFACE recall, since the derived view depends
+        on stored ON_SURFACE edges."""
+        if not (
+            isinstance(constraint.source, SurfaceRef)
+            and isinstance(constraint.target, Variable)
+        ):
+            return ExecutionResult(
+                outcome="execution_error", bindings=[], evidence=[],
+                coverage_floor=0.0,
+                notes=(
+                    "SUPPORTS query requires SurfaceRef source and Variable "
+                    f"target; got source={type(constraint.source).__name__}, "
+                    f"target={type(constraint.target).__name__}"
+                ),
+            )
+        var = constraint.target
+        surface_type = constraint.source.surface_type
+        # ON_SURFACE is the stored relation the derived view depends on.
+        floor = _coverage_floor_for_query(ctx, "ON_SURFACE")
+
+        surface_uids = {
+            s.uid for s in graph.structural_surfaces
+            if s.surface_type == surface_type
+        }
+        if not surface_uids:
+            outcome = _empty_or_unknown(ctx, "ON_SURFACE", floor)
+            return ExecutionResult(
+                outcome=outcome, bindings=[], evidence=[],
+                coverage_floor=floor,
+                notes=f"no {surface_type!r} surface in graph",
+            )
+
+        try:
+            facts = support_facts(graph)
+        except ValueError as e:
+            # Strict view raised (materialized SUPPORTS or malformed
+            # ON_SURFACE) — surface as an execution error, not a wrong answer.
+            return ExecutionResult(
+                outcome="execution_error", bindings=[], evidence=[],
+                coverage_floor=floor, notes=str(e),
+            )
+
+        edge_by_id = {e.edge_id: e for e in graph.edges}
+        bindings: list[dict[str, GraphRef]] = []
+        evidence: list[Edge] = []
+        seen: set[str] = set()
+        for fact in facts:
+            if fact.supporter.uid not in surface_uids:
+                continue
+            if fact.supported.uid in seen:
+                continue
+            seen.add(fact.supported.uid)
+            bindings.append({var.name: fact.supported})
+            edge = edge_by_id.get(fact.derived_from_edge_id)
+            if edge is not None:
+                evidence.append(edge)
+
+        if not bindings:
+            outcome = _empty_or_unknown(ctx, "ON_SURFACE", floor)
+            return ExecutionResult(
+                outcome=outcome, bindings=[], evidence=[],
+                coverage_floor=floor,
+                notes=f"nothing rests on a {surface_type!r} surface",
+            )
+        return ExecutionResult(
+            outcome="bindings", bindings=bindings, evidence=evidence,
+            coverage_floor=floor,
+            notes=f"matched {len(bindings)} binding(s) via support view",
+        )
+
     def execute(
         self,
         ast: QueryAST,
@@ -174,6 +255,14 @@ class RulesExecutor:
             )
 
         constraint: EdgeConstraint = ast.where[0]
+
+        # P4.04: SUPPORTS is a DERIVED view, not stored. Special-case it
+        # BEFORE the generic stored-edge path (which would otherwise try to
+        # satisfy SUPPORTS via stored ON_TOP_OF edges through the inverse
+        # map). Routes to support_facts(graph) over ON_SURFACE edges.
+        if constraint.type == "SUPPORTS":
+            return self._execute_supports(constraint, graph, ctx)
+
         try:
             var, anchor_ref, role = _operand_role(constraint)
         except ValueError as e:

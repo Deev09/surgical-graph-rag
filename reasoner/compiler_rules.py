@@ -22,7 +22,7 @@ from typing import Pattern
 
 from graph.schema import EdgeType, SceneGraphBundle
 from reasoner.ast import (
-    Aggregation, EdgeConstraint, EntityRef, QueryAST, Variable,
+    Aggregation, EdgeConstraint, EntityRef, QueryAST, SurfaceRef, Variable,
 )
 from reasoner.base import CompileResult
 
@@ -45,13 +45,77 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip().lower())
 
 
+# P4.04 — support queries. "on the X" / "against the X". Only the floor is
+# answerable in Phase 4 (Design B: ON_SURFACE on up-facing surfaces; only
+# the floor has real polygon geometry). Other support surfaces are deferred
+# (out_of_schema with a "deferred:" note), NOT parser_failure and NOT empty.
+_ON_PATTERN = re.compile(r"what(?:'s| is) on (?:the )?(.+?)\??$")
+_AGAINST_PATTERN = re.compile(r"what(?:'s| is) against (?:the )?(.+?)\??$")
+
+_DEFERRED_ON_SURFACE = {
+    "table": "deferred: needs EntitySurface/tabletop geometry (not in P4)",
+    "tabletop": "deferred: needs EntitySurface/tabletop geometry (not in P4)",
+    "desk": "deferred: needs EntitySurface/tabletop geometry (not in P4)",
+    "chair": "deferred: needs EntitySurface/chair-seat geometry (not in P4)",
+    "seat": "deferred: needs EntitySurface/chair-seat geometry (not in P4)",
+    "stool": "deferred: needs EntitySurface/seat geometry (not in P4)",
+}
+_DEFERRED_ON_GENERIC = (
+    "deferred: support surfaces beyond the floor need EntitySurface geometry "
+    "(not in P4)"
+)
+_DEFERRED_AGAINST = "deferred: wall attachment/contact relation not in P4"
+
+
 class RulesCompiler:
     """Implements the QueryCompiler Protocol."""
     name: str = "rules_v1"
     version: str = "0.1"
 
+    def _compile_surface_query(self, q: str) -> CompileResult | None:
+        """P4.04 support queries. Returns a CompileResult for "on the X" /
+        "against the X", or None if neither pattern matches (fall through to
+        the generic single-hop patterns)."""
+        m = _ON_PATTERN.match(q)
+        if m:
+            noun = m.group(1).rstrip(".?!").strip()
+            if noun == "floor":
+                bind = Variable(name="x")
+                ast: QueryAST = Aggregation(
+                    op="ENUMERATE",
+                    bind=bind,
+                    where=[
+                        EdgeConstraint(
+                            source=SurfaceRef(surface_type="floor"),
+                            type="SUPPORTS",
+                            target=bind,
+                        ),
+                    ],
+                )
+                return CompileResult(
+                    ast=ast,
+                    outcome="compiled",
+                    compiler_name=self.name,
+                    notes="matched=on_floor_pattern edge_type=SUPPORTS surface=floor",
+                )
+            note = _DEFERRED_ON_SURFACE.get(noun, _DEFERRED_ON_GENERIC)
+            return CompileResult(
+                ast=None, outcome="out_of_schema",
+                compiler_name=self.name, notes=note,
+            )
+        m = _AGAINST_PATTERN.match(q)
+        if m:
+            return CompileResult(
+                ast=None, outcome="out_of_schema",
+                compiler_name=self.name, notes=_DEFERRED_AGAINST,
+            )
+        return None
+
     def compile(self, question: str, scene: SceneGraphBundle) -> CompileResult:
         q = _normalize(question)
+        surface_result = self._compile_surface_query(q)
+        if surface_result is not None:
+            return surface_result
         for pattern, edge_type, note in _PATTERNS:
             m = pattern.match(q)
             if not m:

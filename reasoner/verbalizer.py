@@ -65,6 +65,19 @@ class StandardVerbalizer:
                 cited_uids=[], cited_edges=[],
             )
         if compile_result.outcome == "out_of_schema":
+            note = compile_result.notes or ""
+            if note.startswith("deferred:"):
+                reason = note[len("deferred:"):].strip()
+                # Explicit deferral — must NOT read as "nothing is there".
+                return Answer(
+                    text=(
+                        f"I can't answer that yet — {reason}. "
+                        "This isn't a claim that nothing is there."
+                    ),
+                    answered_by="verbalizer_abstain",
+                    outcome="abstain",
+                    cited_uids=[], cited_edges=[],
+                )
             return Answer(
                 text="That question isn't expressible in the current scene graph.",
                 answered_by="verbalizer_abstain",
