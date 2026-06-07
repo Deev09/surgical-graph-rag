@@ -1,0 +1,106 @@
+{
+  "artifact_kind": "phase4_exit_gate_report",
+  "artifact_stability": {
+    "method": "byte sha256 snapshot before/after; verifier writes only its own report",
+    "telemetry_untouched": true,
+    "tracked_eval_json_unchanged": true
+  },
+  "extractor_version": "0.1",
+  "gates": {
+    "G1_rest_contact_determinism": {
+      "edge_count": 11,
+      "pass": true,
+      "two_run_edge_ids_match": true,
+      "two_run_edge_keys_match": true
+    },
+    "G2_subset_of_polygon_near_surface": {
+      "near_surface_polygon_pairs": 76,
+      "on_surface_pairs": 11,
+      "pass": true,
+      "violation_count": 0,
+      "violations": []
+    },
+    "G3_clean_inverse_supports": {
+      "clean_inverse": true,
+      "materialized_supports": 0,
+      "on_surface_edges": 11,
+      "pass": true,
+      "support_facts": 11
+    },
+    "G4_no_materialized_supports": {
+      "materialized_supports": 0,
+      "pass": true
+    },
+    "G5_phase4_smoke_fixture": {
+      "failures": [],
+      "pass": true,
+      "real_f1_present": true,
+      "synthetic_cases_checked": 8
+    },
+    "G6_default_path_preserved": {
+      "default_build_on_surface_edges": 0,
+      "method": "read committed P2/P3 reports + in-memory default build",
+      "note": "P2/P3 pass is trusted from the committed reports, NOT re-derived (re-deriving would turn this gate into a hidden P2/P3 rerunner). ON_SURFACE isolation is proven by the in-memory default build.",
+      "pass": true,
+      "phase2_report_overall_pass": true,
+      "phase3_report_overall_pass": true
+    },
+    "G7_prior_artifacts_untouched": {
+      "all_unchanged": true,
+      "changed": [],
+      "pass": true,
+      "tracked_eval_json_checked": [
+        "scenes/replica_room_0/eval/evaluation_table.llm.json",
+        "scenes/replica_room_0/eval/evaluation_table.llm_first.json",
+        "scenes/replica_room_0/eval/evaluation_table.llm_strict.json",
+        "scenes/replica_room_0/eval/evaluation_table.regex.json",
+        "scenes/replica_room_0/eval/evaluation_table.v1.llm.json",
+        "scenes/replica_room_0/eval/evaluation_table.v1.llm_first.json",
+        "scenes/replica_room_0/eval/evaluation_table.v1.llm_strict.json",
+        "scenes/replica_room_0/eval/evaluation_table.v1.regex.json",
+        "scenes/replica_room_0/eval/evaluation_table.v2.llm.json",
+        "scenes/replica_room_0/eval/evaluation_table.v2.llm_first.json",
+        "scenes/replica_room_0/eval/evaluation_table.v2.llm_strict.json",
+        "scenes/replica_room_0/eval/evaluation_table.v2.regex.json",
+        "scenes/replica_room_0/eval/oracle_adapter_repro_diff.json",
+        "scenes/replica_room_0/eval/phase2_exit_gate_report.json",
+        "scenes/replica_room_0/eval/phase2_near_surface_telemetry.json",
+        "scenes/replica_room_0/eval/phase2_sparse_v2_telemetry.json",
+        "scenes/replica_room_0/eval/phase3_exit_gate_report.json",
+        "scenes/replica_room_0/eval/phase3_polygon_clip_telemetry.json",
+        "scenes/replica_room_0/eval/phase4_on_surface_telemetry.json",
+        "scenes/replica_room_0/eval/scene_eval_summary.json",
+        "scenes/replica_room_0/eval/scene_eval_summary_ab.json",
+        "scenes/replica_room_0/eval/sparse_density_report.json"
+      ]
+    },
+    "G8_threshold_ordering_enforced": {
+      "bad_config": "OnSurfaceConfig(contact_threshold_m=0.10)",
+      "pass": true,
+      "raised_value_error": true,
+      "reason": "hypot(0.10, 0.0) > near_surface_threshold_m 0.05"
+    },
+    "schema_v3_roundtrip_and_v2_rejection": {
+      "bundle_had_on_surface_edge": true,
+      "pass": true,
+      "v2_manifest_strict_rejected": true,
+      "v3_on_surface_roundtrip_ok": true
+    }
+  },
+  "overall_blocking_pass": true,
+  "phase": "P4.06",
+  "policy_decisions_recorded": [
+    "Verifier only: no prior-phase gate/telemetry main() is invoked; Phase 2/3 pass is read from committed reports, not re-derived.",
+    "ON_SURFACE remains isolated \u2014 absent from any default builder run (G6 in-memory default build has 0 ON_SURFACE edges).",
+    "SUPPORTS is derived-only; zero materialized SUPPORTS edges (G4).",
+    "Phase 4 ships floor support only; table/chair/wall remain deferred (not empty) pending EntitySurface / wall-attachment geometry."
+  ],
+  "scene_id": "replica_room_0",
+  "schema_version": 1,
+  "summary": {
+    "materialized_supports": 0,
+    "on_surface_edges": 11,
+    "subset_violations": 0,
+    "support_facts": 11
+  }
+}
