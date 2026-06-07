@@ -451,6 +451,54 @@ def test_graph_schema_v2_rejected_under_v3() -> None:
         raise AssertionError("expected SchemaVersionError for v2 under strict v3")
 
 
+def test_contacts_surface_edge_roundtrips_under_v4() -> None:
+    """P5.02: CONTACTS_SURFACE is accepted by graph serde (EdgeType addition).
+    A bundle carrying a CONTACTS_SURFACE edge round-trips under schema v4."""
+    from dataclasses import replace
+    base = make_scene_graph_bundle()
+    cs_edge = Edge(
+        edge_id="e_contacts_surface_1",
+        source=GraphRef(kind="entity", uid="obj_1"),
+        type="CONTACTS_SURFACE",
+        target=GraphRef(kind="surface", uid="surf_floor"),
+        frame="world",
+        weight=1.0,
+        confidence=1.0,
+        extractor="contacts_surface",
+        extractor_version="0.1",
+        evidence={"wall_gap_m": 0.01, "contact": True, "up": [0.0, 0.0, 1.0],
+                  "polygon_clip_required": True},
+    )
+    original = replace(base, edges=list(base.edges) + [cs_edge])
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        loaded = load_scene_graph_bundle(out)
+    _assert_equal(original, loaded, "SceneGraphBundle(CONTACTS_SURFACE)")
+    if not any(e.type == "CONTACTS_SURFACE" for e in loaded.edges):
+        raise AssertionError("CONTACTS_SURFACE edge lost in round-trip")
+
+
+def test_graph_schema_v3_rejected_under_v4() -> None:
+    """P5.02 / D4: strict v4 loader rejects a manually-downgraded v3 graph
+    manifest. No migration path; old v3 graph bundles are not silently
+    coerced. (The earlier v2-rejection test still holds: any non-current
+    version is rejected.)"""
+    original = make_scene_graph_bundle()
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        m = out / "manifest.json"
+        payload = json.loads(m.read_text())
+        payload["schema_version"] = 3  # the pre-CONTACTS_SURFACE graph serde version
+        m.write_text(json.dumps(payload))
+        try:
+            load_scene_graph_bundle(out)
+        except SchemaVersionError:
+            return
+        raise AssertionError("expected SchemaVersionError for v3 under strict v4")
+
+
 def test_embedding_npy_sidecar_written_and_typed() -> None:
     original = make_entity_artifacts()
     with tempfile.TemporaryDirectory() as td:
@@ -550,6 +598,8 @@ TESTS = [
     test_schema_version_mismatch_raises_graph,
     test_on_surface_edge_roundtrips_under_v3,
     test_graph_schema_v2_rejected_under_v3,
+    test_contacts_surface_edge_roundtrips_under_v4,
+    test_graph_schema_v3_rejected_under_v4,
     test_embedding_npy_sidecar_written_and_typed,
     test_array_aware_equality_dtype_sensitive,
     test_array_aware_equality_shape_sensitive,
