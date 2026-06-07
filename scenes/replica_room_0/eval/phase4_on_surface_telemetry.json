@@ -1,0 +1,62 @@
+{
+  "artifact_kind": "on_surface_coverage_telemetry",
+  "coverage_summary": {
+    "by_surface_type": {
+      "ceiling": {
+        "on_surface_edges": 0,
+        "support_capable": false,
+        "unique_entities": 0
+      },
+      "floor": {
+        "on_surface_edges": 11,
+        "support_capable": true,
+        "unique_entities": 11
+      },
+      "wall": {
+        "on_surface_edges": 0,
+        "support_capable": false,
+        "unique_entities": 0
+      }
+    },
+    "materialized_supports_edges_total": 0,
+    "on_surface_edges_total": 11,
+    "support_facts_total": 11
+  },
+  "deferred_semantics": {
+    "deferred_not_zero": true,
+    "note": "A 'deferred' QA item is NOT an empty result. Table/chair/wall support is unanswerable in P4 because the geometry (EntitySurface / wall-attachment relation) does not exist yet, not because nothing is there."
+  },
+  "determinism": {
+    "timestamp_free": true
+  },
+  "inputs": {
+    "config": {
+      "contact_threshold_m": 0.02,
+      "footprint_tolerance_m": 0.0,
+      "include_synth_fallback": false,
+      "max_tilt_deg": 30.0,
+      "near_surface_threshold_m": 0.05,
+      "penetration_tolerance_m": 0.03
+    },
+    "entity_bundle_hash": "ent_oracle_replica_31f02c87ca29e684",
+    "extractor": "on_surface",
+    "extractor_version": "0.1",
+    "graph_bundle_hash": "graph_70ec7c958e5745d9"
+  },
+  "interpretation_limits": [
+    "floor support only (Replica room_0 has no furniture-top geometry)",
+    "deferred does not mean empty",
+    "wall/ceiling on_surface_edges = 0 is by-design not-support-capable under Design B, not a measured absence",
+    "support_facts_total equals on_surface_edges_total by construction (clean inverse); this is not independent corroboration",
+    "not a v1 benchmark improvement claim"
+  ],
+  "phase": "P4.05",
+  "qa_readiness": {
+    "what_is_against_the_wall": "deferred_needs_wall_attachment_relation",
+    "what_is_on_the_chair": "deferred_needs_entity_surface",
+    "what_is_on_the_floor": "answerable",
+    "what_is_on_the_table": "deferred_needs_entity_surface"
+  },
+  "scene_id": "replica_room_0",
+  "schema_version": 1
+}
