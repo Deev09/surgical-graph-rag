@@ -1,0 +1,96 @@
+{
+  "artifact_kind": "phase5_exit_gate_report",
+  "artifact_stability": {
+    "method": "byte sha256 snapshot before/after; verifier writes only its own report",
+    "p5_04_eval_untouched": true,
+    "tracked_eval_json_unchanged": true
+  },
+  "extractor_version": "0.1",
+  "gates": {
+    "G1_wall_contact_determinism": {
+      "edge_count": 1,
+      "pass": true,
+      "two_run_edge_ids_match": true,
+      "two_run_edge_keys_match": true
+    },
+    "G2_subset_of_polygon_near_surface": {
+      "contacts_surface_pairs": 1,
+      "near_surface_polygon_pairs": 76,
+      "pass": true,
+      "violation_count": 0,
+      "violations": []
+    },
+    "G3_wall_contact_smoke_fixture": {
+      "failures": [],
+      "pass": true,
+      "real_w1_present": true,
+      "real_wn_negatives_excluded": true,
+      "synthetic_cases_checked": 6
+    },
+    "G4_mixed_qa_scorecard_matches_committed": {
+      "matches_committed_artifact": true,
+      "mismatches": [],
+      "pass": true,
+      "rederived_all_expected_outcomes_met": true,
+      "rederived_category_counts": {
+        "correct_defer": 2,
+        "true_answer": 4
+      },
+      "rederived_false_answer_count": 0
+    },
+    "G5_floor_qa_regression": {
+      "outcome": "bindings",
+      "pass": true,
+      "stool_obj_39_present": true
+    },
+    "G6_default_path_preserved": {
+      "default_build_contacts_surface_edges": 0,
+      "default_build_on_surface_edges": 0,
+      "note": "P2/P3/P4 pass trusted from committed reports, not re-derived.",
+      "pass": true,
+      "phase2_report_overall_pass": true,
+      "phase3_report_overall_pass": true,
+      "phase4_report_overall_pass": true
+    },
+    "G7_prior_artifacts_untouched": {
+      "all_unchanged": true,
+      "changed": [],
+      "pass": true,
+      "phase5_router_qa_eval_in_snapshot_scope": true
+    },
+    "G8_threshold_ordering_enforced": {
+      "bad_config": "ContactsSurfaceConfig(contact_threshold_m=0.5)",
+      "pass": true,
+      "raised_value_error": true
+    },
+    "schema_v4_roundtrip_and_v3_rejection": {
+      "bundle_had_contacts_surface_edge": true,
+      "pass": true,
+      "v3_manifest_strict_rejected": true,
+      "v4_contacts_surface_roundtrip_ok": true
+    }
+  },
+  "overall_blocking_pass": true,
+  "phase": "P5.05",
+  "policy_decisions_recorded": [
+    "Verifier only: no prior-phase gate/tool main() invoked; the P5.04 QA eval artifact is re-derived in memory and COMPARED, never rewritten.",
+    "Wall contact (CONTACTS_SURFACE) is isolated -- absent from any default builder run (G6: 0 ON_SURFACE and 0 CONTACTS_SURFACE).",
+    "ATTACHED_TO is not emitted; 'attached to the wall?' defers (no fabricated attachment).",
+    "The QA eval is a reasoner-native track, NOT comparable to the v1 benchmark."
+  ],
+  "scene_id": "replica_room_0",
+  "schema_version": 1,
+  "summary": {
+    "contacts_surface_edges": 1,
+    "qa_scorecard": {
+      "all_expected_outcomes_met": true,
+      "category_counts": {
+        "correct_defer": 2,
+        "true_answer": 4
+      },
+      "false_answer_count": 0,
+      "matches_committed_artifact": true
+    },
+    "subset_violations": 0
+  }
+}
