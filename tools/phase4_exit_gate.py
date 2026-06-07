@@ -365,8 +365,13 @@ def main() -> int:
         "G4_no_materialized_supports": (g4_pass, {"materialized_supports": g34_detail["materialized_supports"]}),
         "G5_phase4_smoke_fixture": (g5_pass, g5_detail),
         "G6_default_path_preserved": (g6_pass, g6_detail),
+        # G7 records ONLY the claim ("no tracked eval artifact changed while
+        # the gate ran"), not the dynamic git ls-files universe and not its
+        # count -- both are repo-state-dependent and would make every later-
+        # phase eval JSON addition look like old-report drift (a cross-phase
+        # stability bug). We keep snapshotting the dynamic set internally; we
+        # just don't persist anything that churns when artifacts are added.
         "G7_prior_artifacts_untouched": (g7_pass, {
-            "tracked_eval_json_checked": [str(p.relative_to(REPO_ROOT)) for p in tracked],
             "changed": changed,
             "all_unchanged": g7_pass,
         }),

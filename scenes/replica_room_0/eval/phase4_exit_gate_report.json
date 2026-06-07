@@ -48,31 +48,7 @@
     "G7_prior_artifacts_untouched": {
       "all_unchanged": true,
       "changed": [],
-      "pass": true,
-      "tracked_eval_json_checked": [
-        "scenes/replica_room_0/eval/evaluation_table.llm.json",
-        "scenes/replica_room_0/eval/evaluation_table.llm_first.json",
-        "scenes/replica_room_0/eval/evaluation_table.llm_strict.json",
-        "scenes/replica_room_0/eval/evaluation_table.regex.json",
-        "scenes/replica_room_0/eval/evaluation_table.v1.llm.json",
-        "scenes/replica_room_0/eval/evaluation_table.v1.llm_first.json",
-        "scenes/replica_room_0/eval/evaluation_table.v1.llm_strict.json",
-        "scenes/replica_room_0/eval/evaluation_table.v1.regex.json",
-        "scenes/replica_room_0/eval/evaluation_table.v2.llm.json",
-        "scenes/replica_room_0/eval/evaluation_table.v2.llm_first.json",
-        "scenes/replica_room_0/eval/evaluation_table.v2.llm_strict.json",
-        "scenes/replica_room_0/eval/evaluation_table.v2.regex.json",
-        "scenes/replica_room_0/eval/oracle_adapter_repro_diff.json",
-        "scenes/replica_room_0/eval/phase2_exit_gate_report.json",
-        "scenes/replica_room_0/eval/phase2_near_surface_telemetry.json",
-        "scenes/replica_room_0/eval/phase2_sparse_v2_telemetry.json",
-        "scenes/replica_room_0/eval/phase3_exit_gate_report.json",
-        "scenes/replica_room_0/eval/phase3_polygon_clip_telemetry.json",
-        "scenes/replica_room_0/eval/phase4_on_surface_telemetry.json",
-        "scenes/replica_room_0/eval/scene_eval_summary.json",
-        "scenes/replica_room_0/eval/scene_eval_summary_ab.json",
-        "scenes/replica_room_0/eval/sparse_density_report.json"
-      ]
+      "pass": true
     },
     "G8_threshold_ordering_enforced": {
       "bad_config": "OnSurfaceConfig(contact_threshold_m=0.10)",

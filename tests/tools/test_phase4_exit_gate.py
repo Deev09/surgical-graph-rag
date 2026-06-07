@@ -130,12 +130,18 @@ def test_g6_default_path_preserved_and_isolated() -> None:
 def test_g7_prior_artifacts_untouched() -> None:
     p = _load()
     g7 = p["gates"]["G7_prior_artifacts_untouched"]
+    # G7 records the claim (all_unchanged / changed), NOT the dynamic file
+    # list -- so the report stays stable as later phases add tracked eval
+    # artifacts. The own-report exclusion is enforced inside the gate, not
+    # asserted from a stored list.
     if not g7["all_unchanged"] or g7["changed"]:
         raise AssertionError(f"G7: tracked eval artifacts changed: {g7['changed']}")
-    # the gate's own report must be excluded from the snapshot set
-    checked = g7["tracked_eval_json_checked"]
-    if any("phase4_exit_gate_report.json" in c for c in checked):
-        raise AssertionError("G7 must exclude its own report from the snapshot")
+    for churning in ("tracked_eval_json_checked", "tracked_eval_json_count"):
+        if churning in g7:
+            raise AssertionError(
+                f"G7 must NOT persist {churning} -- it is repo-state-dependent "
+                "and churns when later phases add tracked eval artifacts"
+            )
     if not p["artifact_stability"]["telemetry_untouched"]:
         raise AssertionError("artifact_stability.telemetry_untouched must be True")
 
