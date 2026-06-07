@@ -1,0 +1,242 @@
+{
+  "artifact_kind": "router_qa_eval",
+  "determinism": {
+    "timestamp_free": true
+  },
+  "eval": {
+    "aggregate": {
+      "all_expected_outcomes_met": true,
+      "category_counts": {
+        "correct_defer": 2,
+        "true_answer": 4
+      },
+      "false_answer_count": 0,
+      "miss_count": 0,
+      "total_questions": 6,
+      "unexpected_count": 0
+    },
+    "deferral_detection": "compile_metadata",
+    "per_question": [
+      {
+        "actual_outcome": "bindings",
+        "category": "true_answer",
+        "cited_edges": [
+          "e_1a5a42226e09322e",
+          "e_24bf1c7b835f3fdd",
+          "e_2ca0dccd45218b46",
+          "e_4c2a817388d7dfcc",
+          "e_68ee1a9c9e30123a",
+          "e_7935e3c6450e496d",
+          "e_88d8282614939369",
+          "e_99b4933a2459b8aa",
+          "e_a3d3434a03c13634",
+          "e_a7ff3ede5ec57e89",
+          "e_f96b02f52b8364ab"
+        ],
+        "cited_uids": [
+          "obj_11",
+          "obj_27",
+          "obj_36",
+          "obj_39",
+          "obj_41",
+          "obj_46",
+          "obj_7",
+          "obj_73",
+          "obj_74",
+          "obj_75",
+          "obj_84"
+        ],
+        "deferred": false,
+        "expected_outcome": "answer",
+        "question": "what is on the floor?",
+        "question_id": "Q1"
+      },
+      {
+        "actual_outcome": "bindings",
+        "category": "true_answer",
+        "cited_edges": [
+          "e_8bcfec2b9ba5ee2d"
+        ],
+        "cited_uids": [
+          "obj_6"
+        ],
+        "deferred": false,
+        "expected_outcome": "answer",
+        "question": "what is against the wall?",
+        "question_id": "Q2"
+      },
+      {
+        "actual_outcome": "abstain",
+        "category": "correct_defer",
+        "cited_edges": [],
+        "cited_uids": [],
+        "deferred": true,
+        "expected_outcome": "defer",
+        "question": "what is on the table?",
+        "question_id": "Q3"
+      },
+      {
+        "actual_outcome": "bindings",
+        "category": "true_answer",
+        "cited_edges": [
+          "e_0947cf65ce91e19c"
+        ],
+        "cited_uids": [
+          "obj_39"
+        ],
+        "deferred": false,
+        "expected_outcome": "answer",
+        "question": "what is left of the blanket?",
+        "question_id": "Q4"
+      },
+      {
+        "actual_outcome": "bindings",
+        "category": "true_answer",
+        "cited_edges": [
+          "e_04e25db46087fc52",
+          "e_09771272df206fdb",
+          "e_09968da03f910d9b",
+          "e_20f7757498c7a915",
+          "e_2b0f38f8e7f37c9d",
+          "e_2fe3201b32ba74d6",
+          "e_3240e8737d19adcb",
+          "e_387e7eaa1dc17f52",
+          "e_40034e312933953c",
+          "e_41758f3129e6b607",
+          "e_4492b5ad13283310",
+          "e_472feb1d4e6296bd",
+          "e_5135b3d419609b43",
+          "e_5a25f17849a6bd10",
+          "e_657acf4a5b43d608",
+          "e_74647a932757d4df",
+          "e_7b7885045cab2966",
+          "e_7c4210b8eef1c416",
+          "e_7d27a7bf311b8de9",
+          "e_81f051054bd73a02",
+          "e_8b57ef4f57e0e67d",
+          "e_91a0f7eb096361a3",
+          "e_a1fcb086f4302317",
+          "e_a2fdb98d2a95cd47",
+          "e_a3a6d23f5c9c511b",
+          "e_a4d19d8520173613",
+          "e_b5a477ebf1586538",
+          "e_b7eaa56bbc4e2689",
+          "e_bdc4b828911b7733",
+          "e_bfe07ff4a1f8e300",
+          "e_c0a174fbdd672cfb",
+          "e_c2b9ed3fd2fce597",
+          "e_cd5dc6b5afa837c4",
+          "e_d3e876adc3a8f4ab",
+          "e_d8864de7eca80e05",
+          "e_dbe5d33c9fc1a419",
+          "e_dd0841d7eb6683b8",
+          "e_ec7e0f7704e2a4f2",
+          "e_f60a187bfdc51953",
+          "e_ffe19444d09ef06c"
+        ],
+        "cited_uids": [
+          "obj_15",
+          "obj_16",
+          "obj_17",
+          "obj_19",
+          "obj_2",
+          "obj_21",
+          "obj_22",
+          "obj_26",
+          "obj_28",
+          "obj_29",
+          "obj_3",
+          "obj_30",
+          "obj_31",
+          "obj_34",
+          "obj_36",
+          "obj_38",
+          "obj_4",
+          "obj_42",
+          "obj_44",
+          "obj_45",
+          "obj_46",
+          "obj_50",
+          "obj_56",
+          "obj_58",
+          "obj_6",
+          "obj_61",
+          "obj_62",
+          "obj_63",
+          "obj_65",
+          "obj_7",
+          "obj_77",
+          "obj_79",
+          "obj_80",
+          "obj_82",
+          "obj_84",
+          "obj_85",
+          "obj_87",
+          "obj_9",
+          "obj_91",
+          "obj_93"
+        ],
+        "deferred": false,
+        "expected_outcome": "answer",
+        "question": "what is near the wall?",
+        "question_id": "Q5"
+      },
+      {
+        "actual_outcome": "abstain",
+        "category": "correct_defer",
+        "cited_edges": [],
+        "cited_uids": [],
+        "deferred": true,
+        "expected_outcome": "defer",
+        "question": "what is attached to the wall?",
+        "question_id": "Q6"
+      }
+    ],
+    "question_set": "eval/questions/phase5_mixed_qa.json"
+  },
+  "graph": {
+    "bundle_hash": "graph_014bb258eeb8c290",
+    "edge_count": 757,
+    "extractor_configs": [
+      {
+        "name": "directional",
+        "params": {
+          "mode": "sparse"
+        },
+        "version": "0.1"
+      },
+      {
+        "name": "near_surface",
+        "params": {
+          "use_polygon_clip": true
+        },
+        "version": "0.2-near_surface_polygon_clipped"
+      },
+      {
+        "name": "on_surface",
+        "params": {
+          "contact_threshold_m": 0.02,
+          "penetration_tolerance_m": 0.03
+        },
+        "version": "0.1"
+      },
+      {
+        "name": "contacts_surface",
+        "params": {
+          "contact_threshold_m": 0.02,
+          "penetration_tolerance_m": 0.02
+        },
+        "version": "0.1"
+      }
+    ],
+    "note": "explicit mixed eval-candidate graph; NOT a default builder path"
+  },
+  "interpretation_limits": [
+    "NOT comparable to the v1 benchmark; this is a separate reasoner-native eval track (scores Router answers/deferrals, not top-k retrieval).",
+    "deferral is detected via compile metadata, not Answer self-description (Answer.outcome 'abstain' is overloaded across deferred / generic out_of_schema / execution_error).",
+    "single scene (Replica room_0); not generalization evidence."
+  ],
+  "phase": "P5.04",
+  "scene_id": "replica_room_0",
+  "schema_version": 1
+}
