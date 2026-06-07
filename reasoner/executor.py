@@ -151,10 +151,86 @@ def _operand_role(constraint: EdgeConstraint) -> tuple[Variable, EntityRef, str]
     )
 
 
+_SURFACE_RELATION_TYPES: frozenset[EdgeType] = frozenset(
+    {"NEAR_SURFACE", "CONTACTS_SURFACE"}
+)
+
+
 class RulesExecutor:
     """Implements the ASTExecutor Protocol."""
     name: str = "executor_v1"
     version: str = "0.1"
+
+    def _execute_surface_relation(
+        self,
+        constraint: EdgeConstraint,
+        graph: SceneGraphBundle,
+        ctx: ExecutionContext,
+    ) -> ExecutionResult:
+        """RELATION(?x, SurfaceRef(type)) over a STORED entity->surface
+        relation (NEAR_SURFACE / CONTACTS_SURFACE). Resolves the SurfaceRef
+        against structural_surfaces by type, scans stored edges of
+        constraint.type, binds the entity source, and cites the stored edge.
+        No inverse/canonical lookup -- these relations are stored one-
+        direction only. Coverage/empty-unknown use constraint.type."""
+        if not (
+            isinstance(constraint.source, Variable)
+            and isinstance(constraint.target, SurfaceRef)
+        ):
+            return ExecutionResult(
+                outcome="execution_error", bindings=[], evidence=[],
+                coverage_floor=0.0,
+                notes=(
+                    f"surface relation {constraint.type} requires a Variable "
+                    f"source and a SurfaceRef target; got source="
+                    f"{type(constraint.source).__name__}, target="
+                    f"{type(constraint.target).__name__}"
+                ),
+            )
+        var = constraint.source
+        surface_type = constraint.target.surface_type
+        floor = _coverage_floor_for_query(ctx, constraint.type)
+
+        surface_uids = {
+            s.uid for s in graph.structural_surfaces
+            if s.surface_type == surface_type
+        }
+        if not surface_uids:
+            outcome = _empty_or_unknown(ctx, constraint.type, floor)
+            return ExecutionResult(
+                outcome=outcome, bindings=[], evidence=[],
+                coverage_floor=floor,
+                notes=f"no {surface_type!r} surface in graph",
+            )
+
+        bindings: list[dict[str, GraphRef]] = []
+        evidence: list[Edge] = []
+        seen: set[str] = set()
+        for edge in graph.edges:
+            if edge.type != constraint.type:
+                continue
+            if edge.source.kind != "entity" or edge.target.kind != "surface":
+                continue
+            if edge.target.uid not in surface_uids:
+                continue
+            if edge.source.uid in seen:
+                continue
+            seen.add(edge.source.uid)
+            bindings.append({var.name: edge.source})
+            evidence.append(edge)
+
+        if not bindings:
+            outcome = _empty_or_unknown(ctx, constraint.type, floor)
+            return ExecutionResult(
+                outcome=outcome, bindings=[], evidence=[],
+                coverage_floor=floor,
+                notes=f"no {constraint.type} edges touch a {surface_type!r} surface",
+            )
+        return ExecutionResult(
+            outcome="bindings", bindings=bindings, evidence=evidence,
+            coverage_floor=floor,
+            notes=f"matched {len(bindings)} binding(s) via stored {constraint.type}",
+        )
 
     def _execute_supports(
         self,
@@ -262,6 +338,13 @@ class RulesExecutor:
         # map). Routes to support_facts(graph) over ON_SURFACE edges.
         if constraint.type == "SUPPORTS":
             return self._execute_supports(constraint, graph, ctx)
+
+        # P5.03: SurfaceRef-anchored stored entity->surface relations
+        # (NEAR_SURFACE, CONTACTS_SURFACE). One parameterized branch; the
+        # relation is constraint.type. No inverse/canonical lookup (these are
+        # stored one-direction only).
+        if constraint.type in _SURFACE_RELATION_TYPES:
+            return self._execute_surface_relation(constraint, graph, ctx)
 
         try:
             var, anchor_ref, role = _operand_role(constraint)

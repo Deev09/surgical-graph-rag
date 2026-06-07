@@ -222,14 +222,27 @@ def test_chair_query_deferred() -> None:
         raise AssertionError("chair deferral must abstain with no citations")
 
 
-def test_wall_query_deferred() -> None:
-    cr, ans = _deferred_answer("what is against the wall?")
-    if cr.outcome != "out_of_schema" or not cr.notes.startswith("deferred:"):
-        raise AssertionError(f"wall must defer; got {cr.outcome} ({cr.notes})")
-    if "wall" not in cr.notes:
-        raise AssertionError(f"wall deferral note wrong: {cr.notes}")
-    if "can't answer that yet" not in ans.text:
-        raise AssertionError(f"wall deferred text must be explicit; got {ans.text!r}")
+def test_wall_query_no_longer_defers_in_p5() -> None:
+    """BEHAVIOR CHANGE (P4 -> P5): "what is against the wall?" used to defer
+    (wall contact not in P4). P5.03 makes it answerable -- it now compiles to
+    CONTACTS_SURFACE(?x, SurfaceRef("wall")). On this floor-only synthetic
+    scene there is no wall surface, so it executes to empty/unknown (not a
+    deferral, not bindings). The deferred-surface coverage now lives in
+    tests/reasoner/test_wall_contact_qa.py."""
+    scene = _floor_scene_with_two_on_floor()
+    cr = RulesCompiler().compile("what is against the wall?", scene)
+    if cr.outcome != "compiled":
+        raise AssertionError(
+            f"against-the-wall must compile in P5 (no longer deferred); got {cr.outcome}"
+        )
+    c = cr.ast.where[0]
+    if c.type != "CONTACTS_SURFACE":
+        raise AssertionError(f"expected CONTACTS_SURFACE; got {c.type}")
+    er = RulesExecutor().execute(cr.ast, scene, _oracle_ctx())
+    if er.outcome not in ("empty", "unknown") or er.bindings:
+        raise AssertionError(
+            f"wall-less scene must yield empty/unknown; got {er.outcome}"
+        )
 
 
 def test_deferred_is_not_parser_failure() -> None:
@@ -291,7 +304,7 @@ TESTS = [
     test_isolation_no_on_surface_edges_yields_empty_not_bindings,
     test_table_query_deferred,
     test_chair_query_deferred,
-    test_wall_query_deferred,
+    test_wall_query_no_longer_defers_in_p5,
     test_deferred_is_not_parser_failure,
     test_real_replica_floor_answer_includes_stool,
 ]

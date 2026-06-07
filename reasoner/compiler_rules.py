@@ -45,12 +45,16 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip().lower())
 
 
-# P4.04 — support queries. "on the X" / "against the X". Only the floor is
-# answerable in Phase 4 (Design B: ON_SURFACE on up-facing surfaces; only
-# the floor has real polygon geometry). Other support surfaces are deferred
-# (out_of_schema with a "deferred:" note), NOT parser_failure and NOT empty.
+# P4.04 — "on the X" support queries (floor answerable via SUPPORTS; others
+# deferred). P5.03 — "against the wall" -> CONTACTS_SURFACE, "near the wall"
+# -> NEAR_SURFACE (both SurfaceRef-anchored stored relations), and "attached
+# to the X" -> deferred (ATTACHED_TO not in P5; attachment never routes
+# through contact). Deferred = out_of_schema with a "deferred:" note, NOT
+# parser_failure and NOT empty.
 _ON_PATTERN = re.compile(r"what(?:'s| is) on (?:the )?(.+?)\??$")
 _AGAINST_PATTERN = re.compile(r"what(?:'s| is) against (?:the )?(.+?)\??$")
+_NEAR_PATTERN = re.compile(r"what(?:'s| is) near (?:the )?(.+?)\??$")
+_ATTACHED_PATTERN = re.compile(r"what(?:'s| is) attached to (?:the )?(.+?)\??$")
 
 _DEFERRED_ON_SURFACE = {
     "table": "deferred: needs EntitySurface/tabletop geometry (not in P4)",
@@ -64,7 +68,14 @@ _DEFERRED_ON_GENERIC = (
     "deferred: support surfaces beyond the floor need EntitySurface geometry "
     "(not in P4)"
 )
-_DEFERRED_AGAINST = "deferred: wall attachment/contact relation not in P4"
+_DEFERRED_AGAINST = (
+    "deferred: wall contact only supports 'against the wall' in P5; this "
+    "surface is not a wall"
+)
+_DEFERRED_ATTACHED = (
+    "deferred: ATTACHED_TO is not in P5 ('against' != 'attached'); attachment "
+    "needs more than wall contact"
+)
 
 
 class RulesCompiler:
@@ -103,13 +114,59 @@ class RulesCompiler:
                 ast=None, outcome="out_of_schema",
                 compiler_name=self.name, notes=note,
             )
+        m = _ATTACHED_PATTERN.match(q)
+        if m:
+            # "attached to the X" -> always deferred; never routes through
+            # contact (D2: 'against' != 'attached').
+            return CompileResult(
+                ast=None, outcome="out_of_schema",
+                compiler_name=self.name, notes=_DEFERRED_ATTACHED,
+            )
         m = _AGAINST_PATTERN.match(q)
         if m:
+            noun = m.group(1).rstrip(".?!").strip()
+            if noun == "wall":
+                return self._surface_relation_result(
+                    "CONTACTS_SURFACE", "wall", "against_wall_pattern",
+                )
             return CompileResult(
                 ast=None, outcome="out_of_schema",
                 compiler_name=self.name, notes=_DEFERRED_AGAINST,
             )
+        m = _NEAR_PATTERN.match(q)
+        if m:
+            noun = m.group(1).rstrip(".?!").strip()
+            if noun == "wall":
+                return self._surface_relation_result(
+                    "NEAR_SURFACE", "wall", "near_wall_pattern",
+                )
+            # "near the <entity>" falls through to the generic NEAR pattern.
+            return None
         return None
+
+    def _surface_relation_result(
+        self, edge_type: EdgeType, surface_type: str, note_tag: str,
+    ) -> CompileResult:
+        """Compile RELATION(?x, SurfaceRef(surface_type)) for a stored
+        entity->surface relation. The relation is chosen here (compiler
+        pattern); the executor handles NEAR_SURFACE / CONTACTS_SURFACE through
+        one parameterized branch."""
+        bind = Variable(name="x")
+        ast: QueryAST = Aggregation(
+            op="ENUMERATE",
+            bind=bind,
+            where=[
+                EdgeConstraint(
+                    source=bind,
+                    type=edge_type,
+                    target=SurfaceRef(surface_type=surface_type),
+                ),
+            ],
+        )
+        return CompileResult(
+            ast=ast, outcome="compiled", compiler_name=self.name,
+            notes=f"matched={note_tag} edge_type={edge_type} surface={surface_type}",
+        )
 
     def compile(self, question: str, scene: SceneGraphBundle) -> CompileResult:
         q = _normalize(question)
