@@ -153,6 +153,13 @@ def _evidence_for(
     config: OnSurfaceConfig,
 ) -> dict:
     evidence = dict(result_evidence)
+    # Edge evidence is JSON-serialized into the bundle, so it must be
+    # JSON-native: rest_contact returns `up` as a tuple, which would
+    # round-trip to a list and break dump==load equality. Normalize to a
+    # list here (the edge-evidence assembly boundary) so both emitted and
+    # rejected evidence serialize faithfully.
+    if isinstance(evidence.get("up"), tuple):
+        evidence["up"] = list(evidence["up"])
     evidence["near_surface_threshold_m"] = config.near_surface_threshold_m
     evidence["surface_type"] = surface.surface_type
     evidence["source"] = surface.source
