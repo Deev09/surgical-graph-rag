@@ -1,0 +1,74 @@
+{
+  "schema": "phase5_mixed_qa",
+  "schema_version": 1,
+  "fixture_id": "replica_room_0_mixed_qa_v1",
+  "initial_fixture_frozen_before_extractor_code": true,
+  "scene_id": "replica_room_0",
+  "description": "First end-to-end reasoner system test: a mixed relational question set scored through the real Router (compiler -> executor -> verbalizer). Exercises entity<->entity (directional) and entity<->surface (proximity, contact, support) facts plus honest deferrals. NOT comparable to the v1 benchmark; a separate reasoner-native eval track (Phase 5 D5).",
+  "expected_outcomes": ["answer", "empty", "defer", "unknown", "parser_failure", "execution_error"],
+  "score_categories": {
+    "true_answer": "expected answer; system answered; cited entities cover expected_must_contain and include none of expected_must_not_contain",
+    "false_answer": "system answered when expected was defer/empty (fabricated fact), OR answered including a must_not_contain entity",
+    "miss": "expected answer; system answered but missed an expected_must_contain entity (or returned empty/unknown)",
+    "correct_defer": "expected defer; system deferred (out_of_schema -> abstain with a deferred: note)",
+    "true_empty": "expected empty; system returned empty",
+    "unexpected": "outcome did not match the expected category; carries the actual outcome for attribution"
+  },
+  "grounding_note": "All expected_must_contain entities were verified by measurement against the live enriched-v2 bundle before freezing (lamp/wall contact at 0.02/0.02; stool on floor; stool left of blanket; cabinet near a wall). expected_must_not_contain pins the no-false-attachment guard.",
+  "questions": [
+    {
+      "question_id": "Q1",
+      "question": "what is on the floor?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_39"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "SUPPORTS (derived view over ON_SURFACE)",
+      "notes": "Existing Phase 4 floor-support path must still work. obj_39 (stool) is a known floor rest."
+    },
+    {
+      "question_id": "Q2",
+      "question": "what is against the wall?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_6"],
+      "expected_must_not_contain": ["obj_63", "obj_84", "obj_17"],
+      "relation_under_test": "CONTACTS_SURFACE (stored, SurfaceRef-anchored)",
+      "notes": "New wall-contact path. obj_6 (lamp) is the only real wall contact under the frozen 0.02/0.02 band. The picture (obj_63), pillar (obj_84), and window (obj_17) MUST NOT appear -- their inclusion would be a false_answer (no false attachment / no structural contamination)."
+    },
+    {
+      "question_id": "Q3",
+      "question": "what is on the table?",
+      "expected_outcome": "defer",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "relation_under_test": "deferred (EntitySurface not in P5)",
+      "notes": "Table support needs EntitySurface/tabletop geometry not present in Replica room_0. Must defer (out_of_schema, deferred:), not answer and not empty."
+    },
+    {
+      "question_id": "Q4",
+      "question": "what is left of the blanket?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_39"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "LEFT_OF (directional, EntityRef-anchored)",
+      "notes": "Existing entity<->entity directional path. obj_86 (blanket) has exactly one LEFT_OF source: obj_39 (stool)."
+    },
+    {
+      "question_id": "Q5",
+      "question": "what is near the wall?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_2"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "NEAR_SURFACE (stored, SurfaceRef-anchored)",
+      "notes": "SurfaceRef-anchored NEAR_SURFACE -- the generic stored-edge helper (P5.03) must resolve a surface anchor. 40 entities are near a wall; obj_2 (cabinet) is one. Distinct from Q2: 'near' is proximity, 'against' is contact."
+    },
+    {
+      "question_id": "Q6",
+      "question": "what is attached to the wall?",
+      "expected_outcome": "defer",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "relation_under_test": "deferred (ATTACHED_TO not in P5)",
+      "notes": "Attachment is deferred in P5 (D2: 'against' != 'attached'). Asking for attachment must defer, NOT fabricate an attachment from wall contact. This is the no-false-attachment probe: a system that answered this with the lamp (or anything) would be claiming attachment it did not earn."
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+{
+  "schema": "phase5_wall_contact_smoke",
+  "schema_version": 1,
+  "fixture_id": "synthetic_p5_v1__plus__replica_room_0",
+  "initial_fixture_frozen_before_extractor_code": true,
+  "numeric_tolerance_m": 0.0001,
+  "relation": "CONTACTS_SURFACE",
+  "config_defaults": {
+    "contact_threshold_m": 0.02,
+    "penetration_tolerance_m": 0.02,
+    "max_wall_tilt_deg": 30,
+    "footprint_tolerance_m": 0.0,
+    "near_surface_threshold_m_wall": 0.30,
+    "subset_guard": "hypot(contact_threshold_m, footprint_tolerance_m) = 0.02 <= near_surface_threshold_m_wall = 0.30"
+  },
+  "threshold_calibration": {
+    "freeze_statement": "P5 uses a sharp symmetric wall-contact band: contact_threshold_m = 0.02, penetration_tolerance_m = 0.02. This intentionally favors precision over recall on Replica room_0. The only real wall-contact QA positive under this threshold is obj_6 lamp against wall_33_yplus. Looser thresholds admit more objects but also structural contamination (pillars/window), so they are not used for the canonical Phase 5 fixture.",
+    "wall_gap_distribution_observed": {
+      "candidate_set": "entity x wall pairs with footprint over the wall polygon (in_plane_gap == 0), centroid on the interior side, and sd_min < 0.30",
+      "candidate_count": 20,
+      "wall_gap_min_m": -0.2328,
+      "wall_gap_max_m": 0.2517,
+      "wall_gap_median_m": 0.0425,
+      "systematic_fit_bias": "none (gaps roughly symmetric around 0, unlike the floor's all-negative bias) -- so a symmetric band is principled and no penetration bias needs absorbing"
+    },
+    "pass_count_table": [
+      {"contact_threshold_m": 0.02, "penetration_tolerance_m": 0.02, "wall_contacts": 1, "note": "chosen -- obj_6 lamp only; sharp, no structural contamination"},
+      {"contact_threshold_m": 0.02, "penetration_tolerance_m": 0.03, "wall_contacts": 2, "note": "+ obj_84 pillar (structural)"},
+      {"contact_threshold_m": 0.05, "penetration_tolerance_m": 0.05, "wall_contacts": 8, "note": "+ picture/window/sofa/vase + pillars; structurally noisy"}
+    ],
+    "tempting_negatives_recorded": "obj_63 picture (gap -0.0363, near but rejected by contact at 0.02), obj_84 pillar and obj_17 window (structural, rejected by contact) are included as real negatives so the threshold choice is auditable, not vibes-based."
+  },
+  "synthetic_room_convention": {
+    "description": "Right-handed frame, gravity=(0,0,-1), up=(0,0,1). North wall at y=2 (interior-facing normal -y), floor at z=0 (interior/up normal +z). Plane a*x+b*y+c*z+d=0; (a,b,c) is the interior-facing normal. Synthetic entity centroids given explicitly (CONTACTS_SURFACE consumes the centroid).",
+    "clause_glossary": {
+      "wall_capable": "abs(dot((a,b,c)_unit, up)) <= sin(max_wall_tilt_deg)",
+      "on_interior_side": "signed_distance(centroid, plane) >= 0",
+      "wall_gap": "min over 8 AABB corners of signed_distance(corner, plane) (== sd_min)",
+      "contact": "wall_gap <= contact_threshold_m AND wall_gap >= -penetration_tolerance_m",
+      "footprint_ok": "aabb_to_polygon_planar(aabb, plane, polygon) <= footprint_tolerance_m",
+      "CONTACTS_SURFACE": "wall_capable AND on_interior_side AND contact AND footprint_ok"
+    },
+    "failed_clause_order": ["wall_capable", "on_interior_side", "contact", "footprint_ok"]
+  },
+  "synthetic_surfaces": {
+    "synth_wall_north": {
+      "surface_uid": "synth_wall_north",
+      "surface_type": "wall",
+      "plane": {"a": 0.0, "b": -1.0, "c": 0.0, "d": 2.0},
+      "polygon": [[0.0, 2.0, 0.0], [2.0, 2.0, 0.0], [2.0, 2.0, 2.0], [0.0, 2.0, 2.0]],
+      "source": "habitat_label",
+      "confidence": 1.0
+    },
+    "synth_floor": {
+      "surface_uid": "synth_floor",
+      "surface_type": "floor",
+      "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+      "polygon": [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [2.0, 2.0, 0.0], [0.0, 2.0, 0.0]],
+      "source": "habitat_label",
+      "confidence": 1.0
+    }
+  },
+  "cases": [
+    {
+      "id": "W1",
+      "synthetic": false,
+      "scene_id": "replica_room_0",
+      "entity_uid": "obj_6",
+      "entity_label": "lamp",
+      "surface_uid": "wall_33_yplus",
+      "expected_contacts_surface": true,
+      "expected_failed_clauses": [],
+      "measured_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": 0.0027,
+        "in_plane_gap_m": 0.0,
+        "contact": true
+      },
+      "rationale": "Real Replica wall-contact positive, grounded by measurement. Lamp against wall_33_yplus: footprint over the wall polygon, centroid on the interior side, wall_gap +0.0027 (within the symmetric +/-0.02 band). The only real CONTACTS_SURFACE positive under the frozen threshold. Boolean asserted; exact AABB comes from the live bundle."
+    },
+    {
+      "id": "WN1",
+      "synthetic": false,
+      "scene_id": "replica_room_0",
+      "entity_uid": "obj_63",
+      "entity_label": "picture",
+      "surface_uid": "wall_33_yplus",
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "measured_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": -0.0363,
+        "in_plane_gap_m": 0.0,
+        "contact": false
+      },
+      "rationale": "Real near-but-rejected negative. The picture is the tempting 'attached to wall' object, but wall_gap -0.0363 is past the -0.02 penetration bound, so contact fails at the frozen 0.02/0.02 band. Makes the precision-over-recall choice auditable. (Attachment is deferred in P5 anyway -- D2.)"
+    },
+    {
+      "id": "WN2",
+      "synthetic": false,
+      "scene_id": "replica_room_0",
+      "entity_uid": "obj_84",
+      "entity_label": "pillar",
+      "surface_uid": "wall_57_yminus",
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "measured_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": -0.0288,
+        "in_plane_gap_m": 0.0,
+        "contact": false
+      },
+      "rationale": "Real structural-contamination negative. A pillar (floor-to-ceiling architecture, 2.7 m) geometrically near a wall but rejected at 0.02/0.02 (wall_gap -0.0288 past -0.02). Documents that looser thresholds would wrongly admit architecture as 'against the wall'."
+    },
+    {
+      "id": "WN3",
+      "synthetic": false,
+      "scene_id": "replica_room_0",
+      "entity_uid": "obj_17",
+      "entity_label": "window",
+      "surface_uid": "wall_33_yplus",
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "measured_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": -0.0389,
+        "in_plane_gap_m": 0.0,
+        "contact": false
+      },
+      "rationale": "Real structural-contamination negative. A window is embedded in the wall (part of the architecture); rejected at 0.02/0.02 (wall_gap -0.0389). Another auditable exclusion of structure from the wall-contact answer."
+    },
+    {
+      "id": "WS1",
+      "synthetic": true,
+      "surface_ref": "synth_wall_north",
+      "entity_aabb": {"min": [0.8, 1.85, 0.5], "max": [1.2, 1.99, 0.9]},
+      "entity_centroid": [1.0, 1.92, 0.7],
+      "expected_contacts_surface": true,
+      "expected_failed_clauses": [],
+      "expected_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": 0.01,
+        "in_plane_gap_m": 0.0,
+        "contact": true
+      },
+      "rationale": "Synthetic wall positive (exact geometry, no fit bias). Nearest corner 1 cm off the wall on the interior side; footprint within the wall polygon. CONTACTS_SURFACE."
+    },
+    {
+      "id": "WS2",
+      "synthetic": true,
+      "surface_ref": "synth_wall_north",
+      "entity_aabb": {"min": [0.8, 1.8, 0.5], "max": [1.2, 1.95, 0.9]},
+      "entity_centroid": [1.0, 1.875, 0.7],
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "expected_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": 0.05,
+        "in_plane_gap_m": 0.0,
+        "contact": false
+      },
+      "rationale": "Near but not touching: wall_gap 0.05 > contact_threshold 0.02. Single-clause contact rejection."
+    },
+    {
+      "id": "WS3",
+      "synthetic": true,
+      "surface_ref": "synth_wall_north",
+      "entity_aabb": {"min": [3.0, 1.85, 0.5], "max": [3.2, 1.99, 0.9]},
+      "entity_centroid": [3.1, 1.92, 0.7],
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["footprint_ok"],
+      "expected_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": 0.01,
+        "in_plane_gap_m": 1.0,
+        "contact": true
+      },
+      "rationale": "At contact depth but laterally outside the wall polygon (x beyond the wall edge): in_plane_gap 1.0. Single-clause footprint rejection."
+    },
+    {
+      "id": "WS4",
+      "synthetic": true,
+      "surface_ref": "synth_wall_north",
+      "entity_aabb": {"min": [0.8, 2.05, 0.5], "max": [1.2, 2.2, 0.9]},
+      "entity_centroid": [1.0, 2.125, 0.7],
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["on_interior_side", "contact"],
+      "expected_clauses": {
+        "wall_capable": true,
+        "on_interior_side": false,
+        "wall_gap_m": -0.2,
+        "in_plane_gap_m": 0.0,
+        "contact": false
+      },
+      "rationale": "Wrong side (exterior, y>2): centroid behind the wall fails on_interior_side and the deep negative gap fails contact. Multi-clause by construction."
+    },
+    {
+      "id": "WS5",
+      "synthetic": true,
+      "surface_ref": "synth_floor",
+      "entity_aabb": {"min": [0.8, 0.8, -0.01], "max": [1.2, 1.2, 0.3]},
+      "entity_centroid": [1.0, 1.0, 0.145],
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["wall_capable"],
+      "expected_clauses": {
+        "wall_capable": false,
+        "on_interior_side": true,
+        "wall_gap_m": -0.01,
+        "in_plane_gap_m": 0.0,
+        "contact": true
+      },
+      "rationale": "Orientation-gate isolation: an entity resting on a FLOOR (up-facing surface) fed to the wall predicate. Contact/side/footprint all pass, but wall_capable fails (dot(normal,up)=1 > sin(30)). Single-clause wall_capable rejection -- proves the gate excludes horizontals (the mirror of ON_SURFACE excluding verticals)."
+    },
+    {
+      "id": "WS6",
+      "synthetic": true,
+      "surface_ref": "synth_wall_north",
+      "entity_aabb": {"min": [0.8, 1.8, 0.5], "max": [1.2, 2.025, 0.9]},
+      "entity_centroid": [1.0, 1.9125, 0.7],
+      "expected_contacts_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "expected_clauses": {
+        "wall_capable": true,
+        "on_interior_side": true,
+        "wall_gap_m": -0.025,
+        "in_plane_gap_m": 0.0,
+        "contact": false
+      },
+      "threshold_pinning": "wall_gap -0.025 passes at penetration_tolerance 0.03 but is rejected at the frozen 0.02. Makes the symmetric-band choice auditable as a fixture assertion (mirrors the real picture/pillar negatives).",
+      "rationale": "Threshold-pinning penetration case: 2.5 cm into the wall, rejected by contact at the frozen symmetric 0.02 band."
+    }
+  ]
+}
