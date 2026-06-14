@@ -26,10 +26,11 @@ from graph.relations.base import (
     CANONICAL_INVERSE_PAIRS, INVERSE_TO_CANONICAL, SYMMETRIC_EDGE_TYPES,
 )
 from graph.schema import Edge, EdgeType, GraphRef, Node, SceneGraphBundle
-from graph.views.support import support_facts
+from extractors.entity_surfaces import normalize_entity_class
+from graph.views.support import entity_support_facts, support_facts
 from reasoner.ast import (
-    Aggregation, EdgeConstraint, EntityRef, Operand, QueryAST, SurfaceRef,
-    Variable,
+    Aggregation, EdgeConstraint, EntityClassRef, EntityRef, Operand, QueryAST,
+    SurfaceRef, Variable,
 )
 from reasoner.base import ExecutionContext, ExecutionResult
 
@@ -50,6 +51,17 @@ def _node_match_labels(node: Node) -> list[str]:
     return cands
 
 
+def _node_class_candidates(node: Node) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    for label in _node_match_labels(node):
+        cls = normalize_entity_class(label)
+        if cls and cls not in seen:
+            out.append(cls)
+            seen.add(cls)
+    return out
+
+
 def _resolve_entity_ref(ref: EntityRef, graph: SceneGraphBundle) -> list[GraphRef]:
     target = _norm_label(ref.label)
     matches: list[GraphRef] = []
@@ -58,6 +70,15 @@ def _resolve_entity_ref(ref: EntityRef, graph: SceneGraphBundle) -> list[GraphRe
             if _norm_label(cand) == target:
                 matches.append(GraphRef(kind="entity", uid=node.id))
                 break
+    return matches
+
+
+def _resolve_entity_class_ref(ref: EntityClassRef, graph: SceneGraphBundle) -> list[GraphRef]:
+    target = normalize_entity_class(ref.entity_class)
+    matches: list[GraphRef] = []
+    for node in graph.nodes:
+        if target in _node_class_candidates(node):
+            matches.append(GraphRef(kind="entity", uid=node.id))
     return matches
 
 
@@ -238,6 +259,8 @@ class RulesExecutor:
         graph: SceneGraphBundle,
         ctx: ExecutionContext,
     ) -> ExecutionResult:
+        if isinstance(constraint.source, EntityClassRef):
+            return self._execute_entity_supports(constraint, graph, ctx)
         """SUPPORTS(SurfaceRef(type), ?x) -> entities resting on a surface
         of that type, derived from support_facts (no stored SUPPORTS edges).
         Evidence cites the originating ON_SURFACE edges. Coverage/empty-
@@ -309,6 +332,78 @@ class RulesExecutor:
             outcome="bindings", bindings=bindings, evidence=evidence,
             coverage_floor=floor,
             notes=f"matched {len(bindings)} binding(s) via support view",
+        )
+
+    def _execute_entity_supports(
+        self,
+        constraint: EdgeConstraint,
+        graph: SceneGraphBundle,
+        ctx: ExecutionContext,
+    ) -> ExecutionResult:
+        """SUPPORTS(EntityClassRef(class), ?x) over ON_ENTITY_SURFACE edges."""
+        if not (
+            isinstance(constraint.source, EntityClassRef)
+            and isinstance(constraint.target, Variable)
+        ):
+            return ExecutionResult(
+                outcome="execution_error", bindings=[], evidence=[],
+                coverage_floor=0.0,
+                notes=(
+                    "entity SUPPORTS query requires EntityClassRef source and "
+                    f"Variable target; got source={type(constraint.source).__name__}, "
+                    f"target={type(constraint.target).__name__}"
+                ),
+            )
+        var = constraint.target
+        entity_class = normalize_entity_class(constraint.source.entity_class)
+        floor = _coverage_floor_for_query(ctx, "ON_ENTITY_SURFACE")
+        owner_refs = _resolve_entity_class_ref(constraint.source, graph)
+        owner_uids = {ref.uid for ref in owner_refs}
+        if not owner_uids:
+            outcome = _empty_or_unknown(ctx, "ON_ENTITY_SURFACE", floor)
+            return ExecutionResult(
+                outcome=outcome, bindings=[], evidence=[],
+                coverage_floor=floor,
+                notes=f"no {entity_class!r} owner entity in graph",
+            )
+
+        try:
+            facts = entity_support_facts(graph)
+        except ValueError as e:
+            return ExecutionResult(
+                outcome="execution_error", bindings=[], evidence=[],
+                coverage_floor=floor, notes=str(e),
+            )
+
+        edge_by_id = {e.edge_id: e for e in graph.edges}
+        bindings: list[dict[str, GraphRef]] = []
+        evidence: list[Edge] = []
+        seen: set[str] = set()
+        for fact in facts:
+            if fact.supporter.uid not in owner_uids:
+                continue
+            if fact.supported.uid in seen:
+                continue
+            seen.add(fact.supported.uid)
+            bindings.append({var.name: fact.supported})
+            edge = edge_by_id.get(fact.derived_from_edge_id)
+            if edge is not None:
+                evidence.append(edge)
+
+        if not bindings:
+            outcome = _empty_or_unknown(ctx, "ON_ENTITY_SURFACE", floor)
+            return ExecutionResult(
+                outcome=outcome, bindings=[], evidence=[],
+                coverage_floor=floor,
+                notes=f"nothing rests on a {entity_class!r} entity top",
+            )
+        return ExecutionResult(
+            outcome="bindings", bindings=bindings, evidence=evidence,
+            coverage_floor=floor,
+            notes=(
+                f"matched {len(bindings)} binding(s) via entity support view "
+                f"for {entity_class!r}"
+            ),
         )
 
     def execute(

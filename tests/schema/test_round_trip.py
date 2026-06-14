@@ -479,6 +479,51 @@ def test_contacts_surface_edge_roundtrips_under_v4() -> None:
         raise AssertionError("CONTACTS_SURFACE edge lost in round-trip")
 
 
+def test_on_entity_surface_edge_roundtrips_under_v5() -> None:
+    """P6.02: ON_ENTITY_SURFACE is accepted by graph serde.
+    The stored edge is entity -> entity; derived-top details live in evidence."""
+    from dataclasses import replace
+    base = make_scene_graph_bundle()
+    node = Node(
+        id="obj_2",
+        label="table",
+        label_confidence=1.0,
+        centroid=(2.5, 0.5, 0.35),
+        bbox_aabb=((2.0, 0.0, 0.0), (3.0, 1.0, 0.7)),
+        bbox_obb=None,
+        embedding_ref=None,
+        attributes={"display_label": "table_1"},
+        provenance={},
+    )
+    edge = Edge(
+        edge_id="e_on_entity_surface_1",
+        source=GraphRef(kind="entity", uid="obj_1"),
+        type="ON_ENTITY_SURFACE",
+        target=GraphRef(kind="entity", uid="obj_2"),
+        frame="world",
+        weight=1.0,
+        confidence=1.0,
+        extractor="on_entity_surface",
+        extractor_version="0.1",
+        evidence={
+            "owner_entity_uid": "obj_2",
+            "entity_surface_uid": "ent_surf_obj_2_top",
+            "owner_class": "table",
+            "bottom_gap_m": 0.0,
+            "contact": True,
+        },
+    )
+    original = replace(base, nodes=list(base.nodes) + [node], edges=list(base.edges) + [edge])
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        loaded = load_scene_graph_bundle(out)
+    _assert_equal(original, loaded, "SceneGraphBundle(ON_ENTITY_SURFACE)")
+    loaded_edge = next(e for e in loaded.edges if e.type == "ON_ENTITY_SURFACE")
+    if loaded_edge.target.kind != "entity":
+        raise AssertionError("ON_ENTITY_SURFACE target must remain entity ref")
+
+
 def test_graph_schema_v3_rejected_under_v4() -> None:
     """P5.02 / D4: strict v4 loader rejects a manually-downgraded v3 graph
     manifest. No migration path; old v3 graph bundles are not silently
@@ -497,6 +542,23 @@ def test_graph_schema_v3_rejected_under_v4() -> None:
         except SchemaVersionError:
             return
         raise AssertionError("expected SchemaVersionError for v3 under strict v4")
+
+
+def test_graph_schema_v4_rejected_under_v5() -> None:
+    """P6.02: strict v5 loader rejects a manually-downgraded v4 graph."""
+    original = make_scene_graph_bundle()
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        m = out / "manifest.json"
+        payload = json.loads(m.read_text())
+        payload["schema_version"] = 4
+        m.write_text(json.dumps(payload))
+        try:
+            load_scene_graph_bundle(out)
+        except SchemaVersionError:
+            return
+        raise AssertionError("expected SchemaVersionError for v4 under strict v5")
 
 
 def test_embedding_npy_sidecar_written_and_typed() -> None:
@@ -600,6 +662,8 @@ TESTS = [
     test_graph_schema_v2_rejected_under_v3,
     test_contacts_surface_edge_roundtrips_under_v4,
     test_graph_schema_v3_rejected_under_v4,
+    test_on_entity_surface_edge_roundtrips_under_v5,
+    test_graph_schema_v4_rejected_under_v5,
     test_embedding_npy_sidecar_written_and_typed,
     test_array_aware_equality_dtype_sensitive,
     test_array_aware_equality_shape_sensitive,

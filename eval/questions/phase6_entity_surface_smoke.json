@@ -1,0 +1,177 @@
+{
+  "schema": "phase6_entity_surface_smoke",
+  "schema_version": 1,
+  "fixture_id": "synthetic_p6_v1__plus__replica_room_0",
+  "initial_fixture_frozen_before_extractor_code": true,
+  "numeric_tolerance_m": 0.0001,
+  "relation": "ON_ENTITY_SURFACE",
+  "edge_shape": {
+    "description": "ON_ENTITY_SURFACE is a stored entity -> entity edge. source = supported (portable) entity; target = supporter/owner (furniture) entity. The supporting surface is the owner's DERIVED AABB top face (NOT a structural_surface), so the supporter is named as an entity ref, not a surface ref (derived tops are not in structural_surfaces and would fail _validate_edge_refs).",
+    "source": "portable entity ref",
+    "target": "owner/supporter entity ref",
+    "provenance_invariant": "edge.target.uid == evidence['owner_entity_uid']"
+  },
+  "config_defaults": {
+    "contact_threshold_m": 0.02,
+    "penetration_tolerance_m": 0.03,
+    "max_tilt_deg": 30,
+    "footprint_tolerance_m": 0.0,
+    "note": "Reuses the floor rest-contact band (P4). No new threshold introduced."
+  },
+  "support_class_allowlist": ["table", "desk", "chair", "stool", "bench", "shelf", "sofa", "plant-stand", "counter"],
+  "supported_class_exclusions": {
+    "support_class_allowlist": "support-class furniture owners are excluded as supported tabletop objects in P6; this prevents support furniture such as plant-stand from appearing as an answer to 'what is on the table?' even if its box rests on another support entity"
+  },
+  "support_class_exclusions": {
+    "cabinet": "container, not a tabletop -- ON vs IN ambiguity deferred to a later IN/CONTAINED_BY phase"
+  },
+  "threshold_calibration": {
+    "freeze_statement": "P6 reuses the floor rest band contact_threshold_m=0.02 / penetration_tolerance_m=0.03. Measured table-class rest gaps: -0.013 .. +0.035. This band captures 5 table rests (4 books + 1 lamp) and 1 plant-stand rest, and excludes the pot at +0.035 m float. Precision-over-recall, consistent with the wall picture exclusion. No new threshold is introduced.",
+    "rest_gap_distribution_observed": {
+      "candidate_set": "portable-class entity x support-class furniture top, footprint over the top polygon, centroid above the top, |bottom_gap| within the band window",
+      "table_rests_in_band": 5,
+      "other_class_rests_in_band": 1,
+      "rest_gap_min_m": -0.013,
+      "rest_gap_max_m": 0.018,
+      "band_excluded_borderline": "obj_43 pot on table_4 at bottom_gap +0.0349 (float past contact 0.02)"
+    },
+    "tempting_negative_recorded": "obj_43 pot (gap +0.0349, rejected by contact) is included as a real negative so the precision boundary is auditable, not vibes-based."
+  },
+  "synthetic_room_convention": {
+    "description": "Right-handed frame, gravity=(0,0,-1), up=(0,0,1). A synthetic furniture TOP face is the up-facing plane z=1 over x,y in [0,1]; a synthetic WALL is the vertical plane y=2 (interior normal -y). Plane a*x+b*y+c*z+d=0; (a,b,c) is the up-/interior-facing normal. Synthetic entity centroids given explicitly (rest_contact consumes the centroid).",
+    "clause_glossary": {
+      "support_capable": "dot((a,b,c)_unit, up) >= cos(max_tilt_deg)",
+      "centroid_on_support_side": "signed_distance(centroid, plane) >= 0",
+      "bottom_gap": "min over 8 AABB corners of signed_distance(corner, plane) (== sd_min)",
+      "contact": "bottom_gap <= contact_threshold_m AND bottom_gap >= -penetration_tolerance_m",
+      "footprint_ok": "aabb_to_polygon_planar(aabb, plane, polygon) <= footprint_tolerance_m",
+      "ON_ENTITY_SURFACE": "support_capable AND centroid_on_support_side AND contact AND footprint_ok"
+    },
+    "failed_clause_order": ["support_capable", "centroid_on_support_side", "contact", "footprint_ok"]
+  },
+  "synthetic_surfaces": {
+    "synth_top": {
+      "owner_entity_uid": "synth_table",
+      "owner_class": "table",
+      "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": -1.0},
+      "polygon": [[0.0, 0.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0]]
+    },
+    "synth_wall": {
+      "owner_entity_uid": "synth_wall_owner",
+      "owner_class": "wall",
+      "plane": {"a": 0.0, "b": -1.0, "c": 0.0, "d": 2.0},
+      "polygon": [[0.0, 2.0, 0.0], [1.0, 2.0, 0.0], [1.0, 2.0, 2.0], [0.0, 2.0, 2.0]],
+      "note": "Vertical surface fed to the rest predicate to isolate the support_capable orientation gate (mirror of the P5 floor->wall WS5 case)."
+    }
+  },
+  "cases": [
+    {
+      "id": "ES1", "synthetic": false, "scene_id": "replica_room_0",
+      "entity_uid": "obj_92", "entity_label": "book_1",
+      "owner_entity_uid": "obj_10", "owner_class": "table",
+      "expected_on_entity_surface": true,
+      "expected_failed_clauses": [],
+      "measured_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": -0.0077, "in_plane_gap_m": 0.0, "contact": true},
+      "rationale": "Real positive (measured via live rest_contact). book_1 rests on table_5's derived AABB top; bottom_gap -0.0077 within the band, footprint inside the top. Boolean + measured clauses asserted; exact AABB from the live bundle."
+    },
+    {
+      "id": "ES2", "synthetic": false, "scene_id": "replica_room_0",
+      "entity_uid": "obj_87", "entity_label": "lamp_1",
+      "owner_entity_uid": "obj_93", "owner_class": "table",
+      "expected_on_entity_surface": true,
+      "expected_failed_clauses": [],
+      "measured_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": -0.0130, "in_plane_gap_m": 0.0, "contact": true},
+      "rationale": "Real positive. A table lamp rests on table_1's top (gap -0.0130). A 'lamp' that is genuinely table-supported -- contrast obj_6, the floor-standing lamp the wall path saw."
+    },
+    {
+      "id": "ES3", "synthetic": false, "scene_id": "replica_room_0",
+      "entity_uid": "obj_35", "entity_label": "indoor-plant_1",
+      "owner_entity_uid": "obj_55", "owner_class": "plant-stand",
+      "expected_on_entity_surface": true,
+      "expected_failed_clauses": [],
+      "measured_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": 0.0180, "in_plane_gap_m": 0.0, "contact": true},
+      "rationale": "Real positive on a DIFFERENT supporter class (plant-stand, not table) -- proves the class allowlist is generic, not table-only. gap +0.0180 (float within contact 0.02)."
+    },
+    {
+      "id": "ESN1", "synthetic": false, "scene_id": "replica_room_0",
+      "entity_uid": "obj_43", "entity_label": "pot",
+      "owner_entity_uid": "obj_11", "owner_class": "table",
+      "expected_on_entity_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "measured_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": 0.0349, "in_plane_gap_m": 0.0, "contact": false},
+      "rationale": "Real band-excluded negative. The pot floats +0.0349 over table_4's top -- past contact 0.02 -- so it is rejected. The documented recall boundary; makes the precision-over-recall band auditable."
+    },
+    {
+      "id": "SS1", "synthetic": true, "surface_ref": "synth_top",
+      "owner_entity_uid": "synth_table", "owner_class": "table",
+      "entity_aabb": {"min": [0.3, 0.3, 1.0], "max": [0.7, 0.7, 1.4]},
+      "entity_centroid": [0.5, 0.5, 1.2],
+      "expected_on_entity_surface": true,
+      "expected_failed_clauses": [],
+      "expected_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": 0.0, "in_plane_gap_m": 0.0, "contact": true},
+      "rationale": "Synthetic exact rest (no fit bias): bottom face flush on the top plane, footprint inside. ON_ENTITY_SURFACE."
+    },
+    {
+      "id": "SS2", "synthetic": true, "surface_ref": "synth_top",
+      "owner_entity_uid": "synth_table", "owner_class": "table",
+      "entity_aabb": {"min": [0.3, 0.3, 1.10], "max": [0.7, 0.7, 1.5]},
+      "entity_centroid": [0.5, 0.5, 1.3],
+      "expected_on_entity_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "expected_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": 0.10, "in_plane_gap_m": 0.0, "contact": false},
+      "rationale": "Floating 10 cm above the top: bottom_gap 0.10 > contact 0.02. Single-clause contact rejection."
+    },
+    {
+      "id": "SS3", "synthetic": true, "surface_ref": "synth_top",
+      "owner_entity_uid": "synth_table", "owner_class": "table",
+      "entity_aabb": {"min": [3.0, 0.3, 1.0], "max": [3.4, 0.7, 1.4]},
+      "entity_centroid": [3.2, 0.5, 1.2],
+      "expected_on_entity_surface": false,
+      "expected_failed_clauses": ["footprint_ok"],
+      "expected_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": 0.0, "in_plane_gap_m": 2.0, "contact": true},
+      "rationale": "At contact height but laterally off the top polygon (x beyond the top edge): in_plane_gap 2.0. Single-clause footprint rejection -- an object beside the table is not on it."
+    },
+    {
+      "id": "SS4", "synthetic": true, "surface_ref": "synth_top",
+      "owner_entity_uid": "synth_table", "owner_class": "table",
+      "entity_aabb": {"min": [0.3, 0.3, 0.5], "max": [0.7, 0.7, 0.95]},
+      "entity_centroid": [0.5, 0.5, 0.725],
+      "expected_on_entity_surface": false,
+      "expected_failed_clauses": ["centroid_on_support_side", "contact"],
+      "expected_clauses": {"support_capable": true, "centroid_on_support_side": false, "bottom_gap_m": -0.5, "in_plane_gap_m": 0.0, "contact": false},
+      "rationale": "Under the table (centroid below the top plane): fails centroid_on_support_side, and the deep negative gap fails contact. Multi-clause by construction -- an object beneath a table is not on it."
+    },
+    {
+      "id": "SS5", "synthetic": true, "surface_ref": "synth_wall",
+      "owner_entity_uid": "synth_wall_owner", "owner_class": "wall",
+      "entity_aabb": {"min": [0.3, 1.85, 0.5], "max": [0.7, 1.99, 0.9]},
+      "entity_centroid": [0.5, 1.92, 0.7],
+      "expected_on_entity_surface": false,
+      "expected_failed_clauses": ["support_capable"],
+      "expected_clauses": {"support_capable": false, "centroid_on_support_side": true, "bottom_gap_m": 0.01, "in_plane_gap_m": 0.0, "contact": true},
+      "rationale": "Orientation-gate isolation: a box in contact with a VERTICAL surface fed to the rest predicate. Side/contact/footprint all pass, but support_capable fails (dot(normal,up)=0 < cos(30)). Mirror of the P5 WS5 floor->wall case; proves the gate excludes verticals."
+    },
+    {
+      "id": "SS6", "synthetic": true, "surface_ref": "synth_top",
+      "owner_entity_uid": "synth_table", "owner_class": "table",
+      "entity_aabb": {"min": [0.3, 0.3, 1.025], "max": [0.7, 0.7, 1.4]},
+      "entity_centroid": [0.5, 0.5, 1.2],
+      "expected_on_entity_surface": false,
+      "expected_failed_clauses": ["contact"],
+      "expected_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": 0.025, "in_plane_gap_m": 0.0, "contact": false},
+      "threshold_pinning": "bottom_gap +0.025 is just past the contact bound 0.02, so it is rejected. Pins the float edge of the band (mirrors the real pot negative).",
+      "rationale": "Threshold-pinning float case: 2.5 cm above the top, rejected by contact at the frozen 0.02 float bound."
+    },
+    {
+      "id": "SS7", "synthetic": true, "surface_ref": "synth_top",
+      "owner_entity_uid": "synth_table", "owner_class": "table",
+      "entity_aabb": {"min": [0.3, 0.3, 0.975], "max": [0.7, 0.7, 1.4]},
+      "entity_centroid": [0.5, 0.5, 1.2],
+      "expected_on_entity_surface": true,
+      "expected_failed_clauses": [],
+      "expected_clauses": {"support_capable": true, "centroid_on_support_side": true, "bottom_gap_m": -0.025, "in_plane_gap_m": 0.0, "contact": true},
+      "threshold_pinning": "bottom_gap -0.025 is within the penetration bound 0.03, so it is accepted. Pins the asymmetric band: penetration is tolerated more than float (0.03 vs 0.02), absorbing the all-negative rest fit-bias.",
+      "rationale": "Threshold-pinning penetration case: 2.5 cm into the top, still ON at the frozen 0.03 penetration bound. Contrast SS6."
+    }
+  ]
+}

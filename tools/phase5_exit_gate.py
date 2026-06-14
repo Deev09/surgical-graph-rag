@@ -73,13 +73,12 @@ from graph.relations.surface import SurfaceProximityConfig, SurfaceProximityExtr
 from graph.schema import Edge, GraphRef
 from graph.serde import dump_scene_graph_bundle, load_scene_graph_bundle
 from reasoner.base import CompletenessProfile, ExecutionContext
-from reasoner.compiler_rules import RulesCompiler
 from reasoner.executor import RulesExecutor
 from reasoner.router import Router
 from reasoner.verbalizer import StandardVerbalizer
 # Reuse building blocks (read-only); never call a prior gate/tool main().
 from tools.phase2_exit_gate import _phase2_runs, _real_replica_artifacts
-from tools.phase5_router_qa_eval import _eval_runs, QUESTIONS_PATH
+from tools.phase5_router_qa_eval import Phase5RulesCompiler, _eval_runs, QUESTIONS_PATH
 
 
 REPLICA_SCENE_DIR = REPO_ROOT / "scenes" / "replica_room_0"
@@ -99,7 +98,7 @@ def _oracle_ctx() -> ExecutionContext:
 
 
 def _router() -> Router:
-    return Router(compiler=RulesCompiler(), executor=RulesExecutor(),
+    return Router(compiler=Phase5RulesCompiler(), executor=RulesExecutor(),
                   verbalizer=StandardVerbalizer())
 
 

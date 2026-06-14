@@ -42,7 +42,19 @@ class SurfaceRef:
     surface_type: Literal["floor", "wall", "ceiling"]
 
 
-Operand = Union[Variable, EntityRef, SurfaceRef]
+@dataclass(frozen=True)
+class EntityClassRef:
+    """An entity class family in the query (P6.04).
+
+    Used for entity-top support queries:
+    SUPPORTS(EntityClassRef("table"), ?x) asks for objects resting on any
+    support-capable table entity. Kept distinct from SurfaceRef so structural
+    surfaces and entity-derived tops do not blur together.
+    """
+    entity_class: str
+
+
+Operand = Union[Variable, EntityRef, SurfaceRef, EntityClassRef]
 
 
 @dataclass(frozen=True)

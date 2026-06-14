@@ -22,7 +22,8 @@ from typing import Pattern
 
 from graph.schema import EdgeType, SceneGraphBundle
 from reasoner.ast import (
-    Aggregation, EdgeConstraint, EntityRef, QueryAST, SurfaceRef, Variable,
+    Aggregation, EdgeConstraint, EntityClassRef, EntityRef, QueryAST, SurfaceRef,
+    Variable,
 )
 from reasoner.base import CompileResult
 
@@ -56,17 +57,22 @@ _AGAINST_PATTERN = re.compile(r"what(?:'s| is) against (?:the )?(.+?)\??$")
 _NEAR_PATTERN = re.compile(r"what(?:'s| is) near (?:the )?(.+?)\??$")
 _ATTACHED_PATTERN = re.compile(r"what(?:'s| is) attached to (?:the )?(.+?)\??$")
 
-_DEFERRED_ON_SURFACE = {
-    "table": "deferred: needs EntitySurface/tabletop geometry (not in P4)",
-    "tabletop": "deferred: needs EntitySurface/tabletop geometry (not in P4)",
-    "desk": "deferred: needs EntitySurface/tabletop geometry (not in P4)",
-    "chair": "deferred: needs EntitySurface/chair-seat geometry (not in P4)",
-    "seat": "deferred: needs EntitySurface/chair-seat geometry (not in P4)",
-    "stool": "deferred: needs EntitySurface/seat geometry (not in P4)",
+_ENTITY_SURFACE_ON_CLASSES = {
+    "table": "table",
+    "tabletop": "table",
+    "desk": "desk",
+    "chair": "chair",
+    "seat": "chair",
+    "stool": "stool",
+    "bench": "bench",
+    "shelf": "shelf",
+    "sofa": "sofa",
+    "plant stand": "plant-stand",
+    "plant-stand": "plant-stand",
+    "counter": "counter",
 }
 _DEFERRED_ON_GENERIC = (
-    "deferred: support surfaces beyond the floor need EntitySurface geometry "
-    "(not in P4)"
+    "deferred: this support class is not covered by EntitySurface in P6"
 )
 _DEFERRED_AGAINST = (
     "deferred: wall contact only supports 'against the wall' in P5; this "
@@ -109,7 +115,30 @@ class RulesCompiler:
                     compiler_name=self.name,
                     notes="matched=on_floor_pattern edge_type=SUPPORTS surface=floor",
                 )
-            note = _DEFERRED_ON_SURFACE.get(noun, _DEFERRED_ON_GENERIC)
+            entity_class = _ENTITY_SURFACE_ON_CLASSES.get(noun)
+            if entity_class is not None:
+                bind = Variable(name="x")
+                ast = Aggregation(
+                    op="ENUMERATE",
+                    bind=bind,
+                    where=[
+                        EdgeConstraint(
+                            source=EntityClassRef(entity_class=entity_class),
+                            type="SUPPORTS",
+                            target=bind,
+                        ),
+                    ],
+                )
+                return CompileResult(
+                    ast=ast,
+                    outcome="compiled",
+                    compiler_name=self.name,
+                    notes=(
+                        "matched=on_entity_surface_pattern edge_type=SUPPORTS "
+                        f"entity_class={entity_class}"
+                    ),
+                )
+            note = _DEFERRED_ON_GENERIC
             return CompileResult(
                 ast=None, outcome="out_of_schema",
                 compiler_name=self.name, notes=note,

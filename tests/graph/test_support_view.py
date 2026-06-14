@@ -31,7 +31,7 @@ from graph.builder import ExtractorRun, build_graph
 from graph.relations.on_surface import OnSurfaceConfig, OnSurfaceExtractor
 from graph.schema import Edge, Node, SceneGraphBundle, SurfaceRecord, GraphRef
 from graph.serde import CURRENT_SCHEMA_VERSION
-from graph.views.support import SupportFact, support_facts
+from graph.views.support import SupportFact, entity_support_facts, support_facts
 from representations.mesh import MeshRepresentation
 
 
@@ -72,6 +72,22 @@ def _on_surface_edge(edge_id, entity_uid, surface_uid, evidence=None) -> Edge:
     return _edge(
         edge_id, "entity", entity_uid, "ON_SURFACE", "surface", surface_uid,
         evidence=evidence or {"bottom_gap_m": -0.01, "contact": True},
+    )
+
+
+def _on_entity_surface_edge(edge_id, supported_uid, supporter_uid, evidence=None) -> Edge:
+    return _edge(
+        edge_id,
+        "entity",
+        supported_uid,
+        "ON_ENTITY_SURFACE",
+        "entity",
+        supporter_uid,
+        evidence=evidence or {
+            "owner_entity_uid": supporter_uid,
+            "entity_surface_uid": f"ent_surf_{supporter_uid}_top",
+            "contact": True,
+        },
     )
 
 
@@ -219,6 +235,56 @@ def test_no_materialized_supports_in_clean_bundle() -> None:
         raise AssertionError("expected 1 support fact from clean bundle")
 
 
+# --- entity support view (P6) -------------------------------------------
+
+
+def test_entity_support_fact_direction() -> None:
+    facts = entity_support_facts(_bundle([
+        _on_entity_surface_edge("oes1", "book_1", "table_1"),
+    ]))
+    if len(facts) != 1:
+        raise AssertionError(f"expected one entity support fact; got {len(facts)}")
+    f = facts[0]
+    if f.supporter.kind != "entity" or f.supporter.uid != "table_1":
+        raise AssertionError(f"supporter must be owner entity; got {f.supporter}")
+    if f.supported.kind != "entity" or f.supported.uid != "book_1":
+        raise AssertionError(f"supported must be resting entity; got {f.supported}")
+    if f.derived_from_edge_id != "oes1":
+        raise AssertionError("derived_from_edge_id must cite ON_ENTITY_SURFACE edge")
+
+
+def test_entity_support_rejects_materialized_supports() -> None:
+    edges = [
+        _on_entity_surface_edge("oes1", "book_1", "table_1"),
+        _edge("s1", "entity", "table_1", "SUPPORTS", "entity", "book_1"),
+    ]
+    try:
+        entity_support_facts(_bundle(edges))
+    except ValueError:
+        return
+    raise AssertionError("entity_support_facts must raise on materialized SUPPORTS")
+
+
+def test_malformed_on_entity_surface_endpoints_raise() -> None:
+    bad = _edge("bad1", "entity", "book_1", "ON_ENTITY_SURFACE", "surface", "top_1")
+    try:
+        entity_support_facts(_bundle([bad]))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("surface-target ON_ENTITY_SURFACE must raise")
+
+    bad_owner = _on_entity_surface_edge(
+        "bad2", "book_1", "table_1",
+        evidence={"owner_entity_uid": "other_table"},
+    )
+    try:
+        entity_support_facts(_bundle([bad_owner]))
+    except ValueError:
+        return
+    raise AssertionError("owner_entity_uid mismatch must raise")
+
+
 # --- real Replica clean-inverse ------------------------------------------
 
 
@@ -275,6 +341,9 @@ TESTS = [
     test_materialized_supports_edge_raises,
     test_malformed_on_surface_endpoints_raise,
     test_no_materialized_supports_in_clean_bundle,
+    test_entity_support_fact_direction,
+    test_entity_support_rejects_materialized_supports,
+    test_malformed_on_entity_surface_endpoints_raise,
     test_real_replica_clean_inverse,
 ]
 

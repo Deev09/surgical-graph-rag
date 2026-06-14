@@ -1,10 +1,16 @@
-"""SUPPORTS derived view (P4.03).
+"""SUPPORTS derived views (P4.03, P6.03).
 
 `SUPPORTS` is NOT a stored relation in Phase 4 (D3). It is a read-side
 projection over `ON_SURFACE` edges: an `ON_SURFACE(entity -> surface)` edge
 inverts to `SupportFact(supporter=surface, supported=entity)`. No
 `Edge(type="SUPPORTS")` is ever produced, and `SupportFact` is a distinct
 type so a caller cannot mistake a derived fact for a stored edge.
+
+Phase 6 adds a separate entity-support projection over
+`ON_ENTITY_SURFACE(entity -> entity)`: an object resting on a derived
+furniture top is projected as `SupportFact(supporter=owner entity,
+supported=resting entity)`. The derived top surface remains evidence on
+the stored edge, not a graph ref.
 
 Because `ON_SURFACE` (Design B) is already only support-capable rest-contacts,
 the inverse needs NO role filter: exactly one `SupportFact` per `ON_SURFACE`
@@ -40,13 +46,7 @@ class SupportFact:
     relation: Literal["SUPPORTS"] = "SUPPORTS"
 
 
-def support_facts(bundle: SceneGraphBundle) -> list[SupportFact]:
-    """Project the SUPPORTS view from a bundle's ON_SURFACE edges.
-
-    Returns one SupportFact per ON_SURFACE edge, inverting direction
-    (surface supports entity). Raises ValueError if the bundle contains any
-    materialized SUPPORTS edge (Phase 4 contract: SUPPORTS is derived-only).
-    """
+def _raise_if_materialized_supports(bundle: SceneGraphBundle) -> None:
     materialized = [e for e in bundle.edges if e.type == "SUPPORTS"]
     if materialized:
         raise ValueError(
@@ -54,6 +54,16 @@ def support_facts(bundle: SceneGraphBundle) -> list[SupportFact]:
             f"{len(materialized)} materialized SUPPORTS edge(s): "
             f"{[e.edge_id for e in materialized][:5]}"
         )
+
+
+def support_facts(bundle: SceneGraphBundle) -> list[SupportFact]:
+    """Project the SUPPORTS view from a bundle's ON_SURFACE edges.
+
+    Returns one SupportFact per ON_SURFACE edge, inverting direction
+    (surface supports entity). Raises ValueError if the bundle contains any
+    materialized SUPPORTS edge (Phase 4 contract: SUPPORTS is derived-only).
+    """
+    _raise_if_materialized_supports(bundle)
     facts: list[SupportFact] = []
     for edge in bundle.edges:
         if edge.type != "ON_SURFACE":
@@ -72,6 +82,40 @@ def support_facts(bundle: SceneGraphBundle) -> list[SupportFact]:
         facts.append(SupportFact(
             supporter=edge.target,   # surface
             supported=edge.source,   # entity
+            derived_from_edge_id=edge.edge_id,
+        ))
+    return facts
+
+
+def entity_support_facts(bundle: SceneGraphBundle) -> list[SupportFact]:
+    """Project SUPPORTS from ON_ENTITY_SURFACE entity -> entity edges.
+
+    The stored edge source is the supported entity and target is the
+    support-capable owner entity. Evidence carries the derived top-surface
+    provenance; the view names the supporter directly from edge.target.
+    """
+    _raise_if_materialized_supports(bundle)
+    facts: list[SupportFact] = []
+    for edge in bundle.edges:
+        if edge.type != "ON_ENTITY_SURFACE":
+            continue
+        if edge.source.kind != "entity" or edge.target.kind != "entity":
+            raise ValueError(
+                "malformed ON_ENTITY_SURFACE edge "
+                f"{edge.edge_id!r}: expected source.kind='entity' and "
+                f"target.kind='entity', got source.kind="
+                f"{edge.source.kind!r}, target.kind={edge.target.kind!r}"
+            )
+        owner_uid = edge.evidence.get("owner_entity_uid")
+        if owner_uid is not None and owner_uid != edge.target.uid:
+            raise ValueError(
+                "malformed ON_ENTITY_SURFACE edge "
+                f"{edge.edge_id!r}: target uid {edge.target.uid!r} does not "
+                f"match evidence owner_entity_uid {owner_uid!r}"
+            )
+        facts.append(SupportFact(
+            supporter=edge.target,
+            supported=edge.source,
             derived_from_edge_id=edge.edge_id,
         ))
     return facts

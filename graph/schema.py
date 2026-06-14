@@ -23,6 +23,7 @@ EdgeType = Literal[
     "NEAR_SURFACE",
     "ON_SURFACE",
     "CONTACTS_SURFACE",
+    "ON_ENTITY_SURFACE",
     "NEAR",
     # FAR is intentionally not in this list — it is a query-time operator
     # over a centroid index, never stored. See reasoner/executor.

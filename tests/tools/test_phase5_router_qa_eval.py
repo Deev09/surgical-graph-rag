@@ -24,11 +24,15 @@ from eval.router_qa import _classify, score_questions
 from graph.schema import Edge, GraphRef, Node, Plane, SceneGraphBundle, SurfaceRecord
 from graph.serde import CURRENT_SCHEMA_VERSION
 from reasoner.base import CompletenessProfile, ExecutionContext
-from reasoner.compiler_rules import RulesCompiler
 from reasoner.executor import RulesExecutor
 from reasoner.router import Router
 from reasoner.verbalizer import StandardVerbalizer
-from tools.phase5_router_qa_eval import ARTIFACT_PATH, REPLICA_V2_DIR, main
+from tools.phase5_router_qa_eval import (
+    ARTIFACT_PATH,
+    Phase5RulesCompiler,
+    REPLICA_V2_DIR,
+    main,
+)
 
 
 def _ans(outcome, cited=()):
@@ -134,7 +138,7 @@ def _wall_scene() -> SceneGraphBundle:
 
 def test_score_questions_end_to_end() -> None:
     scene = _wall_scene()
-    router = Router(compiler=RulesCompiler(), executor=RulesExecutor(),
+    router = Router(compiler=Phase5RulesCompiler(), executor=RulesExecutor(),
                     verbalizer=StandardVerbalizer())
     ctx = ExecutionContext(completeness=CompletenessProfile(
         source="oracle", entity_recall_by_class={}, edge_recall_by_type={}))

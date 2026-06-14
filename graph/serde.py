@@ -20,7 +20,7 @@ from graph.schema import (
     SceneGraphBundle, SurfaceRecord,
 )
 
-CURRENT_SCHEMA_VERSION = 4  # P5.02: EdgeType gained CONTACTS_SURFACE (wall contact). v3 bundles reject under strict v4 load (no migration path).
+CURRENT_SCHEMA_VERSION = 5  # P6.02: EdgeType gained ON_ENTITY_SURFACE (entity-top support). v4 bundles reject under strict v5 load (no migration path).
 
 _VALID_SURFACE_TYPES = ("floor", "wall", "ceiling")
 _VALID_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")

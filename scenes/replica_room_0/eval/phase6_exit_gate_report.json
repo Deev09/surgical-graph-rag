@@ -1,0 +1,141 @@
+{
+  "artifact_kind": "phase6_exit_gate_report",
+  "artifact_stability": {
+    "method": "byte sha256 snapshot before/after; verifier writes only its own report",
+    "p6_05_eval_untouched": true,
+    "watched_artifacts_unchanged": true
+  },
+  "extractor_version": "0.1",
+  "gates": {
+    "G1_entity_top_derivation_and_rest_determinism": {
+      "derived_surface_count": 12,
+      "edge_count": 6,
+      "owner_classes": [
+        "chair",
+        "plant-stand",
+        "sofa",
+        "stool",
+        "table"
+      ],
+      "pass": true,
+      "surface_derivation_deterministic": true,
+      "two_run_edge_ids_match": true,
+      "two_run_edge_keys_match": true
+    },
+    "G2_entity_surface_edge_invariants": {
+      "edge_count": 6,
+      "pass": true,
+      "violation_count": 0,
+      "violations": []
+    },
+    "G3_entity_surface_smoke_fixture": {
+      "failures": [],
+      "owner_provenance_invariant_ok": true,
+      "pass": true,
+      "real_edge_count": 6,
+      "real_positive_pairs": [
+        [
+          "obj_12",
+          "obj_11"
+        ],
+        [
+          "obj_35",
+          "obj_55"
+        ],
+        [
+          "obj_59",
+          "obj_11"
+        ],
+        [
+          "obj_87",
+          "obj_93"
+        ],
+        [
+          "obj_90",
+          "obj_93"
+        ],
+        [
+          "obj_92",
+          "obj_10"
+        ]
+      ],
+      "synthetic_cases_checked": 7
+    },
+    "G4_mixed_qa_scorecard_matches_committed": {
+      "matches_committed_artifact": true,
+      "mismatches": [],
+      "pass": true,
+      "rederived_all_expected_outcomes_met": true,
+      "rederived_category_counts": {
+        "correct_defer": 1,
+        "true_answer": 5,
+        "true_empty": 1
+      },
+      "rederived_false_answer_count": 0
+    },
+    "G5_floor_and_wall_qa_regression": {
+      "attached_cited_uids": [],
+      "attached_outcome": "abstain",
+      "floor_obj_39_present": true,
+      "floor_outcome": "bindings",
+      "pass": true,
+      "wall_negatives_absent": true,
+      "wall_obj_6_present": true,
+      "wall_outcome": "bindings"
+    },
+    "G6_default_path_preserved": {
+      "default_build_contacts_surface_edges": 0,
+      "default_build_on_entity_surface_edges": 0,
+      "default_build_on_surface_edges": 0,
+      "pass": true,
+      "prior_phase_reports_overall_pass": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    "G7_prior_artifacts_untouched": {
+      "all_unchanged": true,
+      "changed": [],
+      "method": "static path byte sha256 snapshot before/after; verifier writes only its own report",
+      "pass": true,
+      "phase6_router_qa_eval_in_snapshot_scope": true
+    },
+    "G8_threshold_sanity_enforced": {
+      "bad_config": "OnEntitySurfaceConfig(contact_threshold_m=-0.01)",
+      "pass": true,
+      "raised_value_error": true
+    },
+    "schema_v5_roundtrip_and_v4_rejection": {
+      "bundle_had_on_entity_surface_edge": true,
+      "pass": true,
+      "v4_manifest_strict_rejected": true,
+      "v5_on_entity_surface_roundtrip_ok": true
+    }
+  },
+  "overall_blocking_pass": true,
+  "phase": "P6.06",
+  "policy_decisions_recorded": [
+    "ON_ENTITY_SURFACE is stored entity -> entity; the derived top surface is evidence, not a GraphRef(kind='surface').",
+    "Entity-top surfaces are derived at build time and are not added to structural_surfaces.",
+    "Support-furniture classes are excluded as supported tabletop answers in P6; cabinets remain excluded as container boundary.",
+    "The P6 QA eval is a reasoner-native track, NOT comparable to the v1 benchmark and NOT directly comparable to P5 because the question set changed."
+  ],
+  "scene_id": "replica_room_0",
+  "schema_version": 1,
+  "summary": {
+    "edge_invariant_violations": 0,
+    "on_entity_surface_edges": 6,
+    "qa_scorecard": {
+      "all_expected_outcomes_met": true,
+      "category_counts": {
+        "correct_defer": 1,
+        "true_answer": 5,
+        "true_empty": 1
+      },
+      "false_answer_count": 0,
+      "matches_committed_artifact": true
+    }
+  }
+}

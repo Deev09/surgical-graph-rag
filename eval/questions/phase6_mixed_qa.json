@@ -1,0 +1,88 @@
+{
+  "schema": "phase6_mixed_qa",
+  "schema_version": 1,
+  "fixture_id": "replica_room_0_mixed_qa_v2",
+  "initial_fixture_frozen_before_extractor_code": true,
+  "scene_id": "replica_room_0",
+  "description": "Phase 6 reasoner-native QA set: extends the P5 mixed set with entity-on-entity support (ON_ENTITY_SURFACE / SUPPORTS-over-entity). Q1/Q2/Q4/Q5/Q6 are unchanged-behavior regression rows; Q3 'on the table?' flips defer -> answer; Q7 'on the chair?' is a new honest-EMPTY row (the system answers and nothing qualifies, distinct from a defer). NOT comparable to the v1 benchmark, and NOT comparable to the P5 6/6 scorecard -- the question set changed (see phase6_eval_definition_change).",
+  "phase6_eval_definition_change": {
+    "statement": "Q3 'what is on the table?' changes from expected_outcome 'defer' (P5) to 'answer' (P6) because EntitySurface furniture-top support now exists. Q7 'what is on the chair?' is new (expected 'empty'). This is a Phase 6 eval-DEFINITION change, not a benchmark accuracy improvement: the P5 scorecard (6/6) and the P6 scorecard are different question sets and are not directly comparable. The P5 fixture and the P5 QA artifact remain byte-frozen.",
+    "unchanged_rows": ["Q1", "Q2", "Q4", "Q5", "Q6"],
+    "changed_rows": {"Q3": "defer -> answer", "Q7": "new (empty)"}
+  },
+  "expected_outcomes": ["answer", "empty", "defer", "unknown", "parser_failure", "execution_error"],
+  "score_categories": {
+    "true_answer": "expected answer; system answered; cited entities cover expected_must_contain and include none of expected_must_not_contain",
+    "false_answer": "system answered when expected was defer/empty (fabricated fact), OR answered including a must_not_contain entity",
+    "miss": "expected answer; system answered but missed an expected_must_contain entity (or returned empty/unknown)",
+    "correct_defer": "expected defer; system deferred (out_of_schema -> abstain with a deferred: note)",
+    "true_empty": "expected empty; system answered with zero bindings (answerable, nothing qualifies) -- NOT a defer",
+    "unexpected": "outcome did not match the expected category; carries the actual outcome for attribution"
+  },
+  "grounding_note": "All expected_must_contain entities were verified by measurement against the live enriched-v2 bundle with the real rest_contact predicate before freezing. Q3 table-support set = the exactly five table-class rests under the frozen 0.02/0.03 band (book_1/obj_92->table_5 -0.0077, book_2/obj_90->table_1 -0.007, book_4/obj_12->table_4 -0.010, book_7/obj_59->table_4 +0.007, lamp_1/obj_87->table_1 -0.013). The pot (obj_43, +0.0349) is band-excluded and appears in NEITHER list (documented borderline). Q7 'on the chair' is empty: no portable object rests on either chair (obj_73/obj_74) under the band.",
+  "questions": [
+    {
+      "question_id": "Q1",
+      "question": "what is on the floor?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_39"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "SUPPORTS (derived view over ON_SURFACE, floor)",
+      "notes": "Regression: the Phase 4 floor-support path must still work unchanged. obj_39 (stool) is a known floor rest."
+    },
+    {
+      "question_id": "Q2",
+      "question": "what is against the wall?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_6"],
+      "expected_must_not_contain": ["obj_63", "obj_84", "obj_17"],
+      "relation_under_test": "CONTACTS_SURFACE (stored, SurfaceRef-anchored, wall)",
+      "notes": "Regression: the Phase 5 wall-contact path unchanged. obj_6 (lamp) is the only real wall contact; picture/pillar/window must not appear."
+    },
+    {
+      "question_id": "Q3",
+      "question": "what is on the table?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_92", "obj_90", "obj_12", "obj_59", "obj_87"],
+      "expected_must_not_contain": ["obj_39"],
+      "relation_under_test": "ON_ENTITY_SURFACE / SUPPORTS-over-entity (NEW, EntityClassRef-anchored)",
+      "notes": "CHANGED defer -> answer (Phase 6). The five table rests (4 books + 1 lamp) under the frozen band. obj_39 (stool) is a floor supporter, never ON a table -> must_not_contain. The pot (obj_43, band-excluded float) is intentionally in neither list."
+    },
+    {
+      "question_id": "Q4",
+      "question": "what is left of the blanket?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_39"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "LEFT_OF (directional, EntityRef-anchored)",
+      "notes": "Regression: entity<->entity directional path. obj_86 (blanket) has exactly one LEFT_OF source: obj_39 (stool)."
+    },
+    {
+      "question_id": "Q5",
+      "question": "what is near the wall?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_2"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "NEAR_SURFACE (stored, SurfaceRef-anchored, wall)",
+      "notes": "Regression: SurfaceRef-anchored NEAR_SURFACE. obj_2 (cabinet) is near a wall. Distinct from Q2: 'near' is proximity, 'against' is contact."
+    },
+    {
+      "question_id": "Q6",
+      "question": "what is attached to the wall?",
+      "expected_outcome": "defer",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "relation_under_test": "deferred (ATTACHED_TO not in P6)",
+      "notes": "UNCHANGED defer. Attachment stays deferred in P6: room_0 has zero honest wall-contact-AND-elevated positives (the only wall contact, obj_6, is a floor-standing lamp). Answering this with anything would be unearned attachment. 'against' != 'attached'; 'on a table' != 'attached to a wall'."
+    },
+    {
+      "question_id": "Q7",
+      "question": "what is on the chair?",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "relation_under_test": "ON_ENTITY_SURFACE / SUPPORTS-over-entity (NEW, EntityClassRef-anchored, chair)",
+      "notes": "NEW honest-EMPTY row. EntitySurface support exists for chairs (obj_73/obj_74 are in the support-class allowlist and get derived tops), but nothing rests on them under the band. The system must ANSWER with zero bindings (true_empty), NOT defer. This separates 'answered, nothing qualifies' from 'cannot answer' -- the value of having the relation even when the answer is empty."
+    }
+  ]
+}

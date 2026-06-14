@@ -2,8 +2,8 @@
 
 Proves the normal compiler -> executor -> verbalizer path answers the floor
 support query from graph structure (the SUPPORTS derived view over
-ON_SURFACE edges), and that table/chair/wall are explicitly deferred (not
-parser_failure, not "nothing there").
+ON_SURFACE edges). P6 extends SUPPORTS to entity surfaces, so table/chair
+queries compile now; unsupported support classes still defer.
 
 Run: python tests/reasoner/test_on_surface_qa.py
 """
@@ -184,7 +184,7 @@ def test_isolation_no_on_surface_edges_yields_empty_not_bindings() -> None:
         raise AssertionError("must not fabricate bindings without ON_SURFACE edges")
 
 
-# --- deferred: table / chair / wall -------------------------------------
+# --- P6 entity-support compile + unsupported deferral --------------------
 
 
 def _deferred_answer(question: str):
@@ -198,28 +198,28 @@ def _deferred_answer(question: str):
     return cr, ans
 
 
-def test_table_query_deferred() -> None:
+def test_table_query_compiles_in_p6() -> None:
     cr, ans = _deferred_answer("what is on the table?")
-    if cr.outcome != "out_of_schema" or not cr.notes.startswith("deferred:"):
-        raise AssertionError(f"table must defer; got {cr.outcome} ({cr.notes})")
-    if "EntitySurface" not in cr.notes and "tabletop" not in cr.notes:
-        raise AssertionError(f"table deferral note should mention EntitySurface/tabletop: {cr.notes}")
-    if ans.cited_uids or ans.cited_edges:
-        raise AssertionError("deferred answer must cite nothing")
-    if "can't answer that yet" not in ans.text:
-        raise AssertionError(f"deferred text must be explicit; got {ans.text!r}")
-    if "nothing" in ans.text.lower() and "isn't a claim that nothing" not in ans.text.lower():
-        raise AssertionError("deferred answer must not read as 'nothing is there'")
+    if cr.outcome != "compiled" or "entity_class=table" not in cr.notes:
+        raise AssertionError(f"table must compile in P6; got {cr.outcome} ({cr.notes})")
+    if ans.outcome not in ("empty", "unknown"):
+        raise AssertionError(f"floor-only synthetic scene has no table support; got {ans.outcome}")
 
 
-def test_chair_query_deferred() -> None:
+def test_chair_query_compiles_in_p6() -> None:
     cr, ans = _deferred_answer("what is on the chair?")
+    if cr.outcome != "compiled" or "entity_class=chair" not in cr.notes:
+        raise AssertionError(f"chair must compile in P6; got {cr.outcome} ({cr.notes})")
+    if ans.outcome not in ("empty", "unknown"):
+        raise AssertionError(f"floor-only synthetic scene has no chair support; got {ans.outcome}")
+
+
+def test_unsupported_on_query_defers() -> None:
+    cr, ans = _deferred_answer("what is on the cabinet?")
     if cr.outcome != "out_of_schema" or not cr.notes.startswith("deferred:"):
-        raise AssertionError(f"chair must defer; got {cr.outcome} ({cr.notes})")
-    if "chair-seat" not in cr.notes and "EntitySurface" not in cr.notes:
-        raise AssertionError(f"chair deferral note wrong: {cr.notes}")
+        raise AssertionError(f"cabinet must defer; got {cr.outcome} ({cr.notes})")
     if ans.outcome != "abstain" or ans.cited_uids:
-        raise AssertionError("chair deferral must abstain with no citations")
+        raise AssertionError("unsupported support deferral must abstain with no citations")
 
 
 def test_wall_query_no_longer_defers_in_p5() -> None:
@@ -249,7 +249,7 @@ def test_deferred_is_not_parser_failure() -> None:
     """Deferred must be out_of_schema, distinct from parser_failure (which
     is reserved for genuinely unparseable questions)."""
     scene = _floor_scene_with_two_on_floor()
-    deferred = RulesCompiler().compile("what is on the table?", scene)
+    deferred = RulesCompiler().compile("what is on the cabinet?", scene)
     if deferred.outcome == "parser_failure":
         raise AssertionError("deferred must not be parser_failure")
     nonsense = RulesCompiler().compile("how many wugs frobnicate?", scene)
@@ -302,8 +302,9 @@ TESTS = [
     test_floor_query_returns_bindings_from_support_view,
     test_cited_evidence_points_to_on_surface_edges,
     test_isolation_no_on_surface_edges_yields_empty_not_bindings,
-    test_table_query_deferred,
-    test_chair_query_deferred,
+    test_table_query_compiles_in_p6,
+    test_chair_query_compiles_in_p6,
+    test_unsupported_on_query_defers,
     test_wall_query_no_longer_defers_in_p5,
     test_deferred_is_not_parser_failure,
     test_real_replica_floor_answer_includes_stool,

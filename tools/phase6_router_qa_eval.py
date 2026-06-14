@@ -1,25 +1,18 @@
-"""Phase 5 P5.04 — Router QA eval runner on Replica room_0.
+"""Phase 6 P6.05 — Router QA eval runner on Replica room_0.
 
 Builds one explicit MIXED eval-candidate graph (directional + NEAR_SURFACE +
-ON_SURFACE + CONTACTS_SURFACE), runs the frozen mixed question set through the
-real Router, and writes the scorecard:
+ON_SURFACE + CONTACTS_SURFACE + ON_ENTITY_SURFACE), runs the frozen Phase 6
+mixed question set through the real Router, and writes:
 
-  scenes/replica_room_0/eval/phase5_router_qa_eval.json
+  scenes/replica_room_0/eval/phase6_router_qa_eval.json
 
-This is the first end-to-end "does the whole thing work?" evidence. It is a
-NEW reasoner-native eval track, NOT comparable to the v1 benchmark (which
-scores top-k retrieval). The graph here is an eval candidate, not a default
-builder path.
-
-Determinism: no timestamp; sorted keys + trailing newline; byte-identical on
-rerun (tested). Skip-on-missing: enriched-v2 importer output must exist.
-
-Run: python tools/phase5_router_qa_eval.py
+This is a reasoner-native eval track. It is NOT comparable to the v1
+benchmark, and it is NOT directly comparable to the P5 6/6 scorecard because
+the question set changed (Q3 defer->answer, Q7 new empty row).
 """
 from __future__ import annotations
 
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -35,10 +28,13 @@ from extractors.oracle_replica import OracleReplicaExtractor
 from graph.builder import ExtractorRun, build_graph
 from graph.relations.contacts_surface import ContactsSurfaceConfig, ContactsSurfaceExtractor
 from graph.relations.directional import DirectionalConfig, DirectionalExtractor
+from graph.relations.on_entity_surface import (
+    OnEntitySurfaceConfig,
+    OnEntitySurfaceExtractor,
+)
 from graph.relations.on_surface import OnSurfaceConfig, OnSurfaceExtractor
 from graph.relations.surface import SurfaceProximityConfig, SurfaceProximityExtractor
 from reasoner.base import CompletenessProfile, ExecutionContext
-from reasoner.base import CompileResult
 from reasoner.compiler_rules import RulesCompiler
 from reasoner.executor import RulesExecutor
 from reasoner.router import Router
@@ -48,48 +44,8 @@ from representations.mesh import MeshRepresentation
 
 REPLICA_SCENE_DIR = REPO_ROOT / "scenes" / "replica_room_0"
 REPLICA_V2_DIR = REPLICA_SCENE_DIR / "enriched" / "v2"
-QUESTIONS_PATH = REPO_ROOT / "eval" / "questions" / "phase5_mixed_qa.json"
-ARTIFACT_PATH = REPLICA_SCENE_DIR / "eval" / "phase5_router_qa_eval.json"
-
-
-_P5_ON_PATTERN = re.compile(r"what(?:'s| is) on (?:the )?(.+?)\??$")
-_P5_DEFERRED_ON_SURFACE = {
-    "table": "deferred: needs EntitySurface/tabletop geometry (not in P5)",
-    "tabletop": "deferred: needs EntitySurface/tabletop geometry (not in P5)",
-    "desk": "deferred: needs EntitySurface/tabletop geometry (not in P5)",
-    "chair": "deferred: needs EntitySurface/chair-seat geometry (not in P5)",
-    "seat": "deferred: needs EntitySurface/chair-seat geometry (not in P5)",
-    "stool": "deferred: needs EntitySurface/seat geometry (not in P5)",
-}
-
-
-def _normalize(text: str) -> str:
-    return re.sub(r"\s+", " ", text.strip().lower())
-
-
-class Phase5RulesCompiler(RulesCompiler):
-    """Frozen P5 compiler semantics for re-deriving P5 artifacts.
-
-    The main RulesCompiler advances in P6 and compiles table/chair support
-    through EntityClassRef. P5 scorecards remain comparable only if their
-    verifier keeps the P5 deferral semantics for those same questions.
-    """
-    name: str = "rules_v1_p5_frozen"
-
-    def compile(self, question, scene):
-        q = _normalize(question)
-        m = _P5_ON_PATTERN.match(q)
-        if m:
-            noun = m.group(1).rstrip(".?!").strip()
-            note = _P5_DEFERRED_ON_SURFACE.get(noun)
-            if note is not None:
-                return CompileResult(
-                    ast=None,
-                    outcome="out_of_schema",
-                    compiler_name=self.name,
-                    notes=note,
-                )
-        return super().compile(question, scene)
+QUESTIONS_PATH = REPO_ROOT / "eval" / "questions" / "phase6_mixed_qa.json"
+ARTIFACT_PATH = REPLICA_SCENE_DIR / "eval" / "phase6_router_qa_eval.json"
 
 
 def _build_replica_artifacts():
@@ -106,13 +62,13 @@ def _build_replica_artifacts():
 
 
 def _eval_runs() -> list[ExtractorRun]:
-    """The mixed eval-candidate graph: directional (sparse, matches the Q4
-    grounding) + polygon-mode NEAR_SURFACE + ON_SURFACE + CONTACTS_SURFACE."""
+    """The Phase 6 mixed eval-candidate graph; not a default builder path."""
     return [
         ExtractorRun(DirectionalExtractor(), DirectionalConfig(mode="sparse")),
         ExtractorRun(SurfaceProximityExtractor(), SurfaceProximityConfig(use_polygon_clip=True)),
         ExtractorRun(OnSurfaceExtractor(), OnSurfaceConfig()),
         ExtractorRun(ContactsSurfaceExtractor(), ContactsSurfaceConfig()),
+        ExtractorRun(OnEntitySurfaceExtractor(), OnEntitySurfaceConfig()),
     ]
 
 
@@ -127,6 +83,8 @@ def _extractor_configs(diag) -> list[dict]:
          "params": {"contact_threshold_m": 0.02, "penetration_tolerance_m": 0.03}},
         {"name": "contacts_surface", "version": versions.get("contacts_surface"),
          "params": {"contact_threshold_m": 0.02, "penetration_tolerance_m": 0.02}},
+        {"name": "on_entity_surface", "version": versions.get("on_entity_surface"),
+         "params": {"contact_threshold_m": 0.02, "penetration_tolerance_m": 0.03}},
     ]
 
 
@@ -142,7 +100,7 @@ def main() -> int:
     questions = json.loads(QUESTIONS_PATH.read_text(encoding="utf-8"))["questions"]
 
     router = Router(
-        compiler=Phase5RulesCompiler(), executor=RulesExecutor(),
+        compiler=RulesCompiler(), executor=RulesExecutor(),
         verbalizer=StandardVerbalizer(),
     )
     ctx = ExecutionContext(
@@ -152,14 +110,22 @@ def main() -> int:
     )
     scorecard = score_questions(questions, bundle, router, ctx)
 
+    entity_surface_edges = [e for e in bundle.edges if e.type == "ON_ENTITY_SURFACE"]
+    table_answer = next(
+        r for r in scorecard["per_question"] if r["question_id"] == "Q3"
+    )
+    chair_empty = next(
+        r for r in scorecard["per_question"] if r["question_id"] == "Q7"
+    )
     payload = {
         "scene_id": artifacts.scene_id,
-        "phase": "P5.04",
+        "phase": "P6.05",
         "artifact_kind": "router_qa_eval",
         "schema_version": 1,
         "graph": {
             "bundle_hash": bundle.bundle_hash,
             "edge_count": len(bundle.edges),
+            "on_entity_surface_edge_count": len(entity_surface_edges),
             "note": "explicit mixed eval-candidate graph; NOT a default builder path",
             "extractor_configs": _extractor_configs(diag),
         },
@@ -167,14 +133,27 @@ def main() -> int:
             "question_set": str(QUESTIONS_PATH.relative_to(REPO_ROOT)),
             **scorecard,
         },
+        "phase6_eval_definition_change": {
+            "q3": "defer -> answer because EntitySurface support exists",
+            "q7": "new honest-empty row; answerable relation with zero bindings",
+            "not_comparable_to_p5": True,
+        },
+        "summary": {
+            "q3_table_cited_uids": table_answer["cited_uids"],
+            "q7_chair_actual_outcome": chair_empty["actual_outcome"],
+            "on_entity_surface_pairs": sorted(
+                [e.source.uid, e.target.uid] for e in entity_surface_edges
+            ),
+        },
         "interpretation_limits": [
             "NOT comparable to the v1 benchmark; this is a separate "
             "reasoner-native eval track (scores Router answers/deferrals, "
             "not top-k retrieval).",
-            "deferral is detected via compile metadata, not Answer "
-            "self-description (Answer.outcome 'abstain' is overloaded across "
-            "deferred / generic out_of_schema / execution_error).",
+            "NOT directly comparable to the P5 6/6 scorecard; the question "
+            "set changed (Q3 defer->answer, Q7 new empty row).",
             "single scene (Replica room_0); not generalization evidence.",
+            "pot obj_43 is intentionally band-excluded at +0.0349 m float; "
+            "support-furniture classes are excluded as supported tabletop answers.",
         ],
         "determinism": {"timestamp_free": True},
     }
@@ -193,7 +172,7 @@ def main() -> int:
     print(f"  all_expected_outcomes_met: {agg['all_expected_outcomes_met']}")
     for r in scorecard["per_question"]:
         print(f"    {r['question_id']} {r['category']:13s} "
-              f"({r['expected_outcome']} -> {r['actual_outcome']}) {r['cited_uids'][:3]}")
+              f"({r['expected_outcome']} -> {r['actual_outcome']}) {r['cited_uids'][:5]}")
     return 0 if agg["all_expected_outcomes_met"] and agg["false_answer_count"] == 0 else 1
 
 
