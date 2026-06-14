@@ -1,0 +1,338 @@
+{
+  "accuracy_curve": [
+    {
+      "mean_false_on_table": 0.0,
+      "mean_rests_recovered": 5.0,
+      "p_all_five": 1.0,
+      "sigma_m": 0.0
+    },
+    {
+      "mean_false_on_table": 0.03333333333333333,
+      "mean_rests_recovered": 4.533333333333333,
+      "p_all_five": 0.5666666666666667,
+      "sigma_m": 0.005
+    },
+    {
+      "mean_false_on_table": 0.1,
+      "mean_rests_recovered": 3.7,
+      "p_all_five": 0.16666666666666666,
+      "sigma_m": 0.01
+    },
+    {
+      "mean_false_on_table": 0.2,
+      "mean_rests_recovered": 2.8666666666666667,
+      "p_all_five": 0.06666666666666667,
+      "sigma_m": 0.015
+    },
+    {
+      "mean_false_on_table": 0.26666666666666666,
+      "mean_rests_recovered": 2.3666666666666667,
+      "p_all_five": 0.03333333333333333,
+      "sigma_m": 0.02
+    },
+    {
+      "mean_false_on_table": 0.43333333333333335,
+      "mean_rests_recovered": 1.8,
+      "p_all_five": 0.0,
+      "sigma_m": 0.03
+    }
+  ],
+  "ground_truth_table": [
+    "obj_12",
+    "obj_59",
+    "obj_87",
+    "obj_90",
+    "obj_92"
+  ],
+  "monte_carlo_seeds": 30,
+  "named_backends": [
+    {
+      "backend": "oracle",
+      "blurb": "ground-truth boxes (baseline)",
+      "false_answer_count": 0,
+      "on_entity_surface_pairs": [
+        [
+          "obj_12",
+          "obj_11"
+        ],
+        [
+          "obj_35",
+          "obj_55"
+        ],
+        [
+          "obj_59",
+          "obj_11"
+        ],
+        [
+          "obj_87",
+          "obj_93"
+        ],
+        [
+          "obj_90",
+          "obj_93"
+        ],
+        [
+          "obj_92",
+          "obj_10"
+        ]
+      ],
+      "params": {
+        "global_dz": 0.0,
+        "jitter_sigma": 0.0,
+        "scale": 1.0,
+        "seed": 0
+      },
+      "q3_extra": [],
+      "q3_missing": [],
+      "q3_table_found": [
+        "obj_12",
+        "obj_59",
+        "obj_87",
+        "obj_90",
+        "obj_92"
+      ],
+      "qa_all_met": true,
+      "qa_category_counts": {
+        "correct_defer": 1,
+        "true_answer": 5,
+        "true_empty": 1
+      }
+    },
+    {
+      "backend": "global_drift_+3cm",
+      "blurb": "uniform +3cm height bias (whole scene floats)",
+      "false_answer_count": 0,
+      "on_entity_surface_pairs": [
+        [
+          "obj_12",
+          "obj_11"
+        ],
+        [
+          "obj_35",
+          "obj_55"
+        ],
+        [
+          "obj_59",
+          "obj_11"
+        ],
+        [
+          "obj_87",
+          "obj_93"
+        ],
+        [
+          "obj_90",
+          "obj_93"
+        ],
+        [
+          "obj_92",
+          "obj_10"
+        ]
+      ],
+      "params": {
+        "global_dz": 0.03,
+        "jitter_sigma": 0.0,
+        "scale": 1.0,
+        "seed": 0
+      },
+      "q3_extra": [],
+      "q3_missing": [],
+      "q3_table_found": [
+        "obj_12",
+        "obj_59",
+        "obj_87",
+        "obj_90",
+        "obj_92"
+      ],
+      "qa_all_met": true,
+      "qa_category_counts": {
+        "correct_defer": 1,
+        "true_answer": 5,
+        "true_empty": 1
+      }
+    },
+    {
+      "backend": "jitter_1cm",
+      "blurb": "independent per-object noise, sigma=1cm",
+      "false_answer_count": 0,
+      "on_entity_surface_pairs": [
+        [
+          "obj_12",
+          "obj_11"
+        ],
+        [
+          "obj_87",
+          "obj_93"
+        ],
+        [
+          "obj_90",
+          "obj_93"
+        ],
+        [
+          "obj_92",
+          "obj_10"
+        ]
+      ],
+      "params": {
+        "global_dz": 0.0,
+        "jitter_sigma": 0.01,
+        "scale": 1.0,
+        "seed": 1
+      },
+      "q3_extra": [],
+      "q3_missing": [
+        "obj_59"
+      ],
+      "q3_table_found": [
+        "obj_12",
+        "obj_87",
+        "obj_90",
+        "obj_92"
+      ],
+      "qa_all_met": false,
+      "qa_category_counts": {
+        "correct_defer": 1,
+        "miss": 2,
+        "true_answer": 3,
+        "true_empty": 1
+      }
+    },
+    {
+      "backend": "jitter_2cm",
+      "blurb": "independent per-object noise, sigma=2cm",
+      "false_answer_count": 0,
+      "on_entity_surface_pairs": [
+        [
+          "obj_35",
+          "obj_11"
+        ],
+        [
+          "obj_43",
+          "obj_11"
+        ],
+        [
+          "obj_63",
+          "obj_9"
+        ]
+      ],
+      "params": {
+        "global_dz": 0.0,
+        "jitter_sigma": 0.02,
+        "scale": 1.0,
+        "seed": 2
+      },
+      "q3_extra": [
+        "obj_35",
+        "obj_43"
+      ],
+      "q3_missing": [
+        "obj_12",
+        "obj_59",
+        "obj_87",
+        "obj_90",
+        "obj_92"
+      ],
+      "q3_table_found": [],
+      "qa_all_met": false,
+      "qa_category_counts": {
+        "correct_defer": 1,
+        "miss": 3,
+        "true_answer": 2,
+        "true_empty": 1
+      }
+    },
+    {
+      "backend": "jitter_3cm",
+      "blurb": "independent per-object noise, sigma=3cm",
+      "false_answer_count": 0,
+      "on_entity_surface_pairs": [
+        [
+          "obj_43",
+          "obj_11"
+        ],
+        [
+          "obj_59",
+          "obj_11"
+        ],
+        [
+          "obj_87",
+          "obj_93"
+        ],
+        [
+          "obj_92",
+          "obj_10"
+        ]
+      ],
+      "params": {
+        "global_dz": 0.0,
+        "jitter_sigma": 0.03,
+        "scale": 1.0,
+        "seed": 3
+      },
+      "q3_extra": [
+        "obj_43"
+      ],
+      "q3_missing": [
+        "obj_12",
+        "obj_90"
+      ],
+      "q3_table_found": [
+        "obj_59",
+        "obj_87",
+        "obj_92"
+      ],
+      "qa_all_met": false,
+      "qa_category_counts": {
+        "correct_defer": 1,
+        "miss": 2,
+        "true_answer": 3,
+        "true_empty": 1
+      }
+    },
+    {
+      "backend": "shrink_5pct",
+      "blurb": "boxes 5% smaller (GS under-segmentation)",
+      "false_answer_count": 0,
+      "on_entity_surface_pairs": [
+        [
+          "obj_12",
+          "obj_11"
+        ],
+        [
+          "obj_59",
+          "obj_11"
+        ],
+        [
+          "obj_90",
+          "obj_93"
+        ],
+        [
+          "obj_92",
+          "obj_10"
+        ]
+      ],
+      "params": {
+        "global_dz": 0.0,
+        "jitter_sigma": 0.0,
+        "scale": 0.95,
+        "seed": 0
+      },
+      "q3_extra": [],
+      "q3_missing": [
+        "obj_87"
+      ],
+      "q3_table_found": [
+        "obj_12",
+        "obj_59",
+        "obj_90",
+        "obj_92"
+      ],
+      "qa_all_met": false,
+      "qa_category_counts": {
+        "correct_defer": 1,
+        "miss": 2,
+        "true_answer": 3,
+        "true_empty": 1
+      }
+    }
+  ]
+}
