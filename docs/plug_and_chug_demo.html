@@ -168,7 +168,7 @@
       box-shadow: none;
       background:
         linear-gradient(90deg, rgba(255,255,255,0.96), rgba(255,255,255,0.78)),
-        url("../demo/replica_apartment_0_iso3d.png") center / cover no-repeat;
+        url("assets/replica_apartment_0_iso3d.png") center / cover no-repeat;
       min-height: clamp(360px, 54vh, 580px);
     }
 
@@ -655,9 +655,9 @@
       <span>plug-and-chug spatial scene reasoning</span>
     </div>
     <nav class="top-actions" aria-label="Demo links">
-      <a class="link-button" href="../scenes/replica_room_0/eval/phase7_exit_gate_report.json">Phase 7 report</a>
-      <a class="link-button" href="../eval/questions/phase7_mixed_qa.json">QA fixture</a>
-      <a class="link-button" href="../demo/README.md">Demo notes</a>
+      <a class="link-button" href="https://github.com/Deev09/surgical-graph-rag/blob/main/scenes/replica_room_0/eval/phase7_exit_gate_report.json">Phase 7 report</a>
+      <a class="link-button" href="https://github.com/Deev09/surgical-graph-rag/blob/main/eval/questions/phase7_mixed_qa.json">QA fixture</a>
+      <a class="link-button" href="https://github.com/Deev09/surgical-graph-rag/blob/main/demo/README.md">Demo notes</a>
     </nav>
   </header>
 
@@ -695,7 +695,7 @@
         <div id="scene-meta" class="scene-meta"></div>
       </div>
       <div class="image-frame">
-        <img id="scene-image" src="../demo/replica_apartment_0_questions.png" alt="Scene question visualization">
+        <img id="scene-image" src="assets/replica_apartment_0_questions.png" alt="Scene question visualization">
       </div>
       <div class="graph-frame" aria-label="Selected answer graph evidence">
         <div class="graph-head">
@@ -741,11 +741,11 @@
 
     <section class="deploy-note panel">
       <p>
-        Static deploy path: publish this page with the existing <code>demo/*.png</code>,
-        <code>eval/questions/*.json</code>, and <code>scenes/replica_room_0/eval/*.json</code>
-        files. Apartment rows are plausibility labels, not a ground-truth accuracy benchmark.
+        Static deploy path: GitHub Pages publishes from <code>/docs</code>. The rendered
+        PNG assets live in <code>docs/assets/</code>; source fixtures and reports stay
+        in the repo. Apartment rows are plausibility labels, not a ground-truth accuracy benchmark.
       </p>
-      <a class="link-button" href="../demo/real_scene_demo.py">View demo runner</a>
+      <a class="link-button" href="https://github.com/Deev09/surgical-graph-rag/blob/main/demo/real_scene_demo.py">View demo runner</a>
     </section>
   </main>
 
@@ -754,7 +754,7 @@
       apartment: {
         title: "Replica apartment_0",
         kind: "Unseen plug-and-chug scene",
-        image: "../demo/replica_apartment_0_questions.png",
+        image: "assets/replica_apartment_0_questions.png",
         meta: ["346 objects", "69 surfaces", "ATTACHED_TO: 3", "plausibility labels"],
         strip: [
           ["7", "binding questions"],
@@ -829,7 +829,7 @@
       room: {
         title: "Replica room_0",
         kind: "Validated regression scene",
-        image: "../demo/replica_room_0_questions.png",
+        image: "assets/replica_room_0_questions.png",
         meta: ["73 objects", "room_0 gate", "ATTACHED_TO: 0", "grounded support pairs"],
         strip: [
           ["0", "attached wall objects"],
