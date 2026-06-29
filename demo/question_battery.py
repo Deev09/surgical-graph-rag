@@ -20,6 +20,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from demo.replica_habitat_import import import_habitat_room
 from graph.builder import ExtractorRun, build_graph
+from graph.relations.attached_to import AttachedToConfig, AttachedToExtractor
 from graph.relations.contacts_surface import ContactsSurfaceConfig, ContactsSurfaceExtractor
 from graph.relations.directional import DirectionalConfig, DirectionalExtractor
 from graph.relations.on_entity_surface import OnEntitySurfaceConfig, OnEntitySurfaceExtractor
@@ -37,7 +38,7 @@ STRUCTURAL_Q = [
     "what is on the floor?",
     "what is against the wall?",
     "what is near the wall?",
-    "what is attached to the wall?",   # expect DEFER (no ATTACHED_TO relation)
+    "what is attached to the wall?",
 ]
 # one support question per allowlisted support class
 SUPPORT_Q = [f"what is on the {c}?" for c in
@@ -53,6 +54,7 @@ def _runs():
         ExtractorRun(OnSurfaceExtractor(), OnSurfaceConfig()),
         ExtractorRun(ContactsSurfaceExtractor(), ContactsSurfaceConfig()),
         ExtractorRun(OnEntitySurfaceExtractor(), OnEntitySurfaceConfig()),
+        ExtractorRun(AttachedToExtractor(), AttachedToConfig()),
     ]
 
 

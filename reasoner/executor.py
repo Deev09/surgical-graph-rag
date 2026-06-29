@@ -173,7 +173,7 @@ def _operand_role(constraint: EdgeConstraint) -> tuple[Variable, EntityRef, str]
 
 
 _SURFACE_RELATION_TYPES: frozenset[EdgeType] = frozenset(
-    {"NEAR_SURFACE", "CONTACTS_SURFACE"}
+    {"NEAR_SURFACE", "CONTACTS_SURFACE", "ATTACHED_TO"}
 )
 
 
@@ -189,7 +189,7 @@ class RulesExecutor:
         ctx: ExecutionContext,
     ) -> ExecutionResult:
         """RELATION(?x, SurfaceRef(type)) over a STORED entity->surface
-        relation (NEAR_SURFACE / CONTACTS_SURFACE). Resolves the SurfaceRef
+        relation (NEAR_SURFACE / CONTACTS_SURFACE / ATTACHED_TO). Resolves the SurfaceRef
         against structural_surfaces by type, scans stored edges of
         constraint.type, binds the entity source, and cites the stored edge.
         No inverse/canonical lookup -- these relations are stored one-
@@ -434,8 +434,8 @@ class RulesExecutor:
         if constraint.type == "SUPPORTS":
             return self._execute_supports(constraint, graph, ctx)
 
-        # P5.03: SurfaceRef-anchored stored entity->surface relations
-        # (NEAR_SURFACE, CONTACTS_SURFACE). One parameterized branch; the
+        # P5.03/P7: SurfaceRef-anchored stored entity->surface relations
+        # (NEAR_SURFACE, CONTACTS_SURFACE, ATTACHED_TO). One parameterized branch; the
         # relation is constraint.type. No inverse/canonical lookup (these are
         # stored one-direction only).
         if constraint.type in _SURFACE_RELATION_TYPES:

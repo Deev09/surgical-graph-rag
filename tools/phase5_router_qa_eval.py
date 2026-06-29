@@ -39,7 +39,7 @@ from graph.relations.on_surface import OnSurfaceConfig, OnSurfaceExtractor
 from graph.relations.surface import SurfaceProximityConfig, SurfaceProximityExtractor
 from reasoner.base import CompletenessProfile, ExecutionContext
 from reasoner.base import CompileResult
-from reasoner.compiler_rules import RulesCompiler
+from reasoner.compiler_rules import Phase6RulesCompiler
 from reasoner.executor import RulesExecutor
 from reasoner.router import Router
 from reasoner.verbalizer import StandardVerbalizer
@@ -67,7 +67,7 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip().lower())
 
 
-class Phase5RulesCompiler(RulesCompiler):
+class Phase5RulesCompiler(Phase6RulesCompiler):
     """Frozen P5 compiler semantics for re-deriving P5 artifacts.
 
     The main RulesCompiler advances in P6 and compiles table/chair support

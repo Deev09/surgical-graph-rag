@@ -6,7 +6,7 @@ support (table / chair), from one raw habitat/info_semantic.json, no per-scene c
   python3 demo/real_scene_demo.py /path/to/replica/room_1 replica_room_1
 
 Relations exercised: NEAR_SURFACE, ON_SURFACE (floor), CONTACTS_SURFACE (wall),
-ON_ENTITY_SURFACE (furniture top), plus directional.
+ATTACHED_TO (wall-mounted), ON_ENTITY_SURFACE (furniture top), plus directional.
 
 For room_0 it asserts the imported boxes reproduce the committed enriched_v2
 support pairs (the 5 table rests + the plant-stand rest) -- proving the importer
@@ -24,6 +24,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from demo.replica_habitat_import import import_habitat_room
 from graph.builder import ExtractorRun, build_graph
+from graph.relations.attached_to import AttachedToConfig, AttachedToExtractor
 from graph.relations.contacts_surface import (
     ContactsSurfaceConfig,
     ContactsSurfaceExtractor,
@@ -50,6 +51,7 @@ ROOM0_PLANTSTAND = ("obj_35", "obj_55")
 QUESTIONS = [
     "what is on the floor?",       # on_surface  (structural floor)
     "what is against the wall?",   # contacts_surface (structural wall)
+    "what is attached to the wall?",  # attached_to (wall-mounted)
     "what is near the wall?",      # near_surface (structural wall)
     "what is on the table?",       # on_entity_surface (furniture top)
     "what is on the chair?",       # on_entity_surface (expect empty)
@@ -68,6 +70,7 @@ def run(room_dir: Path, scene_id: str):
                          SurfaceProximityConfig(use_polygon_clip=True)),
             ExtractorRun(OnSurfaceExtractor(), OnSurfaceConfig()),
             ExtractorRun(ContactsSurfaceExtractor(), ContactsSurfaceConfig()),
+            ExtractorRun(AttachedToExtractor(), AttachedToConfig()),
             ExtractorRun(OnEntitySurfaceExtractor(), OnEntitySurfaceConfig()),
         ],
         density_policy="phase2_telemetry_only",
@@ -79,6 +82,7 @@ def run(room_dir: Path, scene_id: str):
 
     labels = {e.identity.object_uid: e.identity.display_label for e in arts.entities}
     ent_edges = [e for e in bundle.edges if e.type == "ON_ENTITY_SURFACE"]
+    attached_edges = [e for e in bundle.edges if e.type == "ATTACHED_TO"]
 
     surf_counts: dict[str, int] = {}
     for s in arts.structural_surfaces:
@@ -104,6 +108,11 @@ def run(room_dir: Path, scene_id: str):
         oc = e.evidence.get("owner_class")
         print(f"   {e.source.uid}:{labels.get(e.source.uid,'?'):16} ON  "
               f"{e.target.uid}:{labels.get(e.target.uid,'?'):16} ({oc})")
+    print("\n--- all attached pairs (object  ATTACHED_TO  wall) ---")
+    if not attached_edges:
+        print("   (none)")
+    for e in sorted(attached_edges, key=lambda e: e.source.uid):
+        print(f"   {e.source.uid}:{labels.get(e.source.uid,'?'):16} ATTACHED_TO  {e.target.uid}")
     return bundle, ent_edges, labels
 
 

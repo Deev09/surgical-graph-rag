@@ -37,7 +37,7 @@ from graph.relations.on_entity_surface import (
 )
 from graph.serde import dump_scene_graph_bundle, load_scene_graph_bundle
 from reasoner.base import CompletenessProfile, ExecutionContext
-from reasoner.compiler_rules import RulesCompiler
+from reasoner.compiler_rules import Phase6RulesCompiler
 from reasoner.executor import RulesExecutor
 from reasoner.router import Router
 from reasoner.verbalizer import StandardVerbalizer
@@ -64,7 +64,7 @@ def _oracle_ctx() -> ExecutionContext:
 
 
 def _router() -> Router:
-    return Router(compiler=RulesCompiler(), executor=RulesExecutor(),
+    return Router(compiler=Phase6RulesCompiler(), executor=RulesExecutor(),
                   verbalizer=StandardVerbalizer())
 
 
@@ -281,12 +281,14 @@ def _gate_g6(artifacts) -> tuple[bool, dict]:
     n_on = sum(1 for e in bundle.edges if e.type == "ON_SURFACE")
     n_cs = sum(1 for e in bundle.edges if e.type == "CONTACTS_SURFACE")
     n_oes = sum(1 for e in bundle.edges if e.type == "ON_ENTITY_SURFACE")
-    ok = all(report_passes) and n_on == 0 and n_cs == 0 and n_oes == 0
+    n_attached = sum(1 for e in bundle.edges if e.type == "ATTACHED_TO")
+    ok = all(report_passes) and n_on == 0 and n_cs == 0 and n_oes == 0 and n_attached == 0
     return ok, {
         "prior_phase_reports_overall_pass": report_passes,
         "default_build_on_surface_edges": n_on,
         "default_build_contacts_surface_edges": n_cs,
         "default_build_on_entity_surface_edges": n_oes,
+        "default_build_attached_to_edges": n_attached,
     }
 
 
@@ -306,7 +308,7 @@ def _gate_schema(artifacts) -> tuple[bool, dict]:
     bundle = _combined_bundle(artifacts)
     has_oes = any(e.type == "ON_ENTITY_SURFACE" for e in bundle.edges)
     roundtrip_ok = False
-    v4_rejected = False
+    v5_rejected = False
     with tempfile.TemporaryDirectory() as td:
         out = Path(td) / "bundle"
         dump_scene_graph_bundle(bundle, out)
@@ -315,16 +317,16 @@ def _gate_schema(artifacts) -> tuple[bool, dict]:
             e.type == "ON_ENTITY_SURFACE" for e in loaded.edges)
         manifest = out / "manifest.json"
         payload = json.loads(manifest.read_text(encoding="utf-8"))
-        payload["schema_version"] = 4
+        payload["schema_version"] = 5
         manifest.write_text(json.dumps(payload))
         try:
             load_scene_graph_bundle(out)
         except SchemaVersionError:
-            v4_rejected = True
-    ok = has_oes and roundtrip_ok and v4_rejected
+            v5_rejected = True
+    ok = has_oes and roundtrip_ok and v5_rejected
     return ok, {
-        "v5_on_entity_surface_roundtrip_ok": roundtrip_ok,
-        "v4_manifest_strict_rejected": v4_rejected,
+        "v6_on_entity_surface_roundtrip_ok": roundtrip_ok,
+        "v5_manifest_strict_rejected": v5_rejected,
         "bundle_had_on_entity_surface_edge": has_oes,
     }
 
@@ -389,7 +391,7 @@ def main() -> int:
             "method": "static path byte sha256 snapshot before/after; verifier writes only its own report",
         }),
         "G8_threshold_sanity_enforced": (g8_pass, g8),
-        "schema_v5_roundtrip_and_v4_rejection": (schema_pass, schema),
+        "schema_v6_roundtrip_and_v5_rejection": (schema_pass, schema),
     }
     overall = all(p for p, _ in gates.values())
 

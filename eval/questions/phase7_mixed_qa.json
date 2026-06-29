@@ -1,0 +1,60 @@
+{
+  "schema": "phase7_mixed_qa",
+  "schema_version": 1,
+  "fixture_id": "replica_apartment_0_phase7_mixed_qa_v1",
+  "scene_id": "replica_apartment_0",
+  "answer_key_type": "plausibility_labels_not_ground_truth",
+  "description": "Phase 7 demo QA set on the unseen Replica apartment_0 import. Q6 flips from Phase 6 defer to answer because ATTACHED_TO now exists. These rows are for demo/plausibility review, not an accuracy benchmark: apartment_0 does not have the same measured ground-truth answer key as replica_room_0.",
+  "phase7_eval_definition_change": {
+    "statement": "Q6 'what is attached to the wall?' changes from expected_outcome 'defer' in Phase 6 to expected_outcome 'answer' in Phase 7 because ATTACHED_TO is now a stored entity->wall relation. This is a benchmark-definition change, not a model improvement on the Phase 6 scorecard.",
+    "not_comparable_to_phase6": true,
+    "not_comparable_to_v1_benchmark": true
+  },
+  "questions": [
+    {
+      "question_id": "Q1",
+      "question": "what is against the wall?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_176", "obj_260", "obj_309"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "CONTACTS_SURFACE (wall contact, broader than attachment)",
+      "notes": "Plausibility row. Includes the three attached positives, plus floor-level wall contacts such as curtain/door/refrigerator."
+    },
+    {
+      "question_id": "Q2",
+      "question": "what is attached to the wall?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_176", "obj_260", "obj_309"],
+      "expected_must_not_contain": ["obj_422", "obj_139", "obj_262"],
+      "relation_under_test": "ATTACHED_TO (wall contact AND not floor-supported)",
+      "notes": "Plausibility row. obj_176=vent, obj_260=sink, obj_309=lamp/sconce-like light. Floor-level wall contacts are excluded."
+    },
+    {
+      "question_id": "Q3",
+      "question": "what is on the table?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_432", "obj_121", "obj_100", "obj_137", "obj_49"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "ON_ENTITY_SURFACE / SUPPORTS-over-entity",
+      "notes": "Plausibility row exercising the Phase 6 support path on the same unseen scene."
+    },
+    {
+      "question_id": "Q4",
+      "question": "what is on the desk?",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_376", "obj_166", "obj_212"],
+      "expected_must_not_contain": [],
+      "relation_under_test": "ON_ENTITY_SURFACE / SUPPORTS-over-entity",
+      "notes": "Plausibility row showing the same support compiler generalizes across support classes."
+    },
+    {
+      "question_id": "Q5",
+      "question": "what is on the chair?",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "relation_under_test": "ON_ENTITY_SURFACE / SUPPORTS-over-entity",
+      "notes": "Answerable relation with zero bindings. This is not a deferral."
+    }
+  ]
+}

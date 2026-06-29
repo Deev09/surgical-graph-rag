@@ -74,7 +74,7 @@ def test_overall_and_each_gate_pass() -> None:
         "G6_default_path_preserved",
         "G7_prior_artifacts_untouched",
         "G8_threshold_sanity_enforced",
-        "schema_v5_roundtrip_and_v4_rejection",
+        "schema_v6_roundtrip_and_v5_rejection",
     }
     if set(p["gates"].keys()) != expected:
         raise AssertionError(f"gate set drift: {set(p['gates'])} != {expected}")
@@ -124,14 +124,16 @@ def test_g5_and_g6_regression_isolation() -> None:
         raise AssertionError("default build must have 0 CONTACTS_SURFACE")
     if g6["default_build_on_entity_surface_edges"] != 0:
         raise AssertionError("default build must have 0 ON_ENTITY_SURFACE")
+    if g6["default_build_attached_to_edges"] != 0:
+        raise AssertionError("default build must have 0 ATTACHED_TO")
 
 
 def test_schema_gate_passes() -> None:
-    s = _load()["gates"]["schema_v5_roundtrip_and_v4_rejection"]
-    if not s["v5_on_entity_surface_roundtrip_ok"]:
-        raise AssertionError("v5 round-trip failed")
-    if not s["v4_manifest_strict_rejected"]:
-        raise AssertionError("v4 not rejected")
+    s = _load()["gates"]["schema_v6_roundtrip_and_v5_rejection"]
+    if not s["v6_on_entity_surface_roundtrip_ok"]:
+        raise AssertionError("v6 round-trip failed")
+    if not s["v5_manifest_strict_rejected"]:
+        raise AssertionError("v5 not rejected")
 
 
 def test_artifact_stability_claims() -> None:

@@ -20,7 +20,7 @@ from graph.schema import (
     SceneGraphBundle, SurfaceRecord,
 )
 
-CURRENT_SCHEMA_VERSION = 5  # P6.02: EdgeType gained ON_ENTITY_SURFACE (entity-top support). v4 bundles reject under strict v5 load (no migration path).
+CURRENT_SCHEMA_VERSION = 6  # P7.02: ATTACHED_TO is now emitted/serialized as a stored entity->wall relation. v5 bundles reject under strict v6 load (no migration path).
 
 _VALID_SURFACE_TYPES = ("floor", "wall", "ceiling")
 _VALID_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")

@@ -46,12 +46,11 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip().lower())
 
 
-# P4.04 — "on the X" support queries (floor answerable via SUPPORTS; others
-# deferred). P5.03 — "against the wall" -> CONTACTS_SURFACE, "near the wall"
-# -> NEAR_SURFACE (both SurfaceRef-anchored stored relations), and "attached
-# to the X" -> deferred (ATTACHED_TO not in P5; attachment never routes
-# through contact). Deferred = out_of_schema with a "deferred:" note, NOT
-# parser_failure and NOT empty.
+# P4.04 — "on the X" support queries. P5.03 — "against the wall" ->
+# CONTACTS_SURFACE, "near the wall" -> NEAR_SURFACE. P7 — "attached to the
+# wall" -> ATTACHED_TO. All three wall/surface relations compile to
+# SurfaceRef-anchored stored relations; older phase tools use frozen compiler
+# subclasses below to preserve their deferred attachment semantics.
 _ON_PATTERN = re.compile(r"what(?:'s| is) on (?:the )?(.+?)\??$")
 _AGAINST_PATTERN = re.compile(r"what(?:'s| is) against (?:the )?(.+?)\??$")
 _NEAR_PATTERN = re.compile(r"what(?:'s| is) near (?:the )?(.+?)\??$")
@@ -79,7 +78,10 @@ _DEFERRED_AGAINST = (
     "surface is not a wall"
 )
 _DEFERRED_ATTACHED = (
-    "deferred: ATTACHED_TO is not in P5 ('against' != 'attached'); attachment "
+    "deferred: ATTACHED_TO currently supports wall surfaces only"
+)
+_DEFERRED_ATTACHED_P6 = (
+    "deferred: ATTACHED_TO is not in P6 ('against' != 'attached'); attachment "
     "needs more than wall contact"
 )
 
@@ -145,8 +147,11 @@ class RulesCompiler:
             )
         m = _ATTACHED_PATTERN.match(q)
         if m:
-            # "attached to the X" -> always deferred; never routes through
-            # contact (D2: 'against' != 'attached').
+            noun = m.group(1).rstrip(".?!").strip()
+            if noun == "wall":
+                return self._surface_relation_result(
+                    "ATTACHED_TO", "wall", "attached_to_wall_pattern",
+                )
             return CompileResult(
                 ast=None, outcome="out_of_schema",
                 compiler_name=self.name, notes=_DEFERRED_ATTACHED,
@@ -235,3 +240,24 @@ class RulesCompiler:
             compiler_name=self.name,
             notes="no rule pattern matched",
         )
+
+
+class Phase6RulesCompiler(RulesCompiler):
+    """Frozen P6 compiler semantics for re-deriving P6 artifacts.
+
+    The main RulesCompiler advances in P7 and compiles "attached to the wall"
+    through ATTACHED_TO. P6 scorecards remain comparable only if their verifier
+    keeps the P6 deferral semantics for the same question.
+    """
+    name: str = "rules_v1_p6_frozen"
+
+    def compile(self, question: str, scene: SceneGraphBundle) -> CompileResult:
+        q = _normalize(question)
+        if _ATTACHED_PATTERN.match(q):
+            return CompileResult(
+                ast=None,
+                outcome="out_of_schema",
+                compiler_name=self.name,
+                notes=_DEFERRED_ATTACHED_P6,
+            )
+        return super().compile(question, scene)

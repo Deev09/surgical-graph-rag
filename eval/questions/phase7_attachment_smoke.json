@@ -1,0 +1,55 @@
+{
+  "schema": "phase7_attachment_smoke",
+  "schema_version": 1,
+  "fixture_id": "phase7_attachment_smoke_v1",
+  "scene_id": "synthetic_attachment_wall_floor",
+  "description": "Synthetic ATTACHED_TO smoke cases. Positive means wall-contact plus not floor-supported; negatives separate floor-standing wall contact from no wall contact. This fixture is geometry smoke coverage, not a real-scene accuracy key.",
+  "config_defaults": {
+    "contact_threshold_m": 0.02,
+    "penetration_tolerance_m": 0.02,
+    "floor_contact_threshold_m": 0.02,
+    "floor_penetration_tolerance_m": 0.03
+  },
+  "surfaces": {
+    "wall_1": {
+      "surface_uid": "wall_1",
+      "surface_type": "wall",
+      "plane": {"a": 0.0, "b": 1.0, "c": 0.0, "d": 0.0},
+      "polygon": [[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 0.0, 2.0], [-1.0, 0.0, 2.0]],
+      "source": "habitat_label"
+    },
+    "floor_1": {
+      "surface_uid": "floor_1",
+      "surface_type": "floor",
+      "plane": {"a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0},
+      "polygon": [[-1.0, -0.5, 0.0], [1.0, -0.5, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]],
+      "source": "habitat_label"
+    }
+  },
+  "cases": [
+    {
+      "id": "A1_mounted_positive",
+      "entity_uid": "obj_sconce",
+      "entity_aabb": {"min": [-0.1, 0.0, 1.0], "max": [0.1, 0.1, 1.2]},
+      "entity_centroid": [0.0, 0.05, 1.1],
+      "expected_attached_to": true,
+      "expected_reason": "wall contact and not floor-supported"
+    },
+    {
+      "id": "A2_floor_standing_negative",
+      "entity_uid": "obj_floor_lamp",
+      "entity_aabb": {"min": [-0.1, 0.0, 0.0], "max": [0.1, 0.1, 1.2]},
+      "entity_centroid": [0.0, 0.05, 0.6],
+      "expected_attached_to": false,
+      "expected_rejection": "attached_to_floor_supported"
+    },
+    {
+      "id": "A3_not_wall_contact_negative",
+      "entity_uid": "obj_floating_box",
+      "entity_aabb": {"min": [-0.1, 0.2, 1.0], "max": [0.1, 0.3, 1.2]},
+      "entity_centroid": [0.0, 0.25, 1.1],
+      "expected_attached_to": false,
+      "expected_rejection": "wall_contact_clauses_failed"
+    }
+  ]
+}

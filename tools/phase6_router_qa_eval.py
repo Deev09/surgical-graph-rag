@@ -35,7 +35,7 @@ from graph.relations.on_entity_surface import (
 from graph.relations.on_surface import OnSurfaceConfig, OnSurfaceExtractor
 from graph.relations.surface import SurfaceProximityConfig, SurfaceProximityExtractor
 from reasoner.base import CompletenessProfile, ExecutionContext
-from reasoner.compiler_rules import RulesCompiler
+from reasoner.compiler_rules import Phase6RulesCompiler
 from reasoner.executor import RulesExecutor
 from reasoner.router import Router
 from reasoner.verbalizer import StandardVerbalizer
@@ -100,7 +100,7 @@ def main() -> int:
     questions = json.loads(QUESTIONS_PATH.read_text(encoding="utf-8"))["questions"]
 
     router = Router(
-        compiler=RulesCompiler(), executor=RulesExecutor(),
+        compiler=Phase6RulesCompiler(), executor=RulesExecutor(),
         verbalizer=StandardVerbalizer(),
     )
     ctx = ExecutionContext(

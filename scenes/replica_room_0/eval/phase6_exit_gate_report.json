@@ -84,6 +84,7 @@
       "wall_outcome": "bindings"
     },
     "G6_default_path_preserved": {
+      "default_build_attached_to_edges": 0,
       "default_build_contacts_surface_edges": 0,
       "default_build_on_entity_surface_edges": 0,
       "default_build_on_surface_edges": 0,
@@ -107,11 +108,11 @@
       "pass": true,
       "raised_value_error": true
     },
-    "schema_v5_roundtrip_and_v4_rejection": {
+    "schema_v6_roundtrip_and_v5_rejection": {
       "bundle_had_on_entity_surface_edge": true,
       "pass": true,
-      "v4_manifest_strict_rejected": true,
-      "v5_on_entity_surface_roundtrip_ok": true
+      "v5_manifest_strict_rejected": true,
+      "v6_on_entity_surface_roundtrip_ok": true
     }
   },
   "overall_blocking_pass": true,

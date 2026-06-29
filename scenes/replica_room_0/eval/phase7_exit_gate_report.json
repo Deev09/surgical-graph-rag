@@ -1,0 +1,201 @@
+{
+  "artifact_kind": "phase7_exit_gate_report",
+  "benchmark_semantics": {
+    "apartment0": "plausibility/demo labels only, not ground-truth accuracy",
+    "not_comparable_to_phase6_scorecard": true,
+    "not_comparable_to_v1": true,
+    "phase6_q6": "defer under Phase6RulesCompiler",
+    "phase7_q6": "answer under RulesCompiler when ATTACHED_TO edges exist"
+  },
+  "demo_commands": [
+    "python3 demo/question_battery.py /Users/deevyaswain/Desktop/datasets/replica/apartment_0 replica_apartment_0",
+    "python3 demo/real_scene_demo.py /Users/deevyaswain/Desktop/datasets/replica/apartment_0 replica_apartment_0"
+  ],
+  "extractor_version": "0.1",
+  "gates": {
+    "G1_schema_v6_attached_to_roundtrip_and_v5_rejection": {
+      "attached_to_roundtrip_ok": true,
+      "pass": true,
+      "schema_version": 6,
+      "v5_manifest_strict_rejected": true
+    },
+    "G2_attachment_smoke_fixture": {
+      "emitted_entities": [
+        "obj_sconce"
+      ],
+      "failures": [],
+      "pass": true,
+      "rejection_reasons": {
+        "A2_floor_standing_negative": [
+          "attached_to_floor_supported"
+        ],
+        "A3_not_wall_contact_negative": [
+          "wall_contact_clauses_failed"
+        ]
+      }
+    },
+    "G3_room0_honest_empty": {
+      "answer_outcome": "empty",
+      "attached_to_edge_count": 0,
+      "cited_uids": [],
+      "pass": true
+    },
+    "G4_compiler_p7_answer_and_p6_freeze": {
+      "p6_notes": "deferred: ATTACHED_TO is not in P6 ('against' != 'attached'); attachment needs more than wall contact",
+      "p6_outcome": "out_of_schema",
+      "p7_edge_type": "ATTACHED_TO",
+      "p7_outcome": "compiled",
+      "pass": true
+    },
+    "G5_executor_answers_attached_to": {
+      "cited_edges": [
+        "att_demo_1"
+      ],
+      "cited_uids": [
+        "obj_sconce"
+      ],
+      "outcome": "bindings",
+      "pass": true,
+      "text": "The wall sconce."
+    },
+    "G6_phase6_exit_gate_still_passes": {
+      "pass": true,
+      "phase6_exit_gate_rc": 0
+    },
+    "G7_default_path_preserved": {
+      "default_build_edge_counts": {
+        "ATTACHED_TO": 0,
+        "CONTACTS_SURFACE": 0,
+        "ON_ENTITY_SURFACE": 0,
+        "ON_SURFACE": 0
+      },
+      "pass": true
+    },
+    "G8_attached_to_determinism": {
+      "bundle_hash_a": "graph_8a584651a3e32def",
+      "bundle_hash_b": "graph_8a584651a3e32def",
+      "edge_ids_a": [],
+      "edge_ids_b": [],
+      "pass": true
+    },
+    "G9_apartment0_demo_plausibility": {
+      "aggregate": {
+        "all_expected_outcomes_met": true,
+        "category_counts": {
+          "true_answer": 4,
+          "true_empty": 1
+        },
+        "false_answer_count": 0,
+        "miss_count": 0,
+        "total_questions": 5,
+        "unexpected_count": 0
+      },
+      "answer_key_type": "plausibility_labels_not_ground_truth",
+      "attached_to_entities": [
+        "obj_176",
+        "obj_260",
+        "obj_309"
+      ],
+      "pass": true,
+      "per_question": [
+        {
+          "actual_outcome": "bindings",
+          "category": "true_answer",
+          "cited_edges": [
+            "e_30b4be4534805dad",
+            "e_59d1827292bff7f3",
+            "e_64f91fc4f11b1dae",
+            "e_89210b5ffed53974",
+            "e_9f534ae71b987767",
+            "e_ae2011b80608c9e7"
+          ],
+          "cited_uids": [
+            "obj_139",
+            "obj_176",
+            "obj_260",
+            "obj_262",
+            "obj_309",
+            "obj_422"
+          ],
+          "deferred": false,
+          "expected_outcome": "answer",
+          "question": "what is against the wall?",
+          "question_id": "Q1"
+        },
+        {
+          "actual_outcome": "bindings",
+          "category": "true_answer",
+          "cited_edges": [
+            "e_0504ad6ae548f77b",
+            "e_c686a7acc5b05d95",
+            "e_f2276e67c88444a2"
+          ],
+          "cited_uids": [
+            "obj_176",
+            "obj_260",
+            "obj_309"
+          ],
+          "deferred": false,
+          "expected_outcome": "answer",
+          "question": "what is attached to the wall?",
+          "question_id": "Q2"
+        },
+        {
+          "actual_outcome": "bindings",
+          "category": "true_answer",
+          "cited_edges": [
+            "e_15322a5f394acede",
+            "e_70b1e930dc149df5",
+            "e_986aca6d572b30a9",
+            "e_a45c1a30f843ef4b",
+            "e_d2c630f2ddbae77a"
+          ],
+          "cited_uids": [
+            "obj_100",
+            "obj_121",
+            "obj_137",
+            "obj_432",
+            "obj_49"
+          ],
+          "deferred": false,
+          "expected_outcome": "answer",
+          "question": "what is on the table?",
+          "question_id": "Q3"
+        },
+        {
+          "actual_outcome": "bindings",
+          "category": "true_answer",
+          "cited_edges": [
+            "e_38b06f01549be997",
+            "e_458685a230eded14",
+            "e_b7eb3b1085e8c8d6"
+          ],
+          "cited_uids": [
+            "obj_166",
+            "obj_212",
+            "obj_376"
+          ],
+          "deferred": false,
+          "expected_outcome": "answer",
+          "question": "what is on the desk?",
+          "question_id": "Q4"
+        },
+        {
+          "actual_outcome": "empty",
+          "category": "true_empty",
+          "cited_edges": [],
+          "cited_uids": [],
+          "deferred": false,
+          "expected_outcome": "empty",
+          "question": "what is on the chair?",
+          "question_id": "Q5"
+        }
+      ],
+      "question_set": "eval/questions/phase7_mixed_qa.json",
+      "skipped": false
+    }
+  },
+  "overall_blocking_pass": true,
+  "phase": "P7.03",
+  "schema_version": 1
+}

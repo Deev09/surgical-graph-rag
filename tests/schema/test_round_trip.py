@@ -524,6 +524,51 @@ def test_on_entity_surface_edge_roundtrips_under_v5() -> None:
         raise AssertionError("ON_ENTITY_SURFACE target must remain entity ref")
 
 
+def test_attached_to_edge_roundtrips_under_v6() -> None:
+    """P7.02: ATTACHED_TO is accepted by graph serde.
+    The stored edge is entity -> wall surface."""
+    from dataclasses import replace
+    base = make_scene_graph_bundle()
+    wall = SurfaceRecord(
+        uid="surf_wall",
+        surface_type="wall",
+        plane=Plane(a=0.0, b=1.0, c=0.0, d=-5.0),
+        polygon=[(0.0, 5.0, 0.0), (1.0, 5.0, 0.0), (1.0, 5.0, 1.0), (0.0, 5.0, 1.0)],
+        source="habitat_label",
+        confidence=1.0,
+    )
+    edge = Edge(
+        edge_id="e_attached_to_1",
+        source=GraphRef(kind="entity", uid="obj_1"),
+        type="ATTACHED_TO",
+        target=GraphRef(kind="surface", uid="surf_wall"),
+        frame="world",
+        weight=1.0,
+        confidence=1.0,
+        extractor="attached_to",
+        extractor_version="0.1",
+        evidence={
+            "wall_gap_m": 0.0,
+            "floor_supported": False,
+            "contact_threshold_m": 0.02,
+        },
+    )
+    original = replace(
+        base,
+        edges=list(base.edges) + [edge],
+        structural_surface_refs=list(base.structural_surface_refs) + ["surf_wall"],
+        structural_surfaces=list(base.structural_surfaces) + [wall],
+    )
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        loaded = load_scene_graph_bundle(out)
+    _assert_equal(original, loaded, "SceneGraphBundle(ATTACHED_TO)")
+    loaded_edge = next(e for e in loaded.edges if e.type == "ATTACHED_TO")
+    if loaded_edge.target.kind != "surface":
+        raise AssertionError("ATTACHED_TO target must remain surface ref")
+
+
 def test_graph_schema_v3_rejected_under_v4() -> None:
     """P5.02 / D4: strict v4 loader rejects a manually-downgraded v3 graph
     manifest. No migration path; old v3 graph bundles are not silently
@@ -559,6 +604,23 @@ def test_graph_schema_v4_rejected_under_v5() -> None:
         except SchemaVersionError:
             return
         raise AssertionError("expected SchemaVersionError for v4 under strict v5")
+
+
+def test_graph_schema_v5_rejected_under_v6() -> None:
+    """P7.02: strict v6 loader rejects a manually-downgraded v5 graph."""
+    original = make_scene_graph_bundle()
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "bundle"
+        dump_scene_graph_bundle(original, out)
+        m = out / "manifest.json"
+        payload = json.loads(m.read_text())
+        payload["schema_version"] = 5
+        m.write_text(json.dumps(payload))
+        try:
+            load_scene_graph_bundle(out)
+        except SchemaVersionError:
+            return
+        raise AssertionError("expected SchemaVersionError for v5 under strict v6")
 
 
 def test_embedding_npy_sidecar_written_and_typed() -> None:
@@ -664,6 +726,8 @@ TESTS = [
     test_graph_schema_v3_rejected_under_v4,
     test_on_entity_surface_edge_roundtrips_under_v5,
     test_graph_schema_v4_rejected_under_v5,
+    test_attached_to_edge_roundtrips_under_v6,
+    test_graph_schema_v5_rejected_under_v6,
     test_embedding_npy_sidecar_written_and_typed,
     test_array_aware_equality_dtype_sensitive,
     test_array_aware_equality_shape_sensitive,
