@@ -1,0 +1,63 @@
+{
+ "schema": "c1_artifact_manifest_v1",
+ "note": "bundles are NOT tracked in git (notebooks/bundle_*/ ignored); authoritative copies live on Drive and are pinned here by hash",
+ "external_storage": "Google Drive MyDrive/c1/out/<scene>_c1_bundle.tar.gz",
+ "scenes": {
+  "office_0": {
+   "colab_bundle": {
+    "path": "notebooks/bundle_office_0",
+    "output_sha256": "76914988e13f95edded517a6630073da786e4246be4d51b99d2bbaf706bfcacf",
+    "input_mesh_sha256": "cdb6ede0b9d455f491ef8fd63cd916a86a505b777842aabd6aa428edf9ff9032",
+    "raw_masks_npz_sha256": "1bb9db8b0811def7f980247f72bbc08dfcc319d91371273456d3af226f108a31",
+    "hardware": "NVIDIA A100-SXM4-40GB",
+    "runtime_seconds": 55.5
+   },
+   "frozen_ms02_bundle": {
+    "path": "runs/phase8_c1/bundles_ms02/office_0",
+    "output_sha256": "7bd513b0710181535265482e17d7a4c54f08d61e804354aa132f5685154ad405"
+   }
+  },
+  "room_2": {
+   "colab_bundle": {
+    "path": "notebooks/bundle_room_2",
+    "output_sha256": "326c29036f878c727aae716731fb5aa050586ea54078265f7637788ab2459de8",
+    "input_mesh_sha256": "e58a7c717c7922e1300ba20ae8053c5dbfdf9bd5f2515e10c71edad98bcb7e44",
+    "raw_masks_npz_sha256": "97dd80dd36f03df636323b3bd18f79a950ecfd6879fa1605d86bf918ccf63291",
+    "hardware": "NVIDIA A100-SXM4-40GB",
+    "runtime_seconds": 85.8
+   },
+   "frozen_ms02_bundle": {
+    "path": "runs/phase8_c1/bundles_ms02/room_2",
+    "output_sha256": "2d994fbf1d4b08da8f027ae1e048d05617d9af8f08297b1ed4754d061f8817db"
+   }
+  },
+  "room_1": {
+   "colab_bundle": {
+    "path": "notebooks/bundle_room_1",
+    "output_sha256": "4bfb66668c8a02c66423f76784aacbf2e14f6504ee180ba7ddda04233e221327",
+    "input_mesh_sha256": "21695deccc1fe76051d90178eccc1609ee1bab8b5dc715683dd17f7903cf6ee0",
+    "raw_masks_npz_sha256": "3ddfa5fcd98adbd58feffd47ebbd8b4755490a94c7e7c31cddb407851dd54a5b",
+    "hardware": "NVIDIA A100-SXM4-40GB",
+    "runtime_seconds": 56.9
+   },
+   "frozen_ms02_bundle": {
+    "path": "runs/phase8_c1/bundles_ms02/room_1",
+    "output_sha256": "737e0fd4f5a614a4ecc65917d20dc9c8e9c3b33cd52adad50a764d4be316e49c"
+   }
+  },
+  "frl_apartment_0": {
+   "colab_bundle": {
+    "path": "notebooks/bundle_frl_apartment_0",
+    "output_sha256": "fa21abb34cd8c161f894f6af62c05d60c416743b7838e2d0b1782fba3230b2d5",
+    "input_mesh_sha256": "459374364b1fb6d61b28809fb2ebb722366ffc055caf990a5d659b1ebdd3e71b",
+    "raw_masks_npz_sha256": "2e196313718c377f6f65dc03825b48be8964579a0ab45be1a300e615f037adb9",
+    "hardware": "NVIDIA A100-SXM4-40GB",
+    "runtime_seconds": 82.5
+   },
+   "frozen_ms02_bundle": {
+    "path": "runs/phase8_c1/bundles_ms02/frl_apartment_0",
+    "output_sha256": "86d97796d10bb58b77d5802aec7ac721147c687808896d5382dfd5c5e5df3222"
+   }
+  }
+ }
+}
