@@ -16,13 +16,27 @@ Caveats: same legacy py3.10/CUDA-11.3/MinkowskiEngine stack (Colab recipe
 reusable), but its own-scene demo needs graph-based mesh segmentation
 (Segmentator) as preprocessing — an adapter, not direct-PLY plug-and-play.
 
-## Pins (fill in at session start, BEFORE inference; record in meta.json)
+## Pins (filled 2026-07-13, BEFORE any inference; recorded in meta.json)
 
-- Segment3D commit: `________`
-- Segment3D checkpoint URL + sha256: `________`
-- Segmentator (graph mesh segmentation) commit + build hash: `________`
-- Preprocessing parameters (voxel size, segmentator k/threshold): `________`
-- Query count + DBSCAN settings: upstream defaults, recorded verbatim
+- Segment3D: `LeapLabTHU/Segment3D` @
+  `c510d89a66c372c5358384d6d619f713506214db` (main, 2024-12-29)
+- Checkpoint: Google Drive id `1Swq9d7rjV2Q1lTuXiKh1z0OZPt9V4sgO` (official
+  README demo checkpoint); sha256 recorded at download time in meta.json
+- Segmentator: vendored in-tree at the pinned repo commit (upstream ref
+  `3e5726500896748521a6ceb81271b0f5b2c0e7d2`, ScanNet Felzenszwalb mesh
+  segmentation); built with `make`; invocation exactly as upstream
+  `process.sh`: `./segmentator mesh.ply 0.01 20` →
+  `mesh.0.010000.segs.json` (kThresh=0.01, segMinVerts=20)
+- Inference parameters: upstream `scripts/run_demo.sh` verbatim —
+  num_queries=400, topk_per_image=-1, use_dbscan=true, dbscan_eps=0.05,
+  dbscan_min_points=5, data.remove_small_group=15, train_on_segments=true;
+  preprocessing (voxelization, color normalization) = upstream demo defaults
+- Predeclared code deviations (both anchor-asserted patches, recorded in
+  DEVIATIONS): (1) `cuml.cluster.DBSCAN` → `sklearn.cluster.DBSCAN` (CPU;
+  same eps/min_samples semantics; avoids installing RAPIDS into the legacy
+  CUDA-11.3 env); (2) demo.py's pyviz3d visualization call replaced by a
+  masks/scores export (full-resolution `masks_binary` [K, N] bool in
+  original vertex order + per-mask scores)
 - Resolution: the SAME frozen contract — `segmenter/mask_resolve.py`,
   min_vertices=20, and **predeclared MIN_SCORE=0.2** for the headline run
   (a sweep may be REPORTED separately; the headline score is not chosen
