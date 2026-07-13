@@ -11,3 +11,7 @@ build/
 .DS_Store
 runs/
 data/
+
+# C1 segmentation bundles: hash-pinned in docs/c1_artifact_manifest.json,
+# authoritative copies on Drive; ~31 MB, never tracked
+notebooks/bundle_*/
