@@ -1,0 +1,318 @@
+{
+  "schema": "phase8_scene_qa",
+  "schema_version": 1,
+  "fixture_id": "replica_office_0_phase8_qa_draft",
+  "scene_id": "replica_office_0",
+  "answer_key_type": "plausibility_labels_not_ground_truth",
+  "circular_until_reviewed": true,
+  "generator": {
+    "tool": "tools/draft_answer_key.py",
+    "bundle_hash": "graph_10ffdb8f9bf477e0",
+    "compiler": "rules_v1"
+  },
+  "review_instructions": "see tools/draft_answer_key.py docstring",
+  "questions": [
+    {
+      "question_id": "Q01",
+      "question": "what is on the floor?",
+      "relation": "SUPPORTS_FLOOR",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_16",
+        "obj_19",
+        "obj_34",
+        "obj_5",
+        "obj_58",
+        "obj_61",
+        "obj_7"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_16": "door",
+        "obj_19": "bin",
+        "obj_34": "bin",
+        "obj_5": "rug",
+        "obj_58": "table",
+        "obj_61": "chair",
+        "obj_7": "sofa"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q02",
+      "question": "what is against the wall?",
+      "relation": "CONTACTS_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_65"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_65": "other-leaf"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q03",
+      "question": "what is near the wall?",
+      "relation": "NEAR_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_11",
+        "obj_12",
+        "obj_15",
+        "obj_16",
+        "obj_17",
+        "obj_19",
+        "obj_20",
+        "obj_22",
+        "obj_23",
+        "obj_25",
+        "obj_27",
+        "obj_3",
+        "obj_30",
+        "obj_31",
+        "obj_33",
+        "obj_34",
+        "obj_35",
+        "obj_36",
+        "obj_38",
+        "obj_39",
+        "obj_45",
+        "obj_53",
+        "obj_56",
+        "obj_57",
+        "obj_60",
+        "obj_65",
+        "obj_66",
+        "obj_67",
+        "obj_7",
+        "obj_9"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_11": "camera",
+        "obj_12": "table",
+        "obj_15": "blinds",
+        "obj_16": "door",
+        "obj_17": "vent",
+        "obj_19": "bin",
+        "obj_20": "blinds",
+        "obj_22": "indoor-plant",
+        "obj_23": "plant-stand",
+        "obj_25": "wall-plug",
+        "obj_27": "wall-plug",
+        "obj_3": "anonymize_picture",
+        "obj_30": "anonymize_picture",
+        "obj_31": "wall-plug",
+        "obj_33": "wall-plug",
+        "obj_34": "bin",
+        "obj_35": "panel",
+        "obj_36": "switch",
+        "obj_38": "wall-plug",
+        "obj_39": "wall-plug",
+        "obj_45": "wall-plug",
+        "obj_53": "other-leaf",
+        "obj_56": "pillar",
+        "obj_57": "clock",
+        "obj_60": "other-leaf",
+        "obj_65": "other-leaf",
+        "obj_66": "tv-screen",
+        "obj_67": "other-leaf",
+        "obj_7": "sofa",
+        "obj_9": "sofa"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q04",
+      "question": "what is attached to the wall?",
+      "relation": "ATTACHED_TO",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_65"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_65": "other-leaf"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q05",
+      "question": "what is on the table?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_2",
+        "obj_44",
+        "obj_64"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_2": "anonymize_picture",
+        "obj_44": "desk-organizer",
+        "obj_64": "tablet"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q06",
+      "question": "what is on the desk?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q07",
+      "question": "what is on the shelf?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q08",
+      "question": "what is on the counter?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q09",
+      "question": "what is on the stool?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q10",
+      "question": "what is on the bench?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q11",
+      "question": "what is on the sofa?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q12",
+      "question": "what is on the chair?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q13",
+      "question": "what is on the plant-stand?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    }
+  ]
+}

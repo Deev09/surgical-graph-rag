@@ -1,0 +1,41 @@
+{
+  "schema": "phase8_scene_manifest",
+  "schema_version": 1,
+  "scenes": [
+    {
+      "scene_id": "replica_frl_apartment_0",
+      "room_dir": "/Users/deevyaswain/Desktop/datasets/replica/frl_apartment_0",
+      "draft_path": "eval/questions/phase8/drafts/replica_frl_apartment_0_qa_draft.json",
+      "key_path": "eval/questions/phase8/replica_frl_apartment_0_qa.json",
+      "note": "key_path is used when it exists (human_verified); otherwise the draft scores as plausibility only"
+    },
+    {
+      "scene_id": "replica_office_0",
+      "room_dir": "/Users/deevyaswain/Desktop/datasets/replica/office_0",
+      "draft_path": "eval/questions/phase8/drafts/replica_office_0_qa_draft.json",
+      "key_path": "eval/questions/phase8/replica_office_0_qa.json",
+      "note": "key_path is used when it exists (human_verified); otherwise the draft scores as plausibility only"
+    },
+    {
+      "scene_id": "replica_room_0",
+      "room_dir": "/Users/deevyaswain/Desktop/datasets/replica/room_0",
+      "draft_path": "eval/questions/phase8/drafts/replica_room_0_qa_draft.json",
+      "key_path": "eval/questions/phase8/replica_room_0_qa.json",
+      "note": "key_path is used when it exists (human_verified); otherwise the draft scores as plausibility only"
+    },
+    {
+      "scene_id": "replica_room_1",
+      "room_dir": "/Users/deevyaswain/Desktop/datasets/replica/room_1",
+      "draft_path": "eval/questions/phase8/drafts/replica_room_1_qa_draft.json",
+      "key_path": "eval/questions/phase8/replica_room_1_qa.json",
+      "note": "key_path is used when it exists (human_verified); otherwise the draft scores as plausibility only"
+    },
+    {
+      "scene_id": "replica_room_2",
+      "room_dir": "/Users/deevyaswain/Desktop/datasets/replica/room_2",
+      "draft_path": "eval/questions/phase8/drafts/replica_room_2_qa_draft.json",
+      "key_path": "eval/questions/phase8/replica_room_2_qa.json",
+      "note": "key_path is used when it exists (human_verified); otherwise the draft scores as plausibility only"
+    }
+  ]
+}

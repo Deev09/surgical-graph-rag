@@ -1,0 +1,147 @@
+{
+  "schema": "phase8_paraphrase_bank",
+  "schema_version": 1,
+  "fixture_id": "phase8_paraphrase_bank_v1",
+  "description": "Measures RulesCompiler parse coverage over human-equivalent paraphrases. Every paraphrase in a group asks the same question as the canonical. The compiled-rate is a MEASUREMENT of regex-template brittleness, not a pass/fail gate; only the canonical phrasings gate (they must compile to the expected parse). Deliberately carries NO per-paraphrase expectations - baking in 'known_parser_failure' would freeze current compiler behavior into the benchmark definition. Separate track from the legacy eval_paraphrase.py (v1 graffiti_bathroom); NOT comparable to it or to any phase scorecard.",
+  "groups": [
+    {
+      "group_id": "left_of",
+      "canonical": "what is left of the table?",
+      "expected_parse": {"edge_type": "LEFT_OF", "anchor_kind": "entity", "anchor": "table"},
+      "paraphrases": [
+        "what's to the left of the table?",
+        "what is on the left side of the table?",
+        "which object is left of the table?",
+        "what lies to the left of the table?",
+        "what can be found to the left of the table?"
+      ]
+    },
+    {
+      "group_id": "right_of",
+      "canonical": "what is right of the table?",
+      "expected_parse": {"edge_type": "RIGHT_OF", "anchor_kind": "entity", "anchor": "table"},
+      "paraphrases": [
+        "what's to the right of the table?",
+        "what is on the right side of the table?",
+        "which object is right of the table?",
+        "what sits to the right of the table?"
+      ]
+    },
+    {
+      "group_id": "above",
+      "canonical": "what is above the table?",
+      "expected_parse": {"edge_type": "ABOVE", "anchor_kind": "entity", "anchor": "table"},
+      "paraphrases": [
+        "what's directly above the table?",
+        "what is over the table?",
+        "what hangs above the table?",
+        "which objects are above the table?"
+      ]
+    },
+    {
+      "group_id": "below",
+      "canonical": "what is below the table?",
+      "expected_parse": {"edge_type": "BELOW", "anchor_kind": "entity", "anchor": "table"},
+      "paraphrases": [
+        "what's under the table?",
+        "what is underneath the table?",
+        "what sits beneath the table?",
+        "which items are below the table?"
+      ]
+    },
+    {
+      "group_id": "behind",
+      "canonical": "what is behind the sofa?",
+      "expected_parse": {"edge_type": "BEHIND", "anchor_kind": "entity", "anchor": "sofa"},
+      "paraphrases": [
+        "what's at the back of the sofa?",
+        "which object is behind the sofa?",
+        "what is located behind the sofa?",
+        "what sits behind the sofa?"
+      ]
+    },
+    {
+      "group_id": "in_front_of",
+      "canonical": "what is in front of the sofa?",
+      "expected_parse": {"edge_type": "IN_FRONT_OF", "anchor_kind": "entity", "anchor": "sofa"},
+      "paraphrases": [
+        "what's in front of the sofa",
+        "which object is in front of the sofa?",
+        "what is located in front of the sofa?",
+        "what stands in front of the sofa?"
+      ]
+    },
+    {
+      "group_id": "near_entity",
+      "canonical": "what is near the table?",
+      "expected_parse": {"edge_type": "NEAR", "anchor_kind": "entity", "anchor": "table"},
+      "paraphrases": [
+        "what's close to the table?",
+        "what is next to the table?",
+        "what is beside the table?",
+        "what is around the table?",
+        "which objects are near the table?"
+      ]
+    },
+    {
+      "group_id": "near_wall",
+      "canonical": "what is near the wall?",
+      "expected_parse": {"edge_type": "NEAR_SURFACE", "anchor_kind": "surface", "anchor": "wall"},
+      "paraphrases": [
+        "what's close to the wall?",
+        "what is next to the wall?",
+        "what is by the wall?",
+        "which objects are near the wall?",
+        "what sits near the wall?"
+      ]
+    },
+    {
+      "group_id": "against_wall",
+      "canonical": "what is against the wall?",
+      "expected_parse": {"edge_type": "CONTACTS_SURFACE", "anchor_kind": "surface", "anchor": "wall"},
+      "paraphrases": [
+        "what's up against the wall?",
+        "what is touching the wall?",
+        "what is flush with the wall?",
+        "which objects are against the wall?",
+        "what leans against the wall?"
+      ]
+    },
+    {
+      "group_id": "attached_wall",
+      "canonical": "what is attached to the wall?",
+      "expected_parse": {"edge_type": "ATTACHED_TO", "anchor_kind": "surface", "anchor": "wall"},
+      "paraphrases": [
+        "what's mounted on the wall?",
+        "what hangs on the wall?",
+        "which things are fixed to the wall?",
+        "what is fastened to the wall?",
+        "what is on the wall?"
+      ]
+    },
+    {
+      "group_id": "on_floor",
+      "canonical": "what is on the floor?",
+      "expected_parse": {"edge_type": "SUPPORTS", "anchor_kind": "surface", "anchor": "floor"},
+      "paraphrases": [
+        "what's lying on the floor?",
+        "which objects are on the floor?",
+        "what is sitting on the floor?",
+        "what rests on the floor?",
+        "what is on the ground?"
+      ]
+    },
+    {
+      "group_id": "on_table",
+      "canonical": "what is on the table?",
+      "expected_parse": {"edge_type": "SUPPORTS", "anchor_kind": "entity_class", "anchor": "table"},
+      "paraphrases": [
+        "what's on top of the table?",
+        "what is on the tabletop?",
+        "which items are on the table?",
+        "what sits on the table?",
+        "what objects does the table hold?"
+      ]
+    }
+  ]
+}

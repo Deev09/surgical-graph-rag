@@ -1,0 +1,356 @@
+{
+  "schema": "phase8_scene_qa",
+  "schema_version": 1,
+  "fixture_id": "replica_room_2_phase8_qa_draft",
+  "scene_id": "replica_room_2",
+  "answer_key_type": "plausibility_labels_not_ground_truth",
+  "circular_until_reviewed": true,
+  "generator": {
+    "tool": "tools/draft_answer_key.py",
+    "bundle_hash": "graph_a9aaa272b7bd0755",
+    "compiler": "rules_v1"
+  },
+  "review_instructions": "see tools/draft_answer_key.py docstring",
+  "questions": [
+    {
+      "question_id": "Q01",
+      "question": "what is on the floor?",
+      "relation": "SUPPORTS_FLOOR",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_1",
+        "obj_11",
+        "obj_12",
+        "obj_13",
+        "obj_3",
+        "obj_4",
+        "obj_48",
+        "obj_5",
+        "obj_54",
+        "obj_57",
+        "obj_6",
+        "obj_60",
+        "obj_7",
+        "obj_9"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_1": "rug",
+        "obj_11": "chair",
+        "obj_12": "chair",
+        "obj_13": "chair",
+        "obj_3": "chair",
+        "obj_4": "shelf",
+        "obj_48": "chair",
+        "obj_5": "table",
+        "obj_54": "door",
+        "obj_57": "blinds",
+        "obj_6": "chair",
+        "obj_60": "window",
+        "obj_7": "chair",
+        "obj_9": "chair"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q02",
+      "question": "what is against the wall?",
+      "relation": "CONTACTS_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_42"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_42": "vent"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q03",
+      "question": "what is near the wall?",
+      "relation": "NEAR_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_1",
+        "obj_10",
+        "obj_15",
+        "obj_17",
+        "obj_19",
+        "obj_2",
+        "obj_21",
+        "obj_22",
+        "obj_24",
+        "obj_26",
+        "obj_27",
+        "obj_28",
+        "obj_29",
+        "obj_31",
+        "obj_32",
+        "obj_35",
+        "obj_38",
+        "obj_39",
+        "obj_4",
+        "obj_40",
+        "obj_41",
+        "obj_42",
+        "obj_45",
+        "obj_46",
+        "obj_47",
+        "obj_48",
+        "obj_49",
+        "obj_5",
+        "obj_50",
+        "obj_51",
+        "obj_52",
+        "obj_53",
+        "obj_54",
+        "obj_57",
+        "obj_58",
+        "obj_60",
+        "obj_61"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_1": "rug",
+        "obj_10": "window",
+        "obj_15": "vent",
+        "obj_17": "vase",
+        "obj_19": "blinds",
+        "obj_2": "box",
+        "obj_21": "sculpture",
+        "obj_22": "box",
+        "obj_24": "box",
+        "obj_26": "bottle",
+        "obj_27": "vase",
+        "obj_28": "box",
+        "obj_29": "blinds",
+        "obj_31": "plate",
+        "obj_32": "blinds",
+        "obj_35": "box",
+        "obj_38": "blinds",
+        "obj_39": "lamp",
+        "obj_4": "shelf",
+        "obj_40": "vase",
+        "obj_41": "wall-plug",
+        "obj_42": "vent",
+        "obj_45": "wall-plug",
+        "obj_46": "vase",
+        "obj_47": "indoor-plant",
+        "obj_48": "chair",
+        "obj_49": "sculpture",
+        "obj_5": "table",
+        "obj_50": "window",
+        "obj_51": "bowl",
+        "obj_52": "blinds",
+        "obj_53": "switch",
+        "obj_54": "door",
+        "obj_57": "blinds",
+        "obj_58": "anonymize_picture",
+        "obj_60": "window",
+        "obj_61": "vent"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q04",
+      "question": "what is attached to the wall?",
+      "relation": "ATTACHED_TO",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_42"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_42": "vent"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q05",
+      "question": "what is on the table?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_14",
+        "obj_18"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_14": "vase",
+        "obj_18": "plate"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q06",
+      "question": "what is on the desk?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q07",
+      "question": "what is on the shelf?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_17",
+        "obj_27",
+        "obj_46"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_17": "vase",
+        "obj_27": "vase",
+        "obj_46": "vase"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q08",
+      "question": "what is on the counter?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q09",
+      "question": "what is on the stool?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q10",
+      "question": "what is on the bench?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q11",
+      "question": "what is on the sofa?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q12",
+      "question": "what is on the chair?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_56"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_56": "indoor-plant"
+      },
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    },
+    {
+      "question_id": "Q13",
+      "question": "what is on the plant-stand?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {},
+      "review": {
+        "status": "unreviewed",
+        "reviewer": null,
+        "date": null,
+        "notes": ""
+      }
+    }
+  ]
+}
