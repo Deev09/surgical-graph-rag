@@ -48,12 +48,17 @@ def _font(sz):
 
 
 def _runs():
+    # Must mirror demo/question_battery._runs() (minus AttachedTo) so the
+    # panels show exactly what the battery answers — including the Phase 8
+    # F4 room-scale-flat exclusion on both wall-relation configs.
     return [
         ExtractorRun(DirectionalExtractor(), DirectionalConfig(mode="sparse")),
         ExtractorRun(SurfaceProximityExtractor(),
-                     SurfaceProximityConfig(use_polygon_clip=True)),
+                     SurfaceProximityConfig(use_polygon_clip=True,
+                                            exclude_room_scale_flat=True)),
         ExtractorRun(OnSurfaceExtractor(), OnSurfaceConfig()),
-        ExtractorRun(ContactsSurfaceExtractor(), ContactsSurfaceConfig()),
+        ExtractorRun(ContactsSurfaceExtractor(),
+                     ContactsSurfaceConfig(exclude_room_scale_flat=True)),
         ExtractorRun(OnEntitySurfaceExtractor(), OnEntitySurfaceConfig()),
     ]
 

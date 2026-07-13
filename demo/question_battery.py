@@ -47,12 +47,18 @@ SUPPORT_Q = [f"what is on the {c}?" for c in
 
 
 def _runs():
+    # exclude_room_scale_flat (Phase 8 F4): wall-to-wall rugs are never
+    # "against/near the wall" candidates. Enabled on BOTH wall-relation
+    # configs so CONTACTS ⊆ NEAR(wall) holds. Battery-path policy only;
+    # phase gates build their own default (exclusion-off) configs.
     return [
         ExtractorRun(DirectionalExtractor(), DirectionalConfig(mode="sparse")),
         ExtractorRun(SurfaceProximityExtractor(),
-                     SurfaceProximityConfig(use_polygon_clip=True)),
+                     SurfaceProximityConfig(use_polygon_clip=True,
+                                            exclude_room_scale_flat=True)),
         ExtractorRun(OnSurfaceExtractor(), OnSurfaceConfig()),
-        ExtractorRun(ContactsSurfaceExtractor(), ContactsSurfaceConfig()),
+        ExtractorRun(ContactsSurfaceExtractor(),
+                     ContactsSurfaceConfig(exclude_room_scale_flat=True)),
         ExtractorRun(OnEntitySurfaceExtractor(), OnEntitySurfaceConfig()),
         ExtractorRun(AttachedToExtractor(), AttachedToConfig()),
     ]

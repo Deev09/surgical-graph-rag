@@ -17,10 +17,15 @@ Only the CLASS LABEL (table / book / ...) is still read from info_semantic.json'
 id->class_name map -- a mesh has geometry, not semantics; a real backend pairs the
 mesh with a segmentation/label source exactly the same way.
 
-Everything downstream is identical to the JSON importer: same gravity-align, same
-z_translation, same structural-surface routing, same EntityArtifacts contract. So
-diffing the two importers' support answers isolates one variable -- box source
-(precomputed OBB vs raw mesh AABB).
+A/B frame parity (Phase 8): this importer is variant B of the A/B/C ladder --
+"boxes from mesh geometry; oracle labels, gravity, and surfaces held identical
+to A". It therefore INHERITS the JSON importer's frame wholesale rather than
+recomputing it: the rotation (gravity alignment + F1/F3 yaw de-rotation) comes
+from the shared `_aligned_structural_surfaces` helper, and the structural
+surfaces (including F2 floor calibration, whose voters are A's JSON boxes) are
+taken verbatim from `import_habitat_room`. The ONLY thing this importer
+computes is the box source -- so an A/B diff attributes every difference to
+exactly that one variable.
 
     arts = import_mesh_room(Path("/.../datasets/replica/room_0"), "replica_room_0")
 """
@@ -44,8 +49,9 @@ from extractors.base import (
 from demo.replica_habitat_import import (
     ROOM_0_Z_TRANSLATION,
     STRUCTURAL_CLASSES,
+    _aligned_structural_surfaces,
     _gravity_align_matrix,
-    _structural_surfaces,
+    import_habitat_room,
 )
 
 _VERTEX_DTYPE = np.dtype([
@@ -121,26 +127,48 @@ def import_mesh_room(
 ) -> EntityArtifacts:
     """Build EntityArtifacts whose object boxes are derived from the raw
     mesh_semantic.ply geometry. Class labels come from info_semantic.json's
-    id->class_name map. Same frame + structural-surface routing as the JSON
-    importer, so the two are directly comparable."""
+    id->class_name map. Frame and structural surfaces are inherited verbatim
+    from the JSON importer (variant A), so an A/B diff isolates box source."""
     info = json.loads((room_dir / "habitat" / "info_semantic.json").read_text())
     g = info["gravity_dir"]
     R_align = _gravity_align_matrix((float(g[0]), float(g[1]), float(g[2])))
-    R = np.array(R_align, dtype=np.float64)
 
     id_to_class = {int(o["id"]): str(o.get("class_name", "")).strip()
                    for o in info["objects"]}
 
-    xyz, vidx, oid = _parse_semantic_ply(room_dir / "habitat" / "mesh_semantic.ply")
-    xyz = xyz @ R.T                       # gravity-canonicalize every vertex
-    xyz[:, 2] += z_translation            # shared floor offset
-    boxes = _per_object_aabb(xyz, vidx, oid)
-
+    # A/B parity: rotation from the shared frame helper (bit-identical yaw),
+    # surfaces (incl. F2 floor calibration) verbatim from variant A.
     surfaces: list[StructuralSurface] = []
     surf_diag = {"n_floor": 0, "n_wall": 0, "n_ceiling": 0,
                  "walls_without_floor": 0, "walls_dropped_non_vertical": 0}
+    yaw_derotation_deg = 0.0
+    floor_calibration: dict[str, float] = {}
     if import_surfaces:
-        surfaces, surf_diag = _structural_surfaces(info, R_align, z_translation)
+        R_align, _, _, yaw_applied = _aligned_structural_surfaces(
+            info, R_align, z_translation)
+        if yaw_applied:
+            yaw_derotation_deg = round(yaw_applied, 4)
+        json_arts = import_habitat_room(
+            room_dir, scene_id, z_translation=z_translation,
+            import_surfaces=True, drop_classes=drop_classes)
+        surfaces = json_arts.structural_surfaces
+        surf_diag = json_arts.notes["structural_surfaces"]
+        floor_calibration = json_arts.notes["floor_calibration"]
+        if json_arts.notes["yaw_derotation_deg"] != yaw_derotation_deg:
+            raise AssertionError(
+                "frame drift between importers: "
+                f"{json_arts.notes['yaw_derotation_deg']} != {yaw_derotation_deg}")
+    R = np.array(R_align, dtype=np.float64)
+
+    xyz, vidx, oid = _parse_semantic_ply(room_dir / "habitat" / "mesh_semantic.ply")
+    # einsum, not `xyz @ R.T`: Accelerate-BLAS matmul intermittently raises
+    # spurious divide-by-zero/overflow RuntimeWarnings on these frombuffer
+    # views (result is finite either way; einsum is warning-free and equal).
+    xyz = np.einsum("ij,nj->ni", R, xyz)  # gravity+yaw canonicalize every vertex
+    if not np.isfinite(xyz).all():
+        raise ValueError("non-finite vertex coordinates after frame transform")
+    xyz[:, 2] += z_translation            # shared floor offset
+    boxes = _per_object_aabb(xyz, vidx, oid)
 
     entities: list[EntityArtifact] = []
     n_unlabeled = 0
@@ -182,7 +210,7 @@ def import_mesh_room(
                          notes="object boxes from mesh_semantic.ply geometry"),
         representation_hash=bundle_hash,
         extractor_name="replica_mesh_import",
-        extractor_version="0.1",
+        extractor_version="0.2",
         entities=entities,
         structural_surfaces=surfaces,
         geometry_store_path=None,
@@ -193,11 +221,16 @@ def import_mesh_room(
             coverage_score=1.0,
             notes=(f"boxes from .ply mesh; unlabeled_object_ids={n_unlabeled}; "
                    f"surfaces floor={surf_diag['n_floor']} wall={surf_diag['n_wall']} "
-                   f"ceiling={surf_diag['n_ceiling']}"),
+                   f"ceiling={surf_diag['n_ceiling']}; frame inherited from JSON "
+                   f"importer (yaw={yaw_derotation_deg:+.2f} deg, "
+                   f"floors_calibrated={len(floor_calibration)})"),
         ),
         notes={"source": "habitat/mesh_semantic.ply (geometry) + "
                          "info_semantic.json (labels)",
                "z_translation": z_translation,
                "n_unlabeled_object_ids": n_unlabeled,
-               "structural_surfaces": surf_diag},
+               "structural_surfaces": surf_diag,
+               "frame_source": "inherited_from_replica_habitat_import",
+               "yaw_derotation_deg": yaw_derotation_deg,
+               "floor_calibration": floor_calibration},
     )

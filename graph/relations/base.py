@@ -26,7 +26,7 @@ import hashlib
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
-from extractors.base import EntityArtifacts
+from extractors.base import EntityArtifact, EntityArtifacts, StructuralSurface
 from graph.schema import Edge, EdgeRejection, EdgeType, GraphRef
 
 
@@ -155,3 +155,50 @@ def make_entity_ref(uid: str) -> GraphRef:
 
 def make_surface_ref(uid: str) -> GraphRef:
     return GraphRef(kind="surface", uid=uid)
+
+
+def wall_xy_extent_area(surfaces: list[StructuralSurface]) -> float | None:
+    """XY bounding-rectangle area over all wall polygons — a proxy for room
+    footprint that does not trust floor labels (Replica office_0's `floor`
+    instance covers ~25% of the real floor). None when no wall has a polygon."""
+    xs: list[float] = []
+    ys: list[float] = []
+    for s in surfaces:
+        if s.surface_type != "wall" or not s.polygon:
+            continue
+        for p in s.polygon:
+            xs.append(p[0])
+            ys.append(p[1])
+    if not xs:
+        return None
+    return (max(xs) - min(xs)) * (max(ys) - min(ys))
+
+
+def room_scale_flat(
+    entity: EntityArtifact,
+    room_xy_area_m2: float | None,
+    *,
+    min_area_frac: float,
+    max_height_m: float,
+) -> tuple[bool, dict]:
+    """Phase 8 F4 predicate: is this entity a room-scale flat object (a
+    wall-to-wall rug)? Such objects satisfy wall contact/proximity geometry
+    trivially — a rug spanning the room touches every wall — but are never
+    what a human means by "against/near the wall". Returns (verdict, evidence)
+    so extractors can record the exclusion. Verdict is False when room area is
+    unknown (no wall polygons): no silent exclusions without a room estimate."""
+    lo, hi = entity.bbox_aabb
+    footprint = (hi[0] - lo[0]) * (hi[1] - lo[1])
+    height = hi[2] - lo[2]
+    evidence = {
+        "footprint_xy_m2": round(footprint, 4),
+        "height_m": round(height, 4),
+        "room_xy_area_m2": None if room_xy_area_m2 is None else round(room_xy_area_m2, 4),
+        "min_area_frac": min_area_frac,
+        "max_height_m": max_height_m,
+    }
+    if room_xy_area_m2 is None or room_xy_area_m2 <= 0.0:
+        return False, evidence
+    frac = footprint / room_xy_area_m2
+    evidence["area_frac"] = round(frac, 4)
+    return frac >= min_area_frac and height <= max_height_m, evidence

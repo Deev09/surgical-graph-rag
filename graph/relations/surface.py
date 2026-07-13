@@ -35,6 +35,11 @@ against surfaces whose `source == "synth_bbox_fallback"` unless
 `config.include_synth_fallback` is True. Skipped surfaces are recorded
 as EdgeRejection entries with rejected_reason="surface_source_excluded".
 
+Phase 8 F4 (opt-in, exclude_room_scale_flat=True): room-scale flat entities
+(wall-to-wall rugs) are never candidates against WALL surfaces, recorded as
+rejected_reason="room_scale_flat_excluded"; floor/ceiling proximity is
+untouched. Default off = frozen Phase 2/3 behavior in both modes.
+
 Isolation from global builder density policy (P2.09 sign-off): this
 module ships the extractor and tests, but is NOT yet wired into any
 default GraphBuilder run. P2.10 makes the version-aware density-cap
@@ -53,6 +58,7 @@ from geometry.surface_distance import bbox_to_plane, bbox_to_surface
 from graph.relations.base import (
     RelationExtractorConfig, RelationExtractorDiagnostics,
     count_logical_edges, make_edge_id, make_entity_ref, make_surface_ref,
+    room_scale_flat, wall_xy_extent_area,
 )
 from graph.schema import Edge, EdgeRejection, EdgeType
 
@@ -88,6 +94,19 @@ class SurfaceProximityConfig:
         default=False,
         metadata={"hash_omit_if_default": True},
     )
+    # Phase 8 F4 (opt-in): skip room-scale flat entities (wall-to-wall rugs)
+    # as NEAR_SURFACE candidates against WALL surfaces only (floor/ceiling
+    # proximity is untouched — a rug IS near the floor). Default False =
+    # frozen Phase 2/3 behavior; hash_omit_if_default keeps default config
+    # hashes byte-identical. Defaults mirror ContactsSurfaceConfig; enable on
+    # BOTH configs with the same values so CONTACTS ⊆ NEAR(wall) still holds
+    # (enabling here alone would break that subset).
+    exclude_room_scale_flat: bool = field(
+        default=False, metadata={"hash_omit_if_default": True})
+    room_scale_flat_min_area_frac: float = field(
+        default=0.60, metadata={"hash_omit_if_default": True})
+    room_scale_flat_max_height_m: float = field(
+        default=0.20, metadata={"hash_omit_if_default": True})
 
 
 def _threshold_for(config: SurfaceProximityConfig, surface_type: str) -> float:
@@ -107,10 +126,16 @@ def _validate_config(config: SurfaceProximityConfig) -> None:
         "floor_threshold_m",
         "wall_threshold_m",
         "ceiling_threshold_m",
+        "room_scale_flat_max_height_m",
     ):
         value = getattr(config, name)
         if not math.isfinite(value) or value < 0.0:
             raise ValueError(f"{name} must be finite and non-negative")
+    if (
+        not math.isfinite(config.room_scale_flat_min_area_frac)
+        or config.room_scale_flat_min_area_frac <= 0.0
+    ):
+        raise ValueError("room_scale_flat_min_area_frac must be finite and positive")
 
 
 def _build_near_surface_edge(
@@ -210,7 +235,22 @@ class SurfaceProximityExtractor:
                 continue
             active_surfaces.append(surface)
 
+        # Phase 8 F4 (opt-in): room-scale flat entities (wall-to-wall rugs)
+        # are never NEAR_SURFACE candidates against WALL surfaces. Room area
+        # computed once; floor/ceiling proximity is untouched.
+        room_xy_area: float | None = None
+        if config.exclude_room_scale_flat:
+            room_xy_area = wall_xy_extent_area(entities.structural_surfaces)
+
         for entity in entities.entities:
+            entity_flat = False
+            flat_evidence: dict = {}
+            if config.exclude_room_scale_flat:
+                entity_flat, flat_evidence = room_scale_flat(
+                    entity, room_xy_area,
+                    min_area_frac=config.room_scale_flat_min_area_frac,
+                    max_height_m=config.room_scale_flat_max_height_m,
+                )
             for surface in excluded_surfaces:
                 rejection_counts["NEAR_SURFACE"] = (
                     rejection_counts.get("NEAR_SURFACE", 0) + 1
@@ -231,6 +271,26 @@ class SurfaceProximityExtractor:
                         },
                     ))
             for surface in active_surfaces:
+                if entity_flat and surface.surface_type == "wall":
+                    rejection_counts["NEAR_SURFACE"] = (
+                        rejection_counts.get("NEAR_SURFACE", 0) + 1
+                    )
+                    if len(rejections) < max_rejection_samples:
+                        rejections.append(EdgeRejection(
+                            source=make_entity_ref(entity.identity.object_uid),
+                            type="NEAR_SURFACE",
+                            target=make_surface_ref(surface.surface_uid),
+                            extractor=self.name,
+                            rejected_reason="room_scale_flat_excluded",
+                            evidence=dict(flat_evidence) | {
+                                "surface_type": surface.surface_type,
+                                "source": surface.source,
+                                "policy": (
+                                    "room_scale_flat_never_a_wall_proximity_candidate"
+                                ),
+                            },
+                        ))
+                    continue
                 threshold = _threshold_for(config, surface.surface_type)
                 if config.use_polygon_clip:
                     distance, dispatcher_evidence = bbox_to_surface(

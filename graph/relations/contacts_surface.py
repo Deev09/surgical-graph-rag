@@ -29,6 +29,12 @@ Policy (explicit, semantic-layer):
     (mirrors NEAR_SURFACE / ON_SURFACE).
   - polygon is None skipped (footprint clipping required):
     rejected_reason="polygon_required_for_contacts_surface".
+  - opt-in (Phase 8 F4, exclude_room_scale_flat=True): room-scale flat
+    entities (wall-to-wall rugs: footprint >= room_scale_flat_min_area_frac
+    of the wall-bounded XY extent AND height <= room_scale_flat_max_height_m)
+    are never candidates (rejected_reason="room_scale_flat_excluded") — a rug
+    spanning the room touches every wall geometrically, but "against the
+    wall" never means the floor covering. Default off = frozen P5 behavior.
 
 Cross-relation subset guard (D-subset): ContactsSurfaceConfig validates
   hypot(contact_threshold_m, footprint_tolerance_m) <= near_surface_threshold_m
@@ -43,7 +49,7 @@ from __future__ import annotations
 
 import math
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 from extractors.base import EntityArtifact, EntityArtifacts, StructuralSurface
@@ -51,6 +57,7 @@ from geometry.wall_contact import WallContactConfig, wall_contact
 from graph.relations.base import (
     RelationExtractorConfig, RelationExtractorDiagnostics,
     count_logical_edges, make_edge_id, make_entity_ref, make_surface_ref,
+    room_scale_flat, wall_xy_extent_area,
 )
 from graph.schema import Edge, EdgeRejection, EdgeType
 
@@ -65,6 +72,14 @@ DEFAULT_MAX_WALL_TILT_DEG = 30.0
 DEFAULT_FOOTPRINT_TOLERANCE_M = 0.0
 DEFAULT_NEAR_SURFACE_THRESHOLD_M = 0.30  # Phase 2 wall NEAR threshold
 
+# Phase 8 F4 (opt-in): room-scale flat exclusion defaults. Chosen from the
+# six-scene measurement (2026-07-12): the only true wall-to-wall flat object
+# is office_0's rug at area_frac 0.975; the next-largest flat object anywhere
+# is room_1's rug at 0.483, so 0.60 has wide margins on both sides. 0.20 m
+# keeps tall-but-large furniture (room_1's bed: frac 0.911, height 1.27 m).
+DEFAULT_ROOM_SCALE_FLAT_MIN_AREA_FRAC = 0.60
+DEFAULT_ROOM_SCALE_FLAT_MAX_HEIGHT_M = 0.20
+
 
 @dataclass(frozen=True)
 class ContactsSurfaceConfig:
@@ -78,6 +93,20 @@ class ContactsSurfaceConfig:
     footprint_tolerance_m: float = DEFAULT_FOOTPRINT_TOLERANCE_M
     near_surface_threshold_m: float = DEFAULT_NEAR_SURFACE_THRESHOLD_M
     include_synth_fallback: bool = False
+    # Phase 8 F4 (opt-in): skip room-scale flat entities (wall-to-wall rugs)
+    # as CONTACTS_SURFACE candidates. Default False = frozen P5 behavior;
+    # hash_omit_if_default keeps default config hashes byte-identical. When
+    # enabling, enable the SAME fields on SurfaceProximityConfig too, or the
+    # NEAR⊇CONTACTS subset guarantee weakens to "excluded pairs missing from
+    # NEAR only" (enabling here alone keeps the subset direction intact).
+    exclude_room_scale_flat: bool = field(
+        default=False, metadata={"hash_omit_if_default": True})
+    room_scale_flat_min_area_frac: float = field(
+        default=DEFAULT_ROOM_SCALE_FLAT_MIN_AREA_FRAC,
+        metadata={"hash_omit_if_default": True})
+    room_scale_flat_max_height_m: float = field(
+        default=DEFAULT_ROOM_SCALE_FLAT_MAX_HEIGHT_M,
+        metadata={"hash_omit_if_default": True})
 
     def __post_init__(self) -> None:
         # Delegate wall-contact field sanity to WallContactConfig.
@@ -103,6 +132,22 @@ class ContactsSurfaceConfig:
                 f"footprint_tolerance_m={self.footprint_tolerance_m}) = {combined!r} "
                 f"> near_surface_threshold_m={self.near_surface_threshold_m}. "
                 "CONTACTS_SURFACE would not be a subset of polygon-mode NEAR_SURFACE."
+            )
+        if (
+            not math.isfinite(self.room_scale_flat_min_area_frac)
+            or self.room_scale_flat_min_area_frac <= 0.0
+        ):
+            raise ValueError(
+                "room_scale_flat_min_area_frac must be finite and positive, "
+                f"got {self.room_scale_flat_min_area_frac!r}"
+            )
+        if (
+            not math.isfinite(self.room_scale_flat_max_height_m)
+            or self.room_scale_flat_max_height_m < 0.0
+        ):
+            raise ValueError(
+                "room_scale_flat_max_height_m must be finite and non-negative, "
+                f"got {self.room_scale_flat_max_height_m!r}"
             )
         if self.mode != "sparse":
             raise ValueError(f"unknown mode {self.mode!r}; supported: 'sparse'")
@@ -211,6 +256,12 @@ class ContactsSurfaceExtractor:
             else:
                 active.append(surface)
 
+        # Phase 8 F4 (opt-in): room-scale flat entities (wall-to-wall rugs)
+        # are never CONTACTS_SURFACE candidates. Room area computed once.
+        room_xy_area: float | None = None
+        if config.exclude_room_scale_flat:
+            room_xy_area = wall_xy_extent_area(entities.structural_surfaces)
+
         for entity in entities.entities:
             for surface in non_wall:
                 record_rejection(entity, surface, "surface_type_not_wall", {
@@ -231,6 +282,22 @@ class ContactsSurfaceExtractor:
                     "polygon_clip_required": True,
                     "policy": "contacts_surface_requires_polygon_footprint",
                 })
+            if config.exclude_room_scale_flat:
+                flat, flat_evidence = room_scale_flat(
+                    entity, room_xy_area,
+                    min_area_frac=config.room_scale_flat_min_area_frac,
+                    max_height_m=config.room_scale_flat_max_height_m,
+                )
+                if flat:
+                    for surface in active:
+                        record_rejection(
+                            entity, surface, "room_scale_flat_excluded",
+                            dict(flat_evidence) | {
+                                "surface_type": surface.surface_type,
+                                "source": surface.source,
+                                "policy": "room_scale_flat_never_a_wall_contact_candidate",
+                            })
+                    continue
             for surface in active:
                 result = wall_contact(
                     entity.bbox_aabb, entity.centroid,

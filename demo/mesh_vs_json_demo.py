@@ -103,14 +103,20 @@ def main() -> int:
     cmp("against-wall objects (CONTACTS_SURFACE)", wj, wm)
 
     print("\n" + "=" * 74)
-    same = (sj == sm)
+    # overall equality covers ALL compared relations, not just support —
+    # a support-only banner over a wall diff misreads as "no differences".
+    same = (sj == sm) and (fj == fm) and (wj == wm)
     if same:
-        print("[RESULT] Support answers are IDENTICAL whether boxes come from the "
-              "precomputed JSON or from raw .ply mesh geometry. The pipeline runs "
-              "on actual geometry; a mesh-producing backend plugs in directly.")
+        print("[RESULT] Support, on-floor, and against-wall answers are ALL "
+              "IDENTICAL whether boxes come from the precomputed JSON or from "
+              "raw .ply mesh geometry. A mesh-producing backend plugs in directly.")
     else:
-        print("[RESULT] Support answers differ between box sources (see above). The "
-              "delta is the reconstruction-quality margin around the contact band.")
+        differing = [name for name, a, b in (
+            ("support", sj, sm), ("on-floor", fj, fm), ("against-wall", wj, wm),
+        ) if a != b]
+        print(f"[RESULT] Box source changes answers for: {', '.join(differing)} "
+              "(see above). The delta is the reconstruction-quality margin around "
+              "the contact bands.")
     print("=" * 74)
     return 0 if same else 2
 
