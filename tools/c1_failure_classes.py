@@ -13,6 +13,13 @@ the raw mask evidence (raw_masks.npz) against the dense assignment:
   no_raw_proposal   no raw mask ever reached IoU 0.5 — a model limitation
                     no threshold or resolver change can recover
 
+PRECEDENCE CAVEAT: failure_class describes the COMPOSITION-stage outcome and
+assigns `merged` before consulting raw viability, so class counts must NOT
+be read as proposal-coverage statistics (a merged object may or may not have
+had a viable individual mask). Proposal coverage is reported ORTHOGONALLY:
+per-object `has_viable_raw_proposal` / `best_raw_iou`, and report-level
+`raw_proposal_recall_at_iou` + `n_viable_raw_not_recovered`.
+
 Relation-level consequences (recovered-but-relation-changed) are reported by
 tools/c1_run.py's merge-aware attribution, not here — this tool is about
 instance existence, that one about downstream effect.
@@ -89,6 +96,7 @@ def classify(room_dir: Path, bundle_dir: Path) -> dict:
         per_object.append({
             "oracle_id": o, "class": cov["class"], "size": cov["size"],
             "failure_class": cls,
+            "has_viable_raw_proposal": raw >= 0.5,
             "best_raw_iou": round(raw, 3),
             "dense_greedy_iou": cov["greedy_iou"],
             "covered_frac": cov["covered_frac"],
@@ -102,12 +110,29 @@ def classify(room_dir: Path, bundle_dir: Path) -> dict:
     n_merged_viable = sum(1 for r in per_object
                           if r["failure_class"] == "merged"
                           and r["best_raw_iou"] >= 0.5)
+    # orthogonal proposal-coverage statistics (independent of failure_class
+    # precedence): how many entities have SOME viable individual raw mask,
+    # and how many of those the composition stage failed to deliver
+    n_ent = len(per_object)
+    raw_recall = {str(t): (sum(1 for r in per_object if r["best_raw_iou"] >= t) / n_ent
+                           if n_ent else None)
+                  for t in (0.25, 0.5, 0.75)}
+    n_viable = sum(1 for r in per_object if r["has_viable_raw_proposal"])
+    n_viable_not_recovered = sum(1 for r in per_object
+                                 if r["has_viable_raw_proposal"]
+                                 and r["failure_class"] != "recovered")
     return {
-        "schema": "c1_failure_classes_v1",
+        "schema": "c1_failure_classes_v2",
         "scene_dir": str(room_dir),
         "bundle_dir": str(bundle_dir),
-        "n_oracle_entities": len(per_object),
+        "n_oracle_entities": n_ent,
         "counts": counts,
+        "counts_note": ("failure_class = composition-stage outcome; 'merged' "
+                        "is assigned before raw viability, so these are NOT "
+                        "proposal-coverage counts — see raw_proposal_* fields"),
+        "raw_proposal_recall_at_iou": raw_recall,
+        "n_viable_raw_at_05": n_viable,
+        "n_viable_raw_not_recovered": n_viable_not_recovered,
         "n_merged_with_viable_raw_proposal": n_merged_viable,
         "per_object": per_object,
     }
@@ -134,7 +159,9 @@ def main(argv: list[str] | None = None) -> int:
           f"{r['n_oracle_entities']} oracle entities -> "
           f"recovered={c['recovered']} merged={c['merged']} "
           f"lost_by_resolver={c['lost_by_resolver']} "
-          f"no_raw_proposal={c['no_raw_proposal']}")
+          f"no_raw_proposal={c['no_raw_proposal']}  |  "
+          f"viable_raw@0.5={r['n_viable_raw_at_05']}/{r['n_oracle_entities']} "
+          f"(not recovered: {r['n_viable_raw_not_recovered']})")
     print(f"[c1_failure_classes] report -> {out}")
     return 0
 

@@ -93,6 +93,15 @@ def test_failure_classes_three_way():
         if by_class != {"table": "recovered", "chair": "merged",
                         "lamp": "no_raw_proposal"}:
             raise AssertionError(f"per-object classes wrong: {by_class}")
+        # orthogonal proposal-coverage fields (independent of failure_class):
+        # table viable via m0 (iou .667), chair viable via m1 (iou 1.0), lamp no
+        if r["n_viable_raw_at_05"] != 2 or abs(r["raw_proposal_recall_at_iou"]["0.5"] - 2/3) > 1e-9:
+            raise AssertionError(f"raw-proposal coverage wrong: {r['raw_proposal_recall_at_iou']}")
+        if r["n_viable_raw_not_recovered"] != 1:
+            raise AssertionError("chair is viable-but-not-recovered (composition loss)")
+        viable = {x["class"]: x["has_viable_raw_proposal"] for x in r["per_object"]}
+        if viable != {"table": True, "chair": True, "lamp": False}:
+            raise AssertionError(f"per-object viability wrong: {viable}")
 
 
 def test_reresolve_confidence_and_provenance():

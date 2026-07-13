@@ -85,19 +85,32 @@ R@0.5 is flat at 0.32 for min_score 0.0–0.3 and falls beyond — the failure
 is threshold-robust. Support-OWNER recall is 0.60–0.70 across the whole
 sweep vs Mask3D's 1.00: Segment3D fragments/merges the large furniture.
 
-**The informative part** — the failure PROFILE inverted (failure classes,
-53 oracle entities): no_raw_proposal 12 → **1**, merged 22 → 29,
-lost_by_resolver 1 → 6. Segment3D's fine-grained-proposal claim is real at
-the mask level: all but one entity has a viable raw mask (IoU ≥ 0.5
-somewhere in the 501 proposals). But the masks are fragmented/overlapping
-in ways winner-takes-all resolution cannot compose into clean instances,
-and precision collapses because mis-composed segments acquire wrong
-relations. The C1 bottleneck for this backend is mask COMPOSITION, not
-proposal coverage.
+**The informative part — CORRECTED 2026-07-13** (the first version of this
+paragraph over-read `no_raw_proposal=1` as "52/53 viable"; the failure
+classifier assigns `merged` before checking raw viability, so its class
+counts are composition-stage outcomes, not proposal-coverage statistics).
+The orthogonal per-object viability cut gives:
 
-Implication for the roadmap: the highest-leverage next experiment is a
-smarter resolution/composition layer over Segment3D's raw masks (35/53
-entities have viable-but-mangled masks vs Mask3D's 23) — e.g.
-segment-graph-aware merging or per-object mask selection. That is a NEW
-experiment requiring its own predeclared protocol, not a post-hoc tweak to
-this one. Mask3D @0.2 remains the C1 reference backend.
+| raw-mask result @ IoU 0.5 | Mask3D | Segment3D |
+|---|---|---|
+| entities with a viable individual raw mask | 20/53 | **30/53** |
+| recovered after composition | 18 | 17 |
+| viable raw mask but NOT recovered | 2 | **13** |
+| merged entities without a viable individual mask | 21 | 22 |
+
+So Segment3D genuinely raises the proposal ceiling (30 vs 20) — but not to
+52/53. Its composition stage wastes **13 viable masks** (Mask3D wastes 2),
+and of its 29 merged entities only 7 have a viable individual mask; the
+other 22 would need objects CONSTRUCTED from multiple fragments, not merely
+the right existing mask selected. Precision collapses because mis-composed
+segments acquire wrong relations. The bottleneck is still composition, with
+two distinct sub-problems: selection (13 winnable now) and construction
+(fragment assembly, harder).
+
+Implication for the roadmap: a composition experiment over Segment3D's
+saved raw masks has a measurable selection-only ceiling of 30/53 (vs the
+current 17) before any fragment assembly. That is a NEW experiment
+requiring its own predeclared protocol — and it should be designed against
+HUMAN-verified answer keys, not B-relative metrics (optimizing composition
+against B risks teaching it B's known box artifacts). Mask3D @0.2 remains
+the C1 reference backend.

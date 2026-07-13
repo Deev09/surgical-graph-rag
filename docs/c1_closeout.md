@@ -41,6 +41,14 @@ Reading rules (the corrections that produced these columns):
 | frl_apartment_0 | 49 | 87 | 4 | 54 |
 | **total** | **96 (28%)** | **142 (42%)** | **5 (1.5%)** | **96 (28%)** |
 
+NOTE (added 2026-07-13): failure_class is the COMPOSITION-stage outcome —
+`merged` is assigned before raw viability is checked, so these counts are
+not proposal-coverage statistics. The orthogonal cut (report fields
+`raw_proposal_recall_at_iou` / `n_viable_raw_at_05`, schema v2): Mask3D has
+a viable individual raw mask for 13/47, 20/53, 21/45, 53/194 entities
+(107/339 ≈ 32%), of which only 11 total are lost by composition — its
+selection stage is nearly optimal; its ceiling is proposal coverage.
+
 At the frozen operating point the dominant failure is **merging** — objects
 absorbed into a neighbor's winning mask (worst in the multi-room frl, 87/194)
 — with **no viable proposal** second. Direct resolver loss is small (~1.5%),

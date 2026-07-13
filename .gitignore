@@ -15,3 +15,4 @@ data/
 # C1 segmentation bundles: hash-pinned in docs/c1_artifact_manifest.json,
 # authoritative copies on Drive; ~31 MB, never tracked
 notebooks/bundle_*/
+notebooks/s3d_bundle_*/
