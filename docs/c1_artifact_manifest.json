@@ -29,6 +29,12 @@
    "frozen_ms02_bundle": {
     "path": "runs/phase8_c1/bundles_ms02/room_2",
     "output_sha256": "2d994fbf1d4b08da8f027ae1e048d05617d9af8f08297b1ed4754d061f8817db"
+   },
+   "segment3d_pilot_bundle": {
+    "path": "notebooks/s3d_bundle_room_2",
+    "output_sha256": "0720def0ce30e10a9f15dec429c826d14c6d88086ee5a9ccf057b373beab8369",
+    "raw_masks_npz_sha256": "04edd2ca4da178c84af29188216cf663c44a4928d18d07d9ca7b81b40d24ab25",
+    "gate": "FAILED (docs/c1_m2_protocol.md verdict); pilot stopped after stage 1"
    }
   },
   "room_1": {

@@ -67,3 +67,37 @@ test. **Stage 3: office_0 + room_1** to complete the table.
 
 All scoring through the unchanged evaluator stack (c1_exact_eval, c1_run,
 c1_failure_classes, c1_resolve_sweep) — the comparison is backend-only.
+
+## VERDICT (stage 1, room_2, 2026-07-13): GATE FAILED — STOPPED
+
+Predeclared rule applied; no further scenes run. 4 of 5 criteria missed:
+
+| criterion | needed | Mask3D @0.2 | Segment3D @0.2 | result |
+|---|---|---|---|---|
+| entity R@0.5 | ≥ 0.42 | 0.34 (18/53) | 0.32 (17/53) | FAIL |
+| answer recall vs B | ≥ 0.44 | 0.39 | **0.53** | pass |
+| answer precision vs B | ≥ 0.90 | 0.96 | **0.52** | FAIL |
+| support-answer recall | > 1/6 | 1/6 | 1/6 | FAIL |
+| merged + no_proposal | ≤ 27 | 34 | 30 | FAIL |
+
+The diagnostic sweep (reported separately, headline unchanged): entity
+R@0.5 is flat at 0.32 for min_score 0.0–0.3 and falls beyond — the failure
+is threshold-robust. Support-OWNER recall is 0.60–0.70 across the whole
+sweep vs Mask3D's 1.00: Segment3D fragments/merges the large furniture.
+
+**The informative part** — the failure PROFILE inverted (failure classes,
+53 oracle entities): no_raw_proposal 12 → **1**, merged 22 → 29,
+lost_by_resolver 1 → 6. Segment3D's fine-grained-proposal claim is real at
+the mask level: all but one entity has a viable raw mask (IoU ≥ 0.5
+somewhere in the 501 proposals). But the masks are fragmented/overlapping
+in ways winner-takes-all resolution cannot compose into clean instances,
+and precision collapses because mis-composed segments acquire wrong
+relations. The C1 bottleneck for this backend is mask COMPOSITION, not
+proposal coverage.
+
+Implication for the roadmap: the highest-leverage next experiment is a
+smarter resolution/composition layer over Segment3D's raw masks (35/53
+entities have viable-but-mangled masks vs Mask3D's 23) — e.g.
+segment-graph-aware merging or per-object mask selection. That is a NEW
+experiment requiring its own predeclared protocol, not a post-hoc tweak to
+this one. Mask3D @0.2 remains the C1 reference backend.
