@@ -92,6 +92,30 @@ match it? room_0 passes; the other four fail on at least two panels each.
   unaffected. Note `tools/threshold_sweep.py` still probes the default
   (exclusion-off) extractor semantics.
 
+## How to identify which object is which
+
+Three artifacts per scene, used together:
+
+1. **UID index sheet** — `demo/<scene_id>_uid_index.png` (regenerate with
+   `python3 demo/visualize_uid_index.py <room_dir> <scene_id>`): the same
+   top-down map with EVERY object annotated by its obj number, plus a
+   legend column of `obj_N → label → (x, y) centroid`. This is your
+   ground-truth map of which box is which.
+2. **Question sheet** — `demo/<scene_id>_questions.png`: the colored
+   panels. Boxes here are unlabeled; match them to the index sheet by
+   position (same projection, same orientation).
+3. **Draft JSON** — each question's `candidate_labels` maps the cited
+   `obj_N → class label`, so you can read an answer list in words without
+   the map.
+
+Review loop per question: read the cited uids + labels from the draft JSON
+→ find each number on the index sheet to see WHERE it is → check the
+colored panel for anything colored that shouldn't be (false positive → its
+uid goes to `expected_must_not_contain`) or an obvious member left
+uncolored (miss → add to `expected_must_contain`). When two same-class
+objects are ambiguous (two chairs), the index sheet's number placement and
+the legend centroid settle it.
+
 ## What each PNG panel means and what to check
 
 Each panel is a top-down view; grey outlines are all objects, colored fills
