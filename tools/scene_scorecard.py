@@ -135,7 +135,11 @@ def scorecard_for_key(key: dict, bundle, labels: dict[str, str]) -> dict:
     for rel, b in per_relation.items():
         tp, cited_n, exp_n = b.pop("_tp"), b.pop("_cited"), b.pop("_expected")
         if b["exhaustive_n"]:
-            p = tp / cited_n if cited_n else 1.0
+            # Match prf_for_question's empty-prediction convention. A relation
+            # with expected positives but zero citations has precision 0, not
+            # vacuous precision 1; otherwise the per-question and relation
+            # rollups contradict one another on complete misses.
+            p = tp / cited_n if cited_n else (1.0 if exp_n == 0 else 0.0)
             r = tp / exp_n if exp_n else 1.0
             b["precision"] = round(p, 4)
             b["recall"] = round(r, 4)

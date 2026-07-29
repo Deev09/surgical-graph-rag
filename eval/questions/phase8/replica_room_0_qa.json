@@ -1,0 +1,406 @@
+{
+  "schema": "phase8_scene_qa",
+  "schema_version": 1,
+  "fixture_id": "replica_room_0_phase8_qa_human_verified",
+  "scene_id": "replica_room_0",
+  "answer_key_type": "human_verified",
+  "source_draft": "eval/questions/phase8/drafts/replica_room_0_qa_draft.json",
+  "generator": {
+    "tool": "tools/draft_answer_key.py",
+    "bundle_hash": "graph_a96b06f9f8e036a4",
+    "compiler": "rules_v1"
+  },
+  "human_review": {
+    "reviewer": "project_owner",
+    "date": "2026-07-29",
+    "semantics": {
+      "on_floor": "Ordinary furniture resting on the floor counts; doors and structural pillars at room boundaries do not.",
+      "against_wall": "Human visual judgment of furniture against a wall, not only the extractor's 2 cm contact band.",
+      "on_entity_surface": "The supported object rests under gravity in physical contact with the furniture, even when the imported AABB disagrees.",
+      "attached_to_wall": "Windows integrated into the wall and visibly wall-mounted objects count as attached."
+    },
+    "notes": "Reviewed from the UID index and question sheet in conversation. Near-wall remains membership-only. Cabinet was explicitly accepted as furniture and added as Q14; the current Router does not yet cover that support class."
+  },
+  "questions": [
+    {
+      "question_id": "Q01",
+      "question": "what is on the floor?",
+      "relation": "SUPPORTS_FLOOR",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_2",
+        "obj_7",
+        "obj_9",
+        "obj_11",
+        "obj_27",
+        "obj_39",
+        "obj_41",
+        "obj_73",
+        "obj_74",
+        "obj_75",
+        "obj_77",
+        "obj_93"
+      ],
+      "expected_must_not_contain": [
+        "obj_36",
+        "obj_46",
+        "obj_84"
+      ],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_2": "cabinet",
+        "obj_7": "table",
+        "obj_9": "sofa",
+        "obj_11": "table",
+        "obj_27": "table",
+        "obj_36": "door",
+        "obj_39": "stool",
+        "obj_41": "stool",
+        "obj_46": "pillar",
+        "obj_73": "chair",
+        "obj_74": "chair",
+        "obj_75": "basket",
+        "obj_77": "sofa",
+        "obj_84": "pillar",
+        "obj_93": "table"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "Removed boundary door/pillars 36, 46, 84. Added cabinet 2 and sofa 77. Table 93 was already in the draft and remains included."
+      }
+    },
+    {
+      "question_id": "Q02",
+      "question": "what is against the wall?",
+      "relation": "CONTACTS_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_2",
+        "obj_6",
+        "obj_77"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_2": "cabinet",
+        "obj_6": "lamp",
+        "obj_77": "sofa"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "The cited lamp is correct; cabinet 2 and sofa 77 are missing."
+      }
+    },
+    {
+      "question_id": "Q03",
+      "question": "what is near the wall?",
+      "relation": "NEAR_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_15",
+        "obj_16",
+        "obj_17",
+        "obj_19",
+        "obj_2",
+        "obj_21",
+        "obj_22",
+        "obj_26",
+        "obj_28",
+        "obj_29",
+        "obj_3",
+        "obj_30",
+        "obj_31",
+        "obj_34",
+        "obj_36",
+        "obj_38",
+        "obj_4",
+        "obj_42",
+        "obj_44",
+        "obj_45",
+        "obj_46",
+        "obj_50",
+        "obj_56",
+        "obj_58",
+        "obj_6",
+        "obj_61",
+        "obj_62",
+        "obj_63",
+        "obj_65",
+        "obj_7",
+        "obj_77",
+        "obj_79",
+        "obj_80",
+        "obj_82",
+        "obj_84",
+        "obj_85",
+        "obj_87",
+        "obj_9",
+        "obj_91",
+        "obj_93"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "No cited false positives or obvious misses found. Kept non-exhaustive by review policy."
+      }
+    },
+    {
+      "question_id": "Q04",
+      "question": "what is attached to the wall?",
+      "relation": "ATTACHED_TO",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_17",
+        "obj_26",
+        "obj_28",
+        "obj_29",
+        "obj_38",
+        "obj_42",
+        "obj_45",
+        "obj_61",
+        "obj_62",
+        "obj_63",
+        "obj_91"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_17": "window",
+        "obj_26": "window",
+        "obj_28": "window",
+        "obj_29": "window",
+        "obj_38": "window",
+        "obj_42": "window",
+        "obj_45": "vase",
+        "obj_61": "window",
+        "obj_62": "window",
+        "obj_63": "picture",
+        "obj_91": "window"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "All nine windows count as wall-attached. Vase/planter 45 above cabinet 2 and picture 63 on the bottom wall are also attached."
+      }
+    },
+    {
+      "question_id": "Q05",
+      "question": "what is on the table?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_12",
+        "obj_43",
+        "obj_55",
+        "obj_59",
+        "obj_66",
+        "obj_78",
+        "obj_83",
+        "obj_87",
+        "obj_90",
+        "obj_92"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_12": "book",
+        "obj_43": "pot",
+        "obj_55": "plant-stand",
+        "obj_59": "book",
+        "obj_66": "plate",
+        "obj_78": "lamp",
+        "obj_83": "lamp",
+        "obj_87": "lamp",
+        "obj_90": "book",
+        "obj_92": "book"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "Human physical-contact judgment includes 43, 55, 66, 78, and 83 despite imported-box disagreement."
+      }
+    },
+    {
+      "question_id": "Q06",
+      "question": "what is on the desk?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "No desk owner in the reviewed scene."
+      }
+    },
+    {
+      "question_id": "Q07",
+      "question": "what is on the shelf?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "No shelf owner in the reviewed scene."
+      }
+    },
+    {
+      "question_id": "Q08",
+      "question": "what is on the counter?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "No counter owner in the reviewed scene."
+      }
+    },
+    {
+      "question_id": "Q09",
+      "question": "what is on the stool?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "No supported object was identified on either stool."
+      }
+    },
+    {
+      "question_id": "Q10",
+      "question": "what is on the bench?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "No bench owner in the reviewed scene."
+      }
+    },
+    {
+      "question_id": "Q11",
+      "question": "what is on the sofa?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_5",
+        "obj_13",
+        "obj_32",
+        "obj_70",
+        "obj_71",
+        "obj_86"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_5": "cushion",
+        "obj_13": "cushion",
+        "obj_32": "cushion",
+        "obj_70": "cushion",
+        "obj_71": "cushion",
+        "obj_86": "blanket"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "Sofas count as furniture; cushions and blanket are gravity-supported on their seats."
+      }
+    },
+    {
+      "question_id": "Q12",
+      "question": "what is on the chair?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_69",
+        "obj_72"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_69": "cushion",
+        "obj_72": "cushion"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "The two chair cushions are supported by the chairs."
+      }
+    },
+    {
+      "question_id": "Q13",
+      "question": "what is on the plant-stand?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_35"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_35": "indoor-plant"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "The indoor plant remains the supported item; plant-stand 55 is itself supported by a table in Q05."
+      }
+    },
+    {
+      "question_id": "Q14",
+      "question": "what is on the cabinet?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_4",
+        "obj_45",
+        "obj_65",
+        "obj_79"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_4": "book",
+        "obj_45": "vase",
+        "obj_65": "plate",
+        "obj_79": "candle"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-07-29",
+        "notes": "Cabinet 2 is a valid furniture support owner. This question is intentionally human-keyed even though the current Router defers the class."
+      }
+    }
+  ]
+}

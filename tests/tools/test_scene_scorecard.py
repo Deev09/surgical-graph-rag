@@ -115,6 +115,32 @@ def test_scorecard_verified_exhaustive():
             raise AssertionError(f"latency missing: {row}")
 
 
+def test_relation_rollup_zero_citations_with_expected_positive():
+    key = {
+        "scene_id": "phase8_sc_synth",
+        "fixture_id": "zero_citations",
+        "answer_key_type": "human_verified",
+        "questions": [
+            {
+                "question_id": "Q01",
+                "question": "what is on the table?",
+                "relation": "ON_ENTITY_SURFACE",
+                "expected_outcome": "answer",
+                "expected_must_contain": ["obj_a"],
+                "expected_must_not_contain": [],
+                "exhaustive": True,
+            },
+        ],
+    }
+    card = scorecard_for_key(key, _bundle(), {})
+    row = card["router_qa"]["per_question"][0]
+    rel = card["per_relation"]["ON_ENTITY_SURFACE"]
+    if row["prf"]["precision"] != 0.0:
+        raise AssertionError(f"per-question zero-citation precision wrong: {row}")
+    if rel["precision"] != 0.0 or rel["recall"] != 0.0 or rel["f1"] != 0.0:
+        raise AssertionError(f"relation zero-citation rollup wrong: {rel}")
+
+
 def test_scorecard_plausibility_gets_no_prf():
     card = scorecard_for_key(
         _key("plausibility_labels_not_ground_truth", True, ["obj_a", "obj_b"]),
@@ -141,6 +167,7 @@ TESTS = [
     test_prf_math,
     test_prf_gating_blocks_dishonest_recall,
     test_scorecard_verified_exhaustive,
+    test_relation_rollup_zero_citations_with_expected_positive,
     test_scorecard_plausibility_gets_no_prf,
     test_aggregate_split,
 ]

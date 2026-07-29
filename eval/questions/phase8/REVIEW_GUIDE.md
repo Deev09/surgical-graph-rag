@@ -20,7 +20,7 @@ record exactly what the current system answers.
 
 | scene | status after fixes | verdict |
 |---|---|---|
-| replica_room_0 | clean from the start; imports bit-identically through every fix | **REVIEW NOW** |
+| replica_room_0 | human key promoted 2026-07-29; first real review exposed missed floor furniture, broader wall attachment, seat support, and cabinet support | **HUMAN VERIFIED** |
 | replica_room_1 | de-rotated +26.6°, floor snapped −0.11 m | **REVIEW NOW** — the bed-ATTACHED_TO case and the nightstand allowlist gap are the interesting reviews |
 | replica_room_2 | de-rotated −7.2°; rug-against-wall FP gone (F1); rug at frac 0.34 stays under the F4 guard, so it remains a *near*-wall answer — judge that membership yourself | **REVIEW NOW** — flag the *window* (obj_60) "on the floor" |
 | replica_office_0 | rug excluded from against/near-wall (F4); floor + near-wall + furniture panels now readable | **PARTIAL** — "against the wall" still finds only `other-leaf`; missing real wall furniture is the F3-residual finding (one genuinely 17° wall + 2 cm band), not a key to force |
@@ -147,10 +147,15 @@ the `candidate_labels` block in the draft JSON (it maps `obj_N → label`).
 Current draft answers in words (full UID→label maps in each question's
 `candidate_labels`; regenerated 2026-07-12 post-F1/F2/F4):
 
-- **room_0** — floor: 13 (tables/chairs/sofa/stools/pillars/door/basket —
-  plausible; check the *door* and whether the rug is missing); against wall:
-  lamp only; attached: empty (plausible — nothing wall-mounted); on table: 4
-  books + lamp; plant-stand: indoor-plant. This one should review quickly.
+- **room_0** — human verified 2026-07-29. The reviewer excludes boundary
+  door/pillars `obj_36`, `obj_46`, `obj_84` from floor support and adds cabinet
+  `obj_2` plus sofa `obj_77`; adds both to against-wall. Wall attachment includes
+  all nine windows plus planter/vase `obj_45` and picture `obj_63`. Furniture
+  support uses gravity-resting physical contact, including sofa/chair seats,
+  table members whose imported AABBs disagree, and cabinet `obj_2` as an owner.
+  The promoted key adds a scene-specific cabinet question because the current
+  Router defers that support class; this is a measured capability gap, not a key
+  error.
 - **room_1** — floor: 7 (rug, 2 nightstands, cabinet, basket, blanket, door —
   check the *door*); against wall: blinds/bed/basket (plausible for a
   bedroom); attached: blinds + **bed (obj_32) — the known false positive**:
