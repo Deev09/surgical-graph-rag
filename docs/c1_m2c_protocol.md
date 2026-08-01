@@ -1,9 +1,10 @@
 # C1-M2C — oracle-free selection repair (predeclared protocol)
 
-**Status: DRAFT — awaiting project-owner sign-off. No rule has been
-designed or tuned. This document freezes the experiment BEFORE that
-happens; it becomes PREDECLARED when the owner confirms and the sign-off
-block below is filled.**
+**Status: PREDECLARED (frozen 2026-07-31, owner-approved). Gates, budget,
+signal allowlist, and the room_1 holdout seal below may not be amended
+mid-run; protocol-design mistakes discovered later are recorded as
+findings, not fixed retroactively. At freeze time no rule had been
+designed or tuned.**
 
 Written 2026-07-31, after the stage 0/0b ceiling measurements
 (`docs/c1_composition_ceiling.md`) and before any selection-rule code.
@@ -130,6 +131,8 @@ finding, out of scope for any selection rule.
 
 ## Sign-off
 
-- [ ] Project owner approves gates, budget, and holdout seal
-      (date: __________, by: __________)
-- [ ] Protocol frozen at commit: __________
+- [x] Project owner approves gates, budget, and holdout seal
+      (date: 2026-07-31, by: project owner / deevyaswain — "approved,
+      freeze the protocol and start rule v1")
+- [x] Protocol content frozen as committed at draft commit `9953f04`;
+      this sign-off commit changes status text only.
