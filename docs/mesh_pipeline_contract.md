@@ -24,7 +24,11 @@ upstream stage.
 | **C3** fully raw | learned | learned | mesh-derived | complete deployable pipeline |
 
 Implementations: A = `demo/replica_habitat_import.py::import_habitat_room`,
-B = `demo/replica_mesh_import.py::import_mesh_room`. C1–C3 do not exist yet.
+B = `demo/replica_mesh_import.py::import_mesh_room`. C1 is implemented and
+measured (segmenter package + `tools/c1_*` evaluators; Mask3D reference
+backend frozen at MIN_SCORE=0.2, see `docs/c1_closeout.md`; the Segment3D
+pilot failed its predeclared gate, see `docs/c1_m2_protocol.md`). C2 and C3
+are not implemented.
 
 ## A↔B frame parity (what "repaired and frozen" means)
 
