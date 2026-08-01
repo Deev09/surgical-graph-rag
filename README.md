@@ -93,6 +93,9 @@ python3 tools/run_tests.py
 python3 tools/fetch_replica_scenes.py                 # hash-check pinned inputs
 python3 demo/question_battery.py /path/to/replica/room_0 replica_room_0
 python3 tools/scene_scorecard.py                      # human-verified headline
+python3 tools/mvp_demo.py                             # deterministic A/B/C1/C2 report
+python3 tools/mvp_viewer.py                           # interactive 3D evidence viewer
+#   -> open runs/mvp_v1/viewer.html (self-contained, offline)
 ```
 
 ## Repo layout (current system)
