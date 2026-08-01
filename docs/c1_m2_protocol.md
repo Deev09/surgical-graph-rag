@@ -114,3 +114,11 @@ requiring its own predeclared protocol — and it should be designed against
 HUMAN-verified answer keys, not B-relative metrics (optimizing composition
 against B risks teaching it B's known box artifacts). Mask3D @0.2 remains
 the C1 reference backend.
+
+**Addendum 2026-07-31 (stage-0 ceiling measurement, zero GPU):** greedy
+oracle-guided unions of the saved masks add ZERO entity recall at IoU 0.5
+on either backend — the fragment-ASSEMBLY half of the composition
+hypothesis is dead for the saved room_2 masks; the entire winnable set (13
+entities, 0.32 → 0.57) is pure mask SELECTION, mostly winner-takes-all
+losses of near-perfect masks (a plate at raw IoU 0.999 delivered at 0.000).
+See `docs/c1_composition_ceiling.md`.
