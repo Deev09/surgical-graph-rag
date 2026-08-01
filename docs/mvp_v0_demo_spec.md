@@ -1,9 +1,12 @@
 # MVP-v0 demo — specification (DRAFT for sign-off)
 
-**Status: DRAFT — awaiting project-owner sign-off. No implementation has
-started. Constraints inherited from the closeout decision (2026-08-01):
-zero GPU, zero rule tuning, zero benchmark/key/threshold changes; C2 does
-not start until this vertical slice is accepted.**
+**Status: APPROVED 2026-08-01 with spec defaults (room_0 A/B-only row
+kept; PNGs embedded; verbalized text included) and IMPLEMENTED —
+`tools/mvp_demo.py` + `tools/mvp_report_html.py`, tests in
+`tests/tools/test_mvp_demo.py`. Acceptance criteria 1–4 verified by
+machine (6 s runtime, determinism PASS, room_2 reference rows reproduced,
+61/61 test files green); criterion 5 (owner reviews the rendered HTML) is
+the remaining acceptance step. C2 stays blocked until then.**
 
 ## What MVP-v0 is
 
@@ -143,5 +146,7 @@ deliverable), office_0/frl rows (no human keys).
 
 ## Sign-off
 
-- [ ] Project owner approves scene set, outputs, acceptance criteria,
-      and the three open decisions (date: __________, by: __________)
+- [x] Project owner approves scene set, outputs, acceptance criteria,
+      and the three open decisions — spec defaults on all three
+      (date: 2026-08-01, by: project owner / deevyaswain — "approved
+      with spec defaults, build the demo slice")
