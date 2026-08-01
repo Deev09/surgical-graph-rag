@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="380" viewBox="0 0 760 380" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">
+<rect width="760" height="380" fill="#fcfcfb"/>
+<text x="56" y="24" font-size="15" font-weight="600" fill="#0b0b0b">UID micro-recall vs human-verified keys</text>
+<text x="56" y="41" font-size="11.5" fill="#52514e">Same frozen graph + Router; only the input variant changes. C1/C2 rows are evaluation-only ladder stages.</text>
+<rect x="488" y="16" width="10" height="10" rx="2" fill="#2a78d6"/>
+<text x="502" y="25" font-size="11.5" fill="#0b0b0b">A</text>
+<rect x="552" y="16" width="10" height="10" rx="2" fill="#eb6834"/>
+<text x="566" y="25" font-size="11.5" fill="#0b0b0b">B</text>
+<rect x="616" y="16" width="10" height="10" rx="2" fill="#1baf7a"/>
+<text x="630" y="25" font-size="11.5" fill="#0b0b0b">C1</text>
+<rect x="680" y="16" width="10" height="10" rx="2" fill="#eda100"/>
+<text x="694" y="25" font-size="11.5" fill="#0b0b0b">C2</text>
+<line x1="56" y1="334.0" x2="744" y2="334.0" stroke="#e8e8e6" stroke-width="1"/>
+<text x="48" y="337.5" font-size="10.5" fill="#52514e" text-anchor="end">0.0</text>
+<line x1="56" y1="250.9" x2="744" y2="250.9" stroke="#e8e8e6" stroke-width="1"/>
+<text x="48" y="254.4" font-size="10.5" fill="#52514e" text-anchor="end">0.2</text>
+<line x1="56" y1="167.8" x2="744" y2="167.8" stroke="#e8e8e6" stroke-width="1"/>
+<text x="48" y="171.3" font-size="10.5" fill="#52514e" text-anchor="end">0.4</text>
+<line x1="56" y1="84.8" x2="744" y2="84.8" stroke="#e8e8e6" stroke-width="1"/>
+<text x="48" y="88.3" font-size="10.5" fill="#52514e" text-anchor="end">0.6</text>
+<path d="M79.0,334.0 L79.0,193.9 Q79.0,189.9 83.0,189.9 L105.0,189.9 Q109.0,189.9 109.0,193.9 L109.0,334.0 Z" fill="#2a78d6"/>
+<text x="94.0" y="185.9" font-size="10" fill="#52514e" text-anchor="middle">0.35</text>
+<path d="M111.0,334.0 L111.0,219.3 Q111.0,215.3 115.0,215.3 L137.0,215.3 Q141.0,215.3 141.0,219.3 L141.0,334.0 Z" fill="#eb6834"/>
+<text x="126.0" y="211.3" font-size="10" fill="#52514e" text-anchor="middle">0.29</text>
+<text x="158.0" y="328.0" font-size="9" fill="#52514e" text-anchor="middle" transform="rotate(-90 158.0 328.0)" font-style="italic">not run</text>
+<text x="190.0" y="328.0" font-size="9" fill="#52514e" text-anchor="middle" transform="rotate(-90 190.0 328.0)" font-style="italic">not run</text>
+<text x="142.0" y="352" font-size="11.5" fill="#0b0b0b" text-anchor="middle">room_0</text>
+<path d="M251.0,334.0 L251.0,219.3 Q251.0,215.3 255.0,215.3 L277.0,215.3 Q281.0,215.3 281.0,219.3 L281.0,334.0 Z" fill="#2a78d6"/>
+<text x="266.0" y="211.3" font-size="10" fill="#52514e" text-anchor="middle">0.29</text>
+<path d="M283.0,334.0 L283.0,231.2 Q283.0,227.2 287.0,227.2 L309.0,227.2 Q313.0,227.2 313.0,231.2 L313.0,334.0 Z" fill="#eb6834"/>
+<text x="298.0" y="223.2" font-size="10" fill="#52514e" text-anchor="middle">0.26</text>
+<path d="M315.0,334.0 L315.0,290.5 Q315.0,286.5 319.0,286.5 L341.0,286.5 Q345.0,286.5 345.0,290.5 L345.0,334.0 Z" fill="#1baf7a"/>
+<text x="330.0" y="282.5" font-size="10" fill="#52514e" text-anchor="middle">0.11</text>
+<path d="M347.0,334.0 L347.0,290.5 Q347.0,286.5 351.0,286.5 L373.0,286.5 Q377.0,286.5 377.0,290.5 L377.0,334.0 Z" fill="#eda100"/>
+<text x="362.0" y="282.5" font-size="10" fill="#52514e" text-anchor="middle">0.11</text>
+<text x="314.0" y="352" font-size="11.5" fill="#0b0b0b" text-anchor="middle">room_1</text>
+<path d="M423.0,334.0 L423.0,168.4 Q423.0,164.4 427.0,164.4 L449.0,164.4 Q453.0,164.4 453.0,168.4 L453.0,334.0 Z" fill="#2a78d6"/>
+<text x="438.0" y="160.4" font-size="10" fill="#52514e" text-anchor="middle">0.41</text>
+<path d="M455.0,334.0 L455.0,168.4 Q455.0,164.4 459.0,164.4 L481.0,164.4 Q485.0,164.4 485.0,168.4 L485.0,334.0 Z" fill="#eb6834"/>
+<text x="470.0" y="160.4" font-size="10" fill="#52514e" text-anchor="middle">0.41</text>
+<path d="M487.0,334.0 L487.0,236.3 Q487.0,232.3 491.0,232.3 L513.0,232.3 Q517.0,232.3 517.0,236.3 L517.0,334.0 Z" fill="#1baf7a"/>
+<text x="502.0" y="228.3" font-size="10" fill="#52514e" text-anchor="middle">0.24</text>
+<path d="M519.0,334.0 L519.0,253.2 Q519.0,249.2 523.0,249.2 L545.0,249.2 Q549.0,249.2 549.0,253.2 L549.0,334.0 Z" fill="#eda100"/>
+<text x="534.0" y="245.2" font-size="10" fill="#52514e" text-anchor="middle">0.20</text>
+<text x="486.0" y="352" font-size="11.5" fill="#0b0b0b" text-anchor="middle">room_2</text>
+<path d="M595.0,334.0 L595.0,182.2 Q595.0,178.2 599.0,178.2 L621.0,178.2 Q625.0,178.2 625.0,182.2 L625.0,334.0 Z" fill="#2a78d6"/>
+<text x="610.0" y="174.2" font-size="10" fill="#52514e" text-anchor="middle">0.38</text>
+<path d="M627.0,334.0 L627.0,78.4 Q627.0,74.4 631.0,74.4 L653.0,74.4 Q657.0,74.4 657.0,78.4 L657.0,334.0 Z" fill="#eb6834"/>
+<text x="642.0" y="70.4" font-size="10" fill="#52514e" text-anchor="middle">0.62</text>
+<text x="674.0" y="330.0" font-size="10" fill="#52514e" text-anchor="middle">0</text>
+<text x="706.0" y="330.0" font-size="10" fill="#52514e" text-anchor="middle">0</text>
+<text x="658.0" y="352" font-size="11.5" fill="#0b0b0b" text-anchor="middle">office_0</text>
+<line x1="56" y1="334" x2="744" y2="334" stroke="#52514e" stroke-width="1"/>
+<text x="56" y="370" font-size="10" fill="#52514e">room_0: C1/C2 not run (no GPU spent on it — absent, not zero). office_0: C1/C2 are TRUE zeros (coverage collapse).</text>
+</svg>

@@ -79,4 +79,9 @@ performance protocol targeting C1 proposal generation.
 
 ## Sign-off
 
-- [ ] Owner accepts the viewer (date: ______, by: ______)
+- [x] Owner accepts the viewer (date: 2026-08-01, by: project owner /
+      deevyaswain — full review: both scenes render, orbit/zoom/pan/
+      overlays/answer sources/provenance/disclosures verified, room_2
+      C1→C2 shelf-anchor loss clearly demonstrated, no console errors;
+      one blocker — phantom obj_N on metadata-less semantic ids — fixed
+      at 71b601e with a regression test before acceptance)

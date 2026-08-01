@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">
+<rect width="640" height="360" fill="#fcfcfb"/>
+<text x="56" y="24" font-size="15" font-weight="600" fill="#0b0b0b">room_2 — recall attribution down the ladder</text>
+<text x="56" y="41" font-size="11.5" fill="#52514e">Each step changes exactly one stage, so each drop is attributable.</text>
+<line x1="56" y1="300.0" x2="624" y2="300.0" stroke="#e8e8e6" stroke-width="1"/>
+<text x="48" y="303.5" font-size="10.5" fill="#52514e" text-anchor="end">0.0</text>
+<line x1="56" y1="205.6" x2="624" y2="205.6" stroke="#e8e8e6" stroke-width="1"/>
+<text x="48" y="209.1" font-size="10.5" fill="#52514e" text-anchor="end">0.2</text>
+<line x1="56" y1="111.2" x2="624" y2="111.2" stroke="#e8e8e6" stroke-width="1"/>
+<text x="48" y="114.7" font-size="10.5" fill="#52514e" text-anchor="end">0.4</text>
+<path d="M95.0,300.0 L95.0,111.3 Q95.0,107.3 99.0,107.3 L155.0,107.3 Q159.0,107.3 159.0,111.3 L159.0,300.0 Z" fill="#2a78d6"/>
+<text x="127.0" y="102.3" font-size="11" fill="#0b0b0b" text-anchor="middle">0.408</text>
+<text x="127.0" y="318" font-size="12" fill="#0b0b0b" text-anchor="middle">A</text>
+<path d="M237.0,300.0 L237.0,111.3 Q237.0,107.3 241.0,107.3 L297.0,107.3 Q301.0,107.3 301.0,111.3 L301.0,300.0 Z" fill="#eb6834"/>
+<text x="269.0" y="102.3" font-size="11" fill="#0b0b0b" text-anchor="middle">0.408</text>
+<text x="269.0" y="318" font-size="12" fill="#0b0b0b" text-anchor="middle">B</text>
+<path d="M379.0,300.0 L379.0,188.4 Q379.0,184.4 383.0,184.4 L439.0,184.4 Q443.0,184.4 443.0,188.4 L443.0,300.0 Z" fill="#1baf7a"/>
+<text x="411.0" y="179.4" font-size="11" fill="#0b0b0b" text-anchor="middle">0.245</text>
+<text x="411.0" y="318" font-size="12" fill="#0b0b0b" text-anchor="middle">C1</text>
+<path d="M521.0,300.0 L521.0,207.7 Q521.0,203.7 525.0,203.7 L581.0,203.7 Q585.0,203.7 585.0,207.7 L585.0,300.0 Z" fill="#eda100"/>
+<text x="553.0" y="198.7" font-size="11" fill="#0b0b0b" text-anchor="middle">0.204</text>
+<text x="553.0" y="318" font-size="12" fill="#0b0b0b" text-anchor="middle">C2</text>
+<text x="198.0" y="338" font-size="10" fill="#52514e" text-anchor="middle">→ box source ±0.000</text>
+<text x="340.0" y="338" font-size="10" fill="#52514e" text-anchor="middle">→ instance extraction −0.163</text>
+<text x="482.0" y="338" font-size="10" fill="#52514e" text-anchor="middle">→ labels −0.041</text>
+<line x1="56" y1="300" x2="624" y2="300" stroke="#52514e" stroke-width="1"/>
+</svg>
