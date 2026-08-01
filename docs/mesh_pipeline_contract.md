@@ -24,11 +24,14 @@ upstream stage.
 | **C3** fully raw | learned | learned | mesh-derived | complete deployable pipeline |
 
 Implementations: A = `demo/replica_habitat_import.py::import_habitat_room`,
-B = `demo/replica_mesh_import.py::import_mesh_room`. C1 is implemented and
-measured (segmenter package + `tools/c1_*` evaluators; Mask3D reference
-backend frozen at MIN_SCORE=0.2, see `docs/c1_closeout.md`; the Segment3D
-pilot failed its predeclared gate, see `docs/c1_m2_protocol.md`). C2 and C3
-are not implemented.
+B = `demo/replica_mesh_import.py::import_mesh_room`. C1 is implemented,
+measured, and **CLOSED** (2026-08-01) with Mask3D @ MIN_SCORE=0.2 as the
+frozen reference composition — the Segment3D pilot and the oracle-free
+selection-repair experiment both failed their predeclared gates
+(`docs/c1_closeout.md`, `docs/c1_m2_protocol.md`,
+`docs/c1_m2c_protocol.md`). C2 and C3 are not implemented; C2 does not
+start before the MVP-v0 demo slice is accepted
+(`docs/mvp_v0_demo_spec.md`).
 
 ## A↔B frame parity (what "repaired and frozen" means)
 

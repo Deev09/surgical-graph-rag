@@ -4,6 +4,29 @@ Date: 2026-07-13. Backend: Mask3D mask stage via OpenMask3D `3bc3fc52`,
 arbitrary-scenes checkpoint (`da4b68cb…`), A100, 55–86 s/scene inference.
 All reports under `runs/phase8_c1/` (`ms02/` = frozen operating point).
 
+## STATUS: C1 CLOSED (2026-08-01) — Mask3D @0.2 is the frozen reference
+
+The C1 track is closed with **Mask3D @ MIN_SCORE=0.2 / min_vertices=20**
+(bundles `runs/phase8_c1/bundles_ms02/`, hashes in
+`docs/c1_artifact_manifest.json`) as the frozen reference composition.
+Everything tried beyond it was measured and failed or was bounded:
+
+- **Segment3D backend swap (C1-M2)**: failed its predeclared room_2 gate
+  4/5 — stopped after one scene (`docs/c1_m2_protocol.md`).
+- **Composition ceilings (C1-M2C stages 0/0b)**: unions of saved masks add
+  zero recall; the selection ceiling (30/53) is jointly achievable but
+  only with oracle guidance (`docs/c1_composition_ceiling.md`).
+- **Oracle-free selection repair (C1-M2C)**: three predeclared rule
+  versions all failed the human-key gates — negative result, holdout
+  unspent (`docs/c1_m2c_protocol.md` VERDICT). Against the human room_2
+  key, Mask3D delivered (P 1.00 / R 0.24) outperforms every repair rule.
+
+Improving C1 further requires evidence outside the exhausted signal
+families (re-perception on the mesh, or a trained mask scorer) — a new
+experiment class, only to be opened under a new predeclared protocol.
+Next per the agreed roadmap: the MVP-v0 A/B/C1 demo vertical slice
+(`docs/mvp_v0_demo_spec.md`); C2 does not start until it is accepted.
+
 ## Verdict, stated precisely
 
 **The C1 infrastructure is validated and reproducible; the Mask3D backend's
