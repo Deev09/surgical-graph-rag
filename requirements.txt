@@ -1,2 +1,10 @@
+# Current pipeline (importers, graph, reasoner, segmenter tooling, evaluators)
+numpy
+Pillow
+
+# Legacy v1 demo only (tiny_graph_demo.py optional LLM answering step)
 openai>=1.40.0
 anthropic>=0.40.0
+
+# GPU segmentation backends (Mask3D / Segment3D) run in Colab, NOT locally —
+# their pinned legacy environments live in notebooks/c1_*_colab.ipynb.

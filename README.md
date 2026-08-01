@@ -1,104 +1,119 @@
 # surgical-graph-rag
 
-> Scene-graph RAG for spatial reasoning — typed-relation pruning over a real captured scene.
+> A modular, queryable spatial-graph reasoner over real captured 3D scenes —
+> typed relations, honest outcomes, and measured failure isolation under
+> imperfect 3D instance extraction.
 
-LLMs waste context when reasoning about real scenes: they're handed every object, every coordinate, every label, when the question only needs the few entities in the right spatial relation. `surgical-graph-rag` builds a structured scene graph with typed spatial relations and prunes it *before* retrieval, keeping only the relevant subgraph for the question. Compact context goes to the LLM; the answer comes back grounded.
+Given a captured indoor scene, the system builds a typed spatial scene graph
+(support, wall contact/proximity, attachment, directional relations) and
+answers natural-language structural questions ("what is on the table?",
+"what is against the wall?") through a compile → execute → verbalize Router
+that can answer, return a grounded empty, abstain, or say **unknown** — it
+never fabricates certainty the graph cannot support.
 
-## What it does
+What makes it unusual is the evaluation discipline: every input variant is
+hash-pinned, every pipeline stage is isolated so failures attribute to exactly
+one stage, experiments run under predeclared gates that are allowed to fail,
+and negative results are committed as first-class documentation.
 
-The pipeline:
+## What it is NOT (read this before citing numbers)
 
-1. **Scene graph construction.** Each scene is captured as a set of objects with labels, zones, xyz positions, and attributes. Pairwise typed relations are computed: `LEFT_OF`, `RIGHT_OF`, `BELOW`, `ABOVE`, `IN_FRONT_OF`, `BEHIND`, `NEAR`, `ATTACHED_TO`.
-2. **Question → relation pattern.** A natural-language question is parsed into the relation(s) it implies (e.g. "What is left of the sink?" → `LEFT_OF` anchored on `sink`).
-3. **Typed-relation pruning + zone-aware retrieval.** The scoring pass walks graph edges matching the relation type, applies a spatial-XY salience term for `BELOW`/`ABOVE` (`lambda_xy=0.38`, `floor=0.05`), and prunes everything else.
-4. **Compact JSON to the LLM (optional).** The pruned subgraph is serialized to a compact JSON payload — orders of magnitude smaller than the full scene — and passed to a local OpenAI-compatible model for natural-language answering. Set `SKIP_LLM=1` to skip the LLM call and return the pruned answer directly.
+- It is **not** an end-to-end NeRF/3DGS system. The only real reconstruction
+  adapter is Replica/oracle data.
+- The learned-segmentation path (C1) starts from a raw `mesh.ply` but injects
+  **oracle labels and structural surfaces** for controlled evaluation. Learned
+  semantics (C2) and fully-raw operation (C3) are not implemented.
+- The current headline is that the system **exposes and measures its own
+  failures** — not that it solves raw-scene QA.
 
-Two scenes ship in v1:
+## The input ladder (stage isolation)
 
-- `graffiti_bathroom` — 12 labeled objects, hand-authored relations, 10 benchmarked queries.
-- `replica_room_0` — Replica room reconstruction with scene graph, computed relations, and visualization tooling.
+Each variant changes exactly one upstream stage, so adjacent comparisons
+attribute differences to that stage (`docs/mesh_pipeline_contract.md`):
 
-Three baseline variants live under `baselines/`: `v1` (hand-authored relations), `v1_computed_relations` (relations derived from geometry), and `v1_paraphrase` (robustness under paraphrased queries).
+| variant | boxes | labels | status |
+|---|---|---|---|
+| **A** | `info_semantic.json` oracle | oracle | frozen baseline |
+| **B** | derived from `mesh_semantic.ply` | oracle | frame parity with A frozen |
+| **C1** | learned segmenter on raw `mesh.ply` | oracle via exact vertex correspondence | **measured** (Mask3D reference @ MIN_SCORE=0.2; Segment3D pilot failed its predeclared gate — see below) |
+| **C2** | learned | learned | not implemented |
+| **C3** | learned | learned, mesh-derived surfaces | not implemented |
 
-## Example query
+## Measured status (2026-07-31)
 
-```
-QUERY: What is left of the sink?
+**Human-verified baseline (Phase 8).** Three Replica scenes
+(room_0/room_1/room_2) have human-reviewed answer keys; the scorecard
+(`runs/phase8_scorecard/`) reports against *reality*, not against the system's
+own drafts: 43 questions → 3 fully-correct answers, 20 correct empties, 17
+misses, 3 false answers. The misses are dominated by known representational
+limits (whole-object AABBs cannot model sofa/chair seat surfaces; the 2 cm
+wall-contact band is stricter than human "against the wall"; cabinet/nightstand
+are missing from the support-class allowlist). A key the system fails is a
+successful review — the keys record what is physically true.
 
-Pruned subgraph (excerpt):
-{
-  "anchor":     {"id": "obj_2", "label": "sink", "zone": "front_right"},
-  "candidates": [
-    {"id": "obj_1", "label": "toilet", "rel": "LEFT_OF", "score": 0.91}
-  ]
-}
+**C1 (raw-mesh instances, oracle labels).** Mask3D backend, four scenes,
+frozen operating point: entity recall@IoU0.5 0.25–0.38, answer recall vs B
+0.39–0.51. Failure attribution: Mask3D's selection stage is near-optimal and
+its ceiling is proposal coverage (~32% of oracle entities have a viable raw
+mask); Segment3D raises the proposal ceiling (30/53 vs 20/53 on room_2) but
+wastes 13 viable masks in composition and failed 4/5 predeclared gate criteria
+— so the pilot stopped after one scene, per protocol
+(`docs/c1_closeout.md`, `docs/c1_m2_protocol.md`).
 
-Answer:   toilet
-Expected: toilet   ✓
-```
-
-The structured question schema (`benchmark/questions/graffiti_bathroom.json`) records the relation category (`relative_position`, `proximity`, …), the answer type (`entity` vs `entity_list`), the ambiguity policy (`one_of` vs `all_of`), and aliases for each canonical target — so a paraphrased answer like "bowl" still resolves to "toilet."
+**Committed negative results.** Query-scoped raw-proposal expansion recovers
+zero additional support answers on saved proposals
+(`docs/query_scoped_expansion_prototype.md`); the uncertainty-preserving
+provisional pool is a policy prototype, not a tuned improvement
+(`docs/uncertainty_policy_prototype.md`).
 
 ## Quickstart
 
 ```bash
 git clone https://github.com/Deev09/surgical-graph-rag.git
 cd surgical-graph-rag
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   # numpy + Pillow for the current pipeline
 
-# Run the v1 benchmark with no LLM required
-SKIP_LLM=1 python tiny_graph_demo.py --benchmark-only
+# Canonical test command (57 script-style test files, each in its own process;
+# dataset-guarded tests self-skip without the Replica data)
+python3 tools/run_tests.py
 
-# Full demo: prune subgraphs and call a local LLM through Docker Model Runner
-#   export CONTEXT_SURGEON_OPENAI_BASE_URL=http://localhost:12434/engines/vllm/v1
-#   export CONTEXT_SURGEON_MODEL=ai/llama3.1
-python tiny_graph_demo.py
+# With the Replica dataset on disk (see docs/reproduction.md):
+python3 tools/fetch_replica_scenes.py --verify        # hash-check pinned inputs
+python3 demo/question_battery.py /path/to/replica/room_0 replica_room_0
+python3 tools/scene_scorecard.py                      # human-verified headline
 ```
 
-## v1 baseline
-
-| scene             | n_queries | top1_accuracy | topk_recall | avg_false_positives_per_query |
-| ----------------- | --------- | ------------- | ----------- | ----------------------------- |
-| graffiti_bathroom | 10        | 1.0           | 1.0         | 0.0                           |
-
-The 10-query benchmark is saturated. v1 demonstrates the pipeline works on a clean scene with hand-authored relations; the open question is how it holds up under harder cases.
-
-## What's next (candidate experiments)
-
-The `baselines/` directory already scaffolds two of these:
-
-- **Paraphrase robustness** (`baselines/v1_paraphrase/`, `eval_paraphrase.py`) — does pruning quality degrade under reworded queries?
-- **Computed relations** (`baselines/v1_computed_relations/`, `relations/compute.py`) — replace hand-authored relations with geometry-derived ones; measure the gap.
-- **VLM grounding** (`eval_vlm.py`) — feed image patches into the candidate-scoring pass for scenes that don't have clean object labels.
-- **Harder + more diverse scenes.** Currently 2; the scene schema is designed to ingest more.
-- **Additional typed relations** — `INSIDE_OF`, `SUPPORTS`, `FACING`, etc.
-- **Context-cost ablations.** Token savings vs. a no-pruning RAG baseline at equivalent accuracy.
-
-## Repo layout
+## Repo layout (current system)
 
 ```
-surgical-graph-rag/
-├── tiny_graph_demo.py         # Main demo: scene graph → prune → compact JSON → optional LLM
-├── eval_graph.py              # Graph-level eval
-├── eval_paraphrase.py         # Robustness under paraphrased queries
-├── eval_scene.py              # Scene-level eval
-├── eval_vlm.py                # VLM-grounded eval (experimental)
-├── strict_eval.py             # Strict-match scoring
-├── scenes/                    # Per-scene assets (scene_graph.json, expected_answers.json, …)
-├── benchmark/                 # Questions, runner, schema, categories, VLM client
-├── baselines/                 # v1, v1_computed_relations, v1_paraphrase artifacts
-├── scoring/                   # Scoring (v1, v2, spatial, geom, topk, filter)
-├── relations/                 # Relation compute + compare
-├── parsers/                   # Question → relation pattern
-├── importers/                 # Scene ingestion
-└── requirements.txt
+common/ extractors/ geometry/   # EntityArtifacts contract, frame, surfaces
+graph/                          # typed relation extractors + graph builder
+reasoner/                       # RulesCompiler -> RulesExecutor -> Verbalizer (Router)
+segmenter/                      # C1: segmentation sidecar contract, mask resolution,
+                                #     anonymous candidates, derived eval bundles
+demo/                           # Replica importers (A/B), question battery, review sheets
+eval/                           # router QA scoring + Phase 8 answer keys (human_verified)
+tools/                          # evaluators, scorecard, sweeps, dataset fetch, run_tests
+notebooks/                      # Colab GPU backends (Mask3D, Segment3D) — full env recipes
+docs/                           # contracts, closeouts, protocols, phase records
+tests/                          # 57 script-style test files (tools/run_tests.py)
+```
+
+Reproduction (datasets, checkpoints, environments, hardware):
+`docs/reproduction.md`.
+
+## Legacy v1 (graffiti_bathroom)
+
+The original prototype — a hand-authored 12-object scene graph with
+relation-aware retrieval and an optional LLM answering step — lives on in
+`tiny_graph_demo.py`, `scenes/`, `benchmark/`, `baselines/`, `scoring/`,
+`relations/`, `parsers/`. Its 10-query benchmark is saturated
+(top-1 accuracy 1.0) and is **not comparable** to the Phase 8 track:
+
+```bash
+SKIP_LLM=1 python3 tiny_graph_demo.py --benchmark-only
 ```
 
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
-## Status
-
-v1 demo. The graffiti_bathroom 10-query benchmark saturates; harder evals are in progress (paraphrase, computed-relations, additional scenes). Issues and PRs welcome.
