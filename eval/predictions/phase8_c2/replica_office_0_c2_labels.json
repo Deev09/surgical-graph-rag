@@ -1,0 +1,444 @@
+{
+ "applies_to_bundle_output_sha256": "7bd513b0710181535265482e17d7a4c54f08d61e804354aa132f5685154ad405",
+ "label_accuracy": {
+  "n_matched_entity_instances": 16,
+  "support_class_slice": {
+   "n": 7,
+   "predicted_support_when_oracle_not": 0.0,
+   "predicted_support_when_oracle_support": 0.2857,
+   "top1": 0.2857
+  },
+  "top1": 0.25,
+  "top3": 0.5
+ },
+ "labeler": {
+  "model": "ViT-B-32-quickgelu",
+  "pretrained": "openai",
+  "prompts": [
+   "a photo of a {c}",
+   "a photo of a {c} in a room",
+   "a 3D render of a {c}"
+  ],
+  "weights_sha256": "e6d1bd7789aa45192b3bf90570a789b478bae1b74ebcce7eddd908e83a2b7c31"
+ },
+ "note": "evaluation-only C2.0 predictions on matched instances; consumed by tools/mvp_demo.py for the torch-free C2 row",
+ "per_instance": [
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9768,
+   "learned_label": "sofa",
+   "n_vertices": 30310,
+   "oracle_class": "sofa",
+   "oracle_id": 9,
+   "pred_id": 11,
+   "top3": [
+    {
+     "label": "sofa",
+     "score": 0.3021
+    },
+    {
+     "label": "vent",
+     "score": 0.2737
+    },
+    {
+     "label": "wall",
+     "score": 0.272
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": true,
+   "iou": 0.959,
+   "learned_label": "tissue-paper",
+   "n_vertices": 17714,
+   "oracle_class": "sofa",
+   "oracle_id": 7,
+   "pred_id": 6,
+   "top3": [
+    {
+     "label": "tissue-paper",
+     "score": 0.2828
+    },
+    {
+     "label": "sofa",
+     "score": 0.2695
+    },
+    {
+     "label": "tablet",
+     "score": 0.2655
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": true,
+   "iou": 0.8424,
+   "learned_label": "desk-organizer",
+   "n_vertices": 14299,
+   "oracle_class": "table",
+   "oracle_id": 58,
+   "pred_id": 4,
+   "top3": [
+    {
+     "label": "desk-organizer",
+     "score": 0.3056
+    },
+    {
+     "label": "table",
+     "score": 0.3018
+    },
+    {
+     "label": "anonymize_text",
+     "score": 0.2904
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": true,
+   "iou": 0.5375,
+   "learned_label": "pillar",
+   "n_vertices": 22113,
+   "oracle_class": "tv-screen",
+   "oracle_id": 66,
+   "pred_id": 17,
+   "top3": [
+    {
+     "label": "pillar",
+     "score": 0.2735
+    },
+    {
+     "label": "tv-screen",
+     "score": 0.2685
+    },
+    {
+     "label": "vent",
+     "score": 0.2669
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.5707,
+   "learned_label": "wall-plug",
+   "n_vertices": 13565,
+   "oracle_class": "blinds",
+   "oracle_id": 15,
+   "pred_id": 7,
+   "top3": [
+    {
+     "label": "wall-plug",
+     "score": 0.2824
+    },
+    {
+     "label": "pillar",
+     "score": 0.2736
+    },
+    {
+     "label": "vent",
+     "score": 0.2649
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9157,
+   "learned_label": "chair",
+   "n_vertices": 7337,
+   "oracle_class": "chair",
+   "oracle_id": 4,
+   "pred_id": 2,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.3109
+    },
+    {
+     "label": "sofa",
+     "score": 0.3034
+    },
+    {
+     "label": "vent",
+     "score": 0.2956
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": true,
+   "iou": 0.9265,
+   "learned_label": "vent",
+   "n_vertices": 7022,
+   "oracle_class": "chair",
+   "oracle_id": 61,
+   "pred_id": 0,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.2937
+    },
+    {
+     "label": "chair",
+     "score": 0.2908
+    },
+    {
+     "label": "sofa",
+     "score": 0.2878
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.6854,
+   "learned_label": "vent",
+   "n_vertices": 7143,
+   "oracle_class": "plant-stand",
+   "oracle_id": 23,
+   "pred_id": 10,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.3152
+    },
+    {
+     "label": "pillar",
+     "score": 0.3108
+    },
+    {
+     "label": "anonymize_text",
+     "score": 0.3022
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.9596,
+   "learned_label": "anonymize_text",
+   "n_vertices": 3918,
+   "oracle_class": "bin",
+   "oracle_id": 19,
+   "pred_id": 1,
+   "top3": [
+    {
+     "label": "anonymize_text",
+     "score": 0.2979
+    },
+    {
+     "label": "anonymize_picture",
+     "score": 0.2889
+    },
+    {
+     "label": "vent",
+     "score": 0.2875
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.8043,
+   "learned_label": "anonymize_text",
+   "n_vertices": 3814,
+   "oracle_class": "table",
+   "oracle_id": 12,
+   "pred_id": 16,
+   "top3": [
+    {
+     "label": "anonymize_text",
+     "score": 0.2893
+    },
+    {
+     "label": "vent",
+     "score": 0.288
+    },
+    {
+     "label": "blinds",
+     "score": 0.2865
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9399,
+   "learned_label": "bin",
+   "n_vertices": 2901,
+   "oracle_class": "bin",
+   "oracle_id": 34,
+   "pred_id": 3,
+   "top3": [
+    {
+     "label": "bin",
+     "score": 0.2934
+    },
+    {
+     "label": "rug",
+     "score": 0.2891
+    },
+    {
+     "label": "anonymize_text",
+     "score": 0.2865
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.8387,
+   "learned_label": "vent",
+   "n_vertices": 2856,
+   "oracle_class": "vent",
+   "oracle_id": 17,
+   "pred_id": 19,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.2852
+    },
+    {
+     "label": "desk-organizer",
+     "score": 0.2795
+    },
+    {
+     "label": "wall-plug",
+     "score": 0.2747
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.1041,
+   "learned_label": "anonymize_text",
+   "n_vertices": 1652,
+   "oracle_class": "indoor-plant",
+   "oracle_id": 22,
+   "pred_id": 13,
+   "top3": [
+    {
+     "label": "anonymize_text",
+     "score": 0.2771
+    },
+    {
+     "label": "other-leaf",
+     "score": 0.2751
+    },
+    {
+     "label": "bin",
+     "score": 0.2723
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.0923,
+   "learned_label": "blinds",
+   "n_vertices": 1173,
+   "oracle_class": "door",
+   "oracle_id": 16,
+   "pred_id": 12,
+   "top3": [
+    {
+     "label": "blinds",
+     "score": 0.2858
+    },
+    {
+     "label": "pillar",
+     "score": 0.2827
+    },
+    {
+     "label": "anonymize_text",
+     "score": 0.2812
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.0775,
+   "learned_label": "anonymize_text",
+   "n_vertices": 116,
+   "oracle_class": "desk-organizer",
+   "oracle_id": 44,
+   "pred_id": 15,
+   "top3": [
+    {
+     "label": "anonymize_text",
+     "score": 0.2801
+    },
+    {
+     "label": "anonymize_picture",
+     "score": 0.2666
+    },
+    {
+     "label": "undefined",
+     "score": 0.257
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.0011,
+   "learned_label": "anonymize_text",
+   "n_vertices": 165,
+   "oracle_class": "rug",
+   "oracle_id": 5,
+   "pred_id": 21,
+   "top3": [
+    {
+     "label": "anonymize_text",
+     "score": 0.2853
+    },
+    {
+     "label": "undefined",
+     "score": 0.2667
+    },
+    {
+     "label": "anonymize_picture",
+     "score": 0.2664
+    }
+   ]
+  }
+ ],
+ "protocol": "docs/c2_matched_labels_protocol.md",
+ "scene_id": "replica_office_0",
+ "schema": "c2_label_sidecar_v1",
+ "vocabulary": [
+  "anonymize_picture",
+  "anonymize_text",
+  "bin",
+  "blinds",
+  "camera",
+  "ceiling",
+  "chair",
+  "clock",
+  "desk-organizer",
+  "door",
+  "floor",
+  "indoor-plant",
+  "lamp",
+  "other-leaf",
+  "panel",
+  "pillar",
+  "plant-stand",
+  "rug",
+  "sofa",
+  "switch",
+  "table",
+  "tablet",
+  "tissue-paper",
+  "tv-screen",
+  "undefined",
+  "vent",
+  "wall",
+  "wall-plug"
+ ]
+}

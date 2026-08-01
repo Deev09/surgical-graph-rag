@@ -41,12 +41,12 @@ attribute differences to that stage (`docs/mesh_pipeline_contract.md`):
 | **C2** | learned (= C1 frozen) | learned (CLIP zero-shot on matched instances) | **measured, evaluation-only** — labels are not the bottleneck; C2 optimization stopped (`docs/c2_matched_labels_protocol.md`) |
 | **C3** | learned | learned, mesh-derived surfaces | not implemented (blocked on C1 coverage, not labels) |
 
-## Measured status (2026-07-31)
+## Measured status (2026-08-01)
 
-**Human-verified baseline (Phase 8).** Three Replica scenes
-(room_0/room_1/room_2) have human-reviewed answer keys; the scorecard
+**Human-verified baseline (Phase 8).** Four Replica scenes
+(room_0/room_1/room_2/office_0) have human-reviewed answer keys; the scorecard
 (`runs/phase8_scorecard/`) reports against *reality*, not against the system's
-own drafts: 43 questions → 3 fully-correct answers, 20 correct empties, 17
+own drafts: 56 questions → 4 fully-correct answers, 27 correct empties, 22
 misses, 3 false answers. The misses are dominated by known representational
 limits (whole-object AABBs cannot model sofa/chair seat surfaces; the 2 cm
 wall-contact band is stricter than human "against the wall"; cabinet/nightstand
@@ -63,12 +63,14 @@ wastes 13 viable masks in composition and failed 4/5 predeclared gate criteria
 (`docs/c1_closeout.md`, `docs/c1_m2_protocol.md`).
 
 **C2.0 (learned labels, isolation only).** Zero-shot CLIP on matched-
-instance point-splats: support-owner labels 9/10 on room_2, clutter tail
-0.50–0.57 top-1. But one shelf-label error erased room_2's both support
-answers, and semantic-citation fidelity (uid-correct answers that also
-carry the canonical label) is 0.50–0.62. Labels are confirmed not the
-binding constraint — C1 proposal coverage is — and C2 optimization is
-stopped (`docs/c2_matched_labels_protocol.md`).
+instance point-splats: support-owner labels were 9/10 on room_2 but only
+2/7 on the later office_0 transfer; overall top-1 spans 0.25–0.57. One
+shelf-label error erased room_2's two support answers, while office_0's
+delivered support was already zero under C1. Semantic-citation fidelity
+(uid-correct answers that also carry the canonical label) spans 0.31–0.62.
+Labels are not the current binding constraint — C1 proposal coverage is —
+but they are not robustly solved; C2 optimization remains stopped
+(`docs/c2_matched_labels_protocol.md`).
 
 **Committed negative results.** Query-scoped raw-proposal expansion recovers
 zero additional support answers on saved proposals
@@ -83,12 +85,12 @@ git clone https://github.com/Deev09/surgical-graph-rag.git
 cd surgical-graph-rag
 pip install -r requirements.txt   # numpy + Pillow for the current pipeline
 
-# Canonical test command (57 script-style test files, each in its own process;
+# Canonical test command (62 script-style test files, each in its own process;
 # dataset-guarded tests self-skip without the Replica data)
 python3 tools/run_tests.py
 
 # With the Replica dataset on disk (see docs/reproduction.md):
-python3 tools/fetch_replica_scenes.py --verify        # hash-check pinned inputs
+python3 tools/fetch_replica_scenes.py                 # hash-check pinned inputs
 python3 demo/question_battery.py /path/to/replica/room_0 replica_room_0
 python3 tools/scene_scorecard.py                      # human-verified headline
 ```
@@ -106,7 +108,7 @@ eval/                           # router QA scoring + Phase 8 answer keys (human
 tools/                          # evaluators, scorecard, sweeps, dataset fetch, run_tests
 notebooks/                      # Colab GPU backends (Mask3D, Segment3D) — full env recipes
 docs/                           # contracts, closeouts, protocols, phase records
-tests/                          # 57 script-style test files (tools/run_tests.py)
+tests/                          # 62 script-style test files (tools/run_tests.py)
 ```
 
 Reproduction (datasets, checkpoints, environments, hardware):

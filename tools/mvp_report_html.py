@@ -71,6 +71,11 @@ DISCLOSURES = [
      "missed even by variant A with perfect boxes — whole-object AABBs and "
      "the support-class allowlist cap them. C1 reaching A's own support "
      "level means segmentation is not the binding constraint there."),
+    ("Review sheets are aids, not physical ground truth",
+     "Question and UID PNGs project semantic boxes and can overlap or hide "
+     "objects (office_0's room-sized rug is the clearest example). Physical "
+     "human judgments are made from the raw RGB 3D mesh; obj_N is the "
+     "Replica face object_id used only to key that judgment."),
     ("C1 isolation",
      "C1 labels and structural surfaces are INJECTED from the oracle via "
      "exact vertex correspondence; only instance boundaries are learned. C1 "
@@ -146,13 +151,14 @@ def build_html(out_dir: Path) -> Path:
     scene_files = sorted(out_dir.glob("*_mvp.json"))
     scenes = [json.loads(p.read_text()) for p in scene_files]
 
-    h = [f"<style>{CSS}</style>", "<title>MVP-v0 — A/B/C1 vs human keys</title>",
-         "<h1>MVP-v0 — one pipeline, three input variants, human-keyed</h1>",
+    h = [f"<style>{CSS}</style>", "<title>MVP-v0 — A/B/C1/C2 vs human keys</title>",
+         "<h1>MVP-v0 — one pipeline, four input variants, human-keyed</h1>",
          "<p>A modular, queryable spatial-graph reasoner that exposes "
          "uncertainty and isolates failures under imperfect 3D instance "
          "extraction. Variant A = oracle boxes, B = mesh-derived boxes, "
          "C1 = learned instances (frozen Mask3D @0.2) with oracle labels "
-         "injected. Same frozen graph + Router throughout; scores are "
+         "injected; C2 replaces labels on matched instances with frozen "
+         "zero-shot predictions. Same frozen graph + Router throughout; scores are "
          "against human-verified answer keys.</p>",
          f"<p class='small'>{_esc(agg['comparability'])} "
          f"Git {_esc(agg['git_commit'][:12])}; "

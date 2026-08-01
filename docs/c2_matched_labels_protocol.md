@@ -158,3 +158,23 @@ sidecars (`eval/predictions/phase8_c2/`, pinned to the frozen ms02
 bundles by output hash). Any subsequent performance experiment should
 return to C1 proposal generation or new visual/geometric evidence — not
 C3 and not vocabulary tuning.
+
+### Frozen transfer extension: office_0 (2026-08-01)
+
+After C2 optimization was stopped, office_0 received a human-verified key.
+The unchanged C2.0 model, prompts, vocabulary construction, render path, and
+ms02 bundle were therefore applied once as a transfer measurement — no
+iteration and no reopening of C2.1.
+
+| scene | matched | top-1 | top-3 | support-slice top-1 |
+|---|---|---|---|---|
+| office_0 | 16 | **0.250 (4/16)** | 0.500 | **0.286 (2/7)** |
+
+Against the office human key, C1 and C2 both have uid micro-R 0.0 and zero
+support hits on the exhaustive support rows: C1 coverage/downstream support
+already supplies no answer for learned labels to preserve. Semantic citation
+drops from C1's construction check 1.0 (16/16) to **0.3125 (5/16)** under C2.
+Thus the earlier 9/10 room_2 support-owner result does not generalize to
+office_0. Label learning remains non-binding for the delivered office QA only
+because C1 has already removed the relevant support answers; it is plainly
+not robustly solved. Optimization remains STOPPED.

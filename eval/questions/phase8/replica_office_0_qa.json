@@ -1,0 +1,262 @@
+{
+  "schema": "phase8_scene_qa",
+  "schema_version": 1,
+  "fixture_id": "replica_office_0_phase8_qa_human_verified",
+  "scene_id": "replica_office_0",
+  "answer_key_type": "human_verified",
+  "generator": {
+    "tool": "tools/draft_answer_key.py",
+    "bundle_hash": "graph_10ffdb8f9bf477e0",
+    "compiler": "rules_v1"
+  },
+  "human_review": {
+    "reviewer": "project_owner",
+    "date": "2026-08-01",
+    "semantics": {
+      "on_floor": "Ordinary furniture resting under gravity on the floor counts. The floating wall-mounted table obj_12 and boundary door obj_16 do not.",
+      "against_wall": "Human visual wall contact is recorded without changing the extractor's 2 cm band; the 17 degree wall remains an F3 residual.",
+      "on_entity_surface": "Every annotated object visibly resting under gravity on a furniture surface counts, including the complete central-table cluster and the plant on its stand.",
+      "attached_to_wall": "The floating table obj_12 and blue projector/display obj_66 are physically wall-mounted. Sofas remain near-wall, not attached."
+    },
+    "notes": "Reviewed against the raw RGB mesh screenshots, with a raw-mesh UID overlay used only to map physical objects to Replica object_id values. The visible purple floor object has no usable semantic instance (the nearby obj_62 is a degenerate other-leaf), so floor remains non-exhaustive and the missing annotation is recorded rather than assigned a fabricated uid. Against-wall remains non-exhaustive because of the known F3 residual; near-wall remains membership-only."
+  },
+  "questions": [
+    {
+      "question_id": "Q01",
+      "question": "what is on the floor?",
+      "relation": "SUPPORTS_FLOOR",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_4",
+        "obj_5",
+        "obj_7",
+        "obj_9",
+        "obj_19",
+        "obj_23",
+        "obj_34",
+        "obj_58",
+        "obj_61"
+      ],
+      "expected_must_not_contain": [
+        "obj_12",
+        "obj_16"
+      ],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_4": "chair",
+        "obj_5": "rug",
+        "obj_7": "sofa",
+        "obj_9": "sofa",
+        "obj_12": "table",
+        "obj_16": "door",
+        "obj_19": "bin",
+        "obj_23": "plant-stand",
+        "obj_34": "bin",
+        "obj_58": "table",
+        "obj_61": "chair"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-08-01",
+        "notes": "Added the missed chair 4, sofa 9, and plant-stand 23. Kept chair 61, table 58, sofa 7, rug 5, and both bins. Floating wall table 12 and boundary door 16 are explicit negatives. Kept non-exhaustive because a visible purple floor object lacks a usable semantic uid."
+      }
+    },
+    {
+      "question_id": "Q02",
+      "question": "what is against the wall?",
+      "relation": "CONTACTS_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_12",
+        "obj_66"
+      ],
+      "expected_must_not_contain": [
+        "obj_65"
+      ],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_12": "table",
+        "obj_65": "other-leaf",
+        "obj_66": "tv-screen"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-08-01",
+        "notes": "Floating table 12 and blue projector/display 66 are physically against the wall. The cited near-zero-size other-leaf 65 is an artifact. Sofas remain near-wall rather than against/attached. Non-exhaustive because the 17 degree wall is the recorded F3 residual."
+      }
+    },
+    {
+      "question_id": "Q03",
+      "question": "what is near the wall?",
+      "relation": "NEAR_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_11", "obj_12", "obj_15", "obj_16", "obj_17", "obj_19",
+        "obj_20", "obj_22", "obj_23", "obj_25", "obj_27", "obj_3",
+        "obj_30", "obj_31", "obj_33", "obj_34", "obj_35", "obj_36",
+        "obj_38", "obj_39", "obj_45", "obj_53", "obj_56", "obj_57",
+        "obj_60", "obj_65", "obj_66", "obj_67", "obj_7", "obj_9"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_11": "camera", "obj_12": "table", "obj_15": "blinds",
+        "obj_16": "door", "obj_17": "vent", "obj_19": "bin",
+        "obj_20": "blinds", "obj_22": "indoor-plant",
+        "obj_23": "plant-stand", "obj_25": "wall-plug",
+        "obj_27": "wall-plug", "obj_3": "anonymize_picture",
+        "obj_30": "anonymize_picture", "obj_31": "wall-plug",
+        "obj_33": "wall-plug", "obj_34": "bin", "obj_35": "panel",
+        "obj_36": "switch", "obj_38": "wall-plug", "obj_39": "wall-plug",
+        "obj_45": "wall-plug", "obj_53": "other-leaf", "obj_56": "pillar",
+        "obj_57": "clock", "obj_60": "other-leaf", "obj_65": "other-leaf",
+        "obj_66": "tv-screen", "obj_67": "other-leaf", "obj_7": "sofa",
+        "obj_9": "sofa"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-08-01",
+        "notes": "Current near-wall membership was judged broadly accurate; kept non-exhaustive by review policy."
+      }
+    },
+    {
+      "question_id": "Q04",
+      "question": "what is attached to the wall?",
+      "relation": "ATTACHED_TO",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_12",
+        "obj_66"
+      ],
+      "expected_must_not_contain": [
+        "obj_65"
+      ],
+      "exhaustive": false,
+      "candidate_labels": {
+        "obj_12": "table",
+        "obj_65": "other-leaf",
+        "obj_66": "tv-screen"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-08-01",
+        "notes": "Table 12 has no legs and is physically wall-mounted; blue projector/display 66 is wall-mounted. Sofas are near-wall only. Other-leaf 65 is a degenerate artifact. Kept non-exhaustive."
+      }
+    },
+    {
+      "question_id": "Q05",
+      "question": "what is on the table?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": [
+        "obj_1", "obj_2", "obj_6", "obj_13", "obj_28", "obj_44", "obj_64"
+      ],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {
+        "obj_1": "anonymize_text", "obj_2": "anonymize_picture",
+        "obj_6": "anonymize_text", "obj_13": "anonymize_text",
+        "obj_28": "tissue-paper", "obj_44": "desk-organizer",
+        "obj_64": "tablet"
+      },
+      "review": {
+        "status": "reviewed",
+        "reviewer": "project_owner",
+        "date": "2026-08-01",
+        "notes": "Expanded the central-table answer from 2/44/64 to every annotated object visibly resting on it: 1, 2, 6, 13, 28, 44, and 64. The floating wall table has no separately annotated supported contents."
+      }
+    },
+    {
+      "question_id": "Q06",
+      "question": "what is on the desk?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "No desk owner in the reviewed scene."}
+    },
+    {
+      "question_id": "Q07",
+      "question": "what is on the shelf?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "No shelf owner in the reviewed scene."}
+    },
+    {
+      "question_id": "Q08",
+      "question": "what is on the counter?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "No counter owner in the reviewed scene."}
+    },
+    {
+      "question_id": "Q09",
+      "question": "what is on the stool?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "No stool owner in the reviewed scene."}
+    },
+    {
+      "question_id": "Q10",
+      "question": "what is on the bench?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "No bench owner in the reviewed scene."}
+    },
+    {
+      "question_id": "Q11",
+      "question": "what is on the sofa?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "No separately annotated object was identified resting on either sofa."}
+    },
+    {
+      "question_id": "Q12",
+      "question": "what is on the chair?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "empty",
+      "expected_must_contain": [],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "No separately annotated object was identified resting on either chair."}
+    },
+    {
+      "question_id": "Q13",
+      "question": "what is on the plant-stand?",
+      "relation": "ON_ENTITY_SURFACE",
+      "expected_outcome": "answer",
+      "expected_must_contain": ["obj_22"],
+      "expected_must_not_contain": [],
+      "exhaustive": true,
+      "candidate_labels": {"obj_22": "indoor-plant"},
+      "review": {"status": "reviewed", "reviewer": "project_owner", "date": "2026-08-01", "notes": "Indoor plant 22 rests on floor-standing plant-stand 23."}
+    }
+  ]
+}

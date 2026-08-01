@@ -71,7 +71,7 @@ Everything downstream of the saved bundles is zero-GPU and local:
 
 | claim | source of truth | reproduce with |
 |---|---|---|
-| Phase 8 human-verified headline (43 Q, 3 scenes) | `runs/phase8_scorecard/aggregate.json` | `python3 tools/scene_scorecard.py` |
+| Phase 8 human-verified headline (56 Q, 4 scenes) | `runs/phase8_scorecard/aggregate.json` | `python3 tools/scene_scorecard.py` |
 | Human answer keys | `eval/questions/phase8/*_qa.json` (`answer_key_type: human_verified`) | review process in `REVIEW_GUIDE.md` |
 | C1 Mask3D four-scene table | `docs/c1_closeout.md`, reports in `runs/phase8_c1/ms02/` | `python3 tools/c1_run.py` on the pinned bundles |
 | Segment3D gate verdict | `docs/c1_m2_protocol.md` (predeclared gate + verdict) | same evaluator stack on the s3d bundle |

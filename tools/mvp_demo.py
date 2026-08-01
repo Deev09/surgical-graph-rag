@@ -1,12 +1,13 @@
-"""MVP-v0 demo — one offline command comparing A/B/C1 vs the human keys.
+"""MVP-v0 demo — one offline command comparing A/B/C1/C2 vs human keys.
 
   python3 tools/mvp_demo.py [--out-dir runs/mvp_v0] [--scene SCENE_ID]
                             [--check-determinism] [--no-html]
 
 Spec: docs/mvp_v0_demo_spec.md (approved 2026-08-01, spec defaults).
 Runs the SAME frozen graph + Router over variant A (oracle boxes), B
-(mesh-derived boxes) and C1 (frozen Mask3D @0.2 instances, oracle labels
-injected), scores every human-key question, and emits:
+(mesh-derived boxes), C1 (frozen Mask3D @0.2 instances, oracle labels
+injected), and evaluation-only C2 (frozen learned-label sidecars), scores
+every human-key question, and emits:
 
   runs/mvp_v0/<scene>_mvp.json   deterministic per-scene report
   runs/mvp_v0/aggregate.json     deterministic headline table
@@ -17,7 +18,7 @@ injected), scores every human-key question, and emits:
 Hard-fail guarantees (spec acceptance criteria):
   - every pinned input hash is verified before any work,
   - only human_verified keys are accepted,
-  - recomputed room_2 reference rows must equal the committed values,
+  - recomputed room_2 and office_0 reference rows equal committed values,
   - --check-determinism runs everything twice and byte-compares.
 No GPU, no network, no writes outside --out-dir.
 """
@@ -65,6 +66,8 @@ SCENES = [
      "variants": ["A", "B", "C1", "C2"]},
     {"scene_id": "replica_room_2", "short": "room_2",
      "variants": ["A", "B", "C1", "C2"]},
+    {"scene_id": "replica_office_0", "short": "office_0",
+     "variants": ["A", "B", "C1", "C2"]},
 ]
 SIDECAR_DIR = REPO_ROOT / "eval" / "predictions" / "phase8_c2"
 
@@ -72,6 +75,28 @@ SIDECAR_DIR = REPO_ROOT / "eval" / "predictions" / "phase8_c2"
 # spec acceptance criterion 3. Sources: runs/phase8_c1/joint_ceiling*,
 # runs/phase8_c2/ (C2.0 protocol results).
 REFERENCE = {
+    "replica_office_0": {
+        "A": {"micro_precision": 1.0, "micro_recall": 0.375},
+        "B": {"micro_precision": 1.0, "micro_recall": 0.625},
+        "C1": {
+            "micro_precision": None,
+            "micro_recall": 0.0,
+            "semantic_citation": {
+                "n_uid_correct_citations": 16,
+                "n_with_canonical_label": 16,
+                "accuracy": 1.0,
+            },
+        },
+        "C2": {
+            "micro_precision": None,
+            "micro_recall": 0.0,
+            "semantic_citation": {
+                "n_uid_correct_citations": 16,
+                "n_with_canonical_label": 5,
+                "accuracy": 0.3125,
+            },
+        },
+    },
     "replica_room_2": {
         "A": {"micro_precision": 0.9524, "micro_recall": 0.4082},
         "C1": {"micro_precision": 1.0, "micro_recall": 0.2449},

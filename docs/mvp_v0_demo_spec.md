@@ -1,20 +1,22 @@
-# MVP-v0 demo — specification (DRAFT for sign-off)
+# MVP-v0 demo — specification (approved, implemented, and amended)
 
 **Status: APPROVED 2026-08-01 with spec defaults (room_0 A/B-only row
 kept; PNGs embedded; verbalized text included) and IMPLEMENTED —
 `tools/mvp_demo.py` + `tools/mvp_report_html.py`, tests in
-`tests/tools/test_mvp_demo.py`. Acceptance criteria 1–4 verified by
-machine (6 s runtime, determinism PASS, room_2 reference rows reproduced,
-61/61 test files green); criterion 5 (owner reviews the rendered HTML) is
-the remaining acceptance step. C2 stays blocked until then.**
+`tests/tools/test_mvp_demo.py`. Accepted by the owner before C2.0; the
+current amended artifact includes C2 and office_0. Determinism and hard
+reference checks are re-run after every amendment; after the office_0
+amendment, determinism passed over six artifacts and 62/62 test files were
+green.**
 
 ## What MVP-v0 is
 
 One offline command that demonstrates the project's honest headline — *a
 modular, queryable spatial-graph reasoner that exposes uncertainty and
 isolates failures under imperfect 3D instance extraction* — by running the
-SAME frozen graph + Router over the three input variants (A oracle boxes,
-B mesh-derived boxes, C1 learned instances) and scoring all three against
+SAME frozen graph + Router over the four current input variants (A oracle
+boxes, B mesh-derived boxes, C1 learned instances, and evaluation-only C2
+learned labels) and scoring them against
 the human-verified answer keys, with every number carrying its provenance.
 
 It is a packaging milestone, not an experiment: every metric it emits
@@ -121,14 +123,15 @@ requirement, embedded images being deterministic files).
    `--out-dir`.
 2. `--check-determinism` passes (byte-identical JSON + HTML).
 3. Recomputed metrics match the committed reference reports exactly
-   (room_2 A and C1 rows as above; mismatch = hard fail, not a warning).
+   (room_2 A/C1/C2 plus office_0 A/B/C1/C2; mismatch = hard fail, not a
+   warning).
 4. Full test suite green (`python3 tools/run_tests.py`); no frozen
    pipeline file, gate, key, or benchmark artifact modified.
 5. HTML opens from disk in a browser with everything visible offline;
    owner reviews per-question cards for at least one scene and confirms
    the disclosures render.
 
-## Non-goals (v0)
+## Original non-goals (v0; superseded where amendments say otherwise)
 
 C2 (blocked on acceptance of this slice), any GPU inference, rule/
 threshold tuning, key edits, new metrics, interactivity beyond static
@@ -165,3 +168,15 @@ carry the canonical label; C1 = 1.0 by construction, a scorer
 self-check); room_2 C2 reference row (1.0 / 0.2041) added to the hard
 reference check. All original acceptance criteria re-verified after the
 amendment (determinism PASS, references reproduced, suite green).
+
+## Amendment 2 (2026-08-01, human-key addition): office_0 full ladder
+
+The project owner reviewed office_0 against the raw RGB mesh and promoted a
+human key. The scene therefore joins MVP-v0 as A/B/C1/C2 — a data addition
+explicitly allowed by the original scene-set rule, not a scoring or pipeline
+change. The frozen C2.0 labeler ran once with no prompt/vocabulary changes;
+its sanitized sidecar is hash-pinned to the existing office_0 ms02 bundle.
+Hard references now cover office A/B uid membership plus C1/C2 semantic
+citation. The raw review exposed two limitations preserved in the key:
+against-wall remains non-exhaustive under the 17° F3 residual, and a visible
+purple floor object has no usable semantic uid.

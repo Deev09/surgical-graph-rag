@@ -23,12 +23,13 @@ record exactly what the current system answers.
 | replica_room_0 | human key promoted 2026-07-29; first real review exposed missed floor furniture, broader wall attachment, seat support, and cabinet support | **HUMAN VERIFIED** |
 | replica_room_1 | human key promoted 2026-07-31; bed attachment rejected, missing floor bed and wall furniture recorded, bed/nightstand/cabinet support added | **HUMAN VERIFIED** |
 | replica_room_2 | human key promoted 2026-07-31; window 60 moved from floor to wall contact/attachment, dining-table and cabinet/shelf memberships expanded | **HUMAN VERIFIED** |
-| replica_office_0 | rug excluded from against/near-wall (F4); floor + near-wall + furniture panels now readable | **PARTIAL** — "against the wall" still finds only `other-leaf`; missing real wall furniture is the F3-residual finding (one genuinely 17° wall + 2 cm band), not a key to force |
+| replica_office_0 | human key promoted 2026-08-01 from raw RGB mesh review; floating table/display wall contact, missed floor furniture, complete table contents, and plant-stand support recorded | **HUMAN VERIFIED, PARTLY NON-EXHAUSTIVE** — against-wall preserves the F3 residual and a visible purple floor object has no usable semantic uid |
 | replica_frl_apartment_0 | floor snapped −0.28 m; sheet + draft regenerated | PARTIAL — floor/attached now sane; "near the wall" (178 objects) is trivially true for a multi-room scene — record membership only, never exhaustive |
 
-Bottom line: **room_0, room_1, and room_2 are fully reviewable against
-current drafts. office_0 is reviewable except the against-wall question;
-frl is reviewable except near-wall.** Pre-fix drafts are preserved outside
+Bottom line: **room_0, room_1, room_2, and office_0 have promoted human
+keys; office_0 keeps floor/against/attachment non-exhaustive where the raw
+mesh exposed missing annotation or F3 ambiguity. frl remains reviewable
+except near-wall.** Pre-fix drafts are preserved outside
 the repo as evidence of what F1/F2/F4 changed.
 
 The metric for "is a sheet reviewable," if you want one: for each panel, could
@@ -171,12 +172,15 @@ Current draft answers in words (full UID→label maps in each question's
   `obj_56`; the plant is rejected from the chair answer. Dataset `shelf`
   `obj_4` was visually identified as the cabinet, and its exhaustive supported
   membership expands from three vases to fifteen objects.
-- **office_0** — floor: 7 (rug, sofa, table, chair, 2 bins, door — now
-  readable); near wall: 30, rug correctly absent (F4); on table: picture +
-  desk-organizer + tablet (plausible). "Against the wall": only
-  `other-leaf (obj_65)` while the actual wall furniture is missed (2 cm band
-  + the genuinely 17° wall → F3-residual AABB inflation) — record that as a
-  finding, don't force a key through it.
+- **office_0** — human verified 2026-08-01 against the raw RGB mesh rather
+  than the box sheet alone. Floor adds chair `obj_4`, sofa `obj_9`, and
+  plant-stand `obj_23`; floating wall-mounted table `obj_12` and boundary
+  door `obj_16` are explicit floor negatives. The visible purple floor
+  object has no usable semantic instance, so floor stays non-exhaustive.
+  Against/attachment add floating table `obj_12` and blue projector/display
+  `obj_66`, reject degenerate `other-leaf obj_65`, and stay non-exhaustive
+  because the 17° wall remains an F3 residual. Table support expands to
+  `obj_1/2/6/13/28/44/64`; plant `obj_22` rests on stand `obj_23`.
 - **frl_apartment_0** — floor: 38 (plausible sweep — spot-check *shoe*,
   *bike*, *stair*); against wall: tissue-paper/book/table/picture; attached:
   tissue-paper/book/picture — the *book* and *tissue-paper* are the

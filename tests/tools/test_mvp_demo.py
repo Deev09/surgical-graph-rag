@@ -146,11 +146,35 @@ def test_e2e_room_2_reproduces_reference():
                                  f"{c1['micro_recall']}")
 
 
+def test_e2e_office_0_reproduces_reference():
+    """Dataset-guarded: office human key + full A/B/C1/C2 reference check."""
+    data = Path("/Users/deevyaswain/Desktop/datasets/replica/office_0")
+    bundle = REPO_ROOT / "runs" / "phase8_c1" / "bundles_ms02" / "office_0"
+    sidecar = (REPO_ROOT / "eval" / "predictions" / "phase8_c2"
+               / "replica_office_0_c2_labels.json")
+    if not data.exists() or not bundle.exists() or not sidecar.exists():
+        print("  (skipped: office dataset, ms02 bundle, or C2 sidecar not present)")
+        return
+    from tools.mvp_demo import main as mvp_main
+    with tempfile.TemporaryDirectory() as td:
+        rc = mvp_main(["--scene", "replica_office_0", "--out-dir", td,
+                       "--no-html"])
+        if rc != 0:
+            raise AssertionError(f"mvp_demo failed on office_0: rc={rc}")
+        r = json.loads((Path(td) / "replica_office_0_mvp.json").read_text())
+        c2 = r["variants"]["C2"]
+        if c2["micro_recall"] != 0.0:
+            raise AssertionError(f"office C2 reference drift: {c2}")
+        if c2["semantic_citation"]["accuracy"] != 0.3125:
+            raise AssertionError(f"office C2 semantic drift: {c2}")
+
+
 TESTS = [
     test_variant_schema_and_determinism,
     test_c1_variant_reports_matches,
     test_html_renders_from_json_only,
     test_e2e_room_2_reproduces_reference,
+    test_e2e_office_0_reproduces_reference,
 ]
 
 
