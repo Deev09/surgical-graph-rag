@@ -67,6 +67,15 @@ def build_scene_payload(room_dir: Path, bundle_dir: Path, scene_id: str,
     pred = seg.vertex_instance_ids.astype(np.int16)
     _, vidx, oid = _parse_semantic_ply(room_dir / "habitat" / "mesh_semantic.ply")
     oracle = oracle_vertex_membership(vidx, oid, n).astype(np.int16)
+    # The semantic mesh can carry face ids (e.g. 0 in office_0) that have
+    # NO entry in info_semantic.json's object list. Those are not oracle
+    # objects — normalize them to -1 so the viewer's "no oracle object at
+    # this vertex" path applies, instead of showing a phantom obj_N.
+    # (Viewer payload only; the frozen evaluators are untouched.)
+    valid_ids = np.array(sorted(int(o["id"]) for o in info["objects"]),
+                         dtype=np.int16)
+    oracle = np.where(np.isin(oracle, valid_ids), oracle,
+                      np.int16(-1)).astype(np.int16)
 
     lo = xyz.min(axis=0)
     hi = xyz.max(axis=0)

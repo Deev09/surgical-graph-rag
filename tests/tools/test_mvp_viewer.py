@@ -102,6 +102,35 @@ def test_html_valid_json_offline_deterministic():
                 raise AssertionError(f"external/request pattern found: {pat}")
 
 
+def test_unknown_oracle_ids_normalized_to_minus_one():
+    """Regression (office_0 acceptance blocker): the semantic mesh can
+    carry face ids with NO entry in info_semantic.json — the viewer
+    payload must normalize them to -1, never show a phantom obj_N."""
+    import base64
+    from tools.mvp_viewer import build_scene_payload
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        # three-cube mesh (oids 1,2,3) but metadata for the third cube is
+        # REMOVED — its mesh id 3 has no oracle object
+        pred = np.array([10] * 8 + [20] * 8 + [-1] * 8)
+        room, bundle = _scene(tmp, pred, with_wall_cube=True)
+        info_path = room / "habitat" / "info_semantic.json"
+        info = json.loads(info_path.read_text())
+        info["objects"] = [o for o in info["objects"] if o["id"] != 3]
+        info_path.write_text(json.dumps(info))
+        p = build_scene_payload(room, bundle, "synthetic_scene",
+                                _fake_mvp_report())
+        oracle = np.frombuffer(base64.b64decode(p["b64"]["oracle"]),
+                               dtype=np.int16)
+        if set(oracle[:16].tolist()) != {1, 2}:
+            raise AssertionError(f"known ids must survive: {set(oracle[:16].tolist())}")
+        if set(oracle[16:24].tolist()) != {-1}:
+            raise AssertionError(f"metadata-less mesh id must normalize to -1: "
+                                 f"{set(oracle[16:24].tolist())}")
+        if "3" in p["objects"]:
+            raise AssertionError("phantom object must not appear in meta")
+
+
 def test_real_build_when_inputs_present():
     data = Path("/Users/deevyaswain/Desktop/datasets/replica/room_2")
     bundle = REPO_ROOT / "runs" / "phase8_c1" / "bundles_ms02" / "room_2"
@@ -122,6 +151,7 @@ def test_real_build_when_inputs_present():
 TESTS = [
     test_payload_roundtrip_and_ids,
     test_html_valid_json_offline_deterministic,
+    test_unknown_oracle_ids_normalized_to_minus_one,
     test_real_build_when_inputs_present,
 ]
 
