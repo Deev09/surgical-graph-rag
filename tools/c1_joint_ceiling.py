@@ -163,7 +163,12 @@ def score_against_key(key: dict, graph_bundle, router, ctx,
         ans = router.answer(q["question"], graph_bundle, ctx)
         cited = set(ans.cited_uids)
         if uid_map is not None:
-            cited = {uid_map.get(u, u) for u in cited}
+            # Pred-space uids are obj_<mask_row>, which COLLIDES with the
+            # oracle obj_<id> namespace — an untranslated (unmatched) pred
+            # uid must never accidentally equal a key uid, so it is
+            # prefixed instead of passed through.
+            cited = {uid_map[u] if u in uid_map else f"pred:{u}"
+                     for u in cited}
         must = set(q["expected_must_contain"])
         must_not = set(q["expected_must_not_contain"])
         got_outcome = _OUTCOME_MAP.get(ans.outcome, "unknown")
@@ -174,7 +179,9 @@ def score_against_key(key: dict, graph_bundle, router, ctx,
             "n_expected": len(must),
             "n_hit": len(cited & must),
             "must_not_violations": sorted(cited & must_not),
-            "anonymous_cited": sorted(u for u in cited if not u.startswith("obj_")),
+            "anonymous_cited": sorted(u for u in cited
+                                      if not u.startswith("obj_")
+                                      or u.startswith("pred:")),
         }
         if q["expected_outcome"] == "answer" and q.get("exhaustive"):
             row["precision"] = (len(cited & must) / len(cited)) if cited else None

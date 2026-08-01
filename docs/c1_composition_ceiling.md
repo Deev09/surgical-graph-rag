@@ -85,7 +85,7 @@ references.
 | A (oracle boxes) | — | 0.95 | 0.41 | 5/20 | 13/13 | 1/14 | 518 |
 | delivered (frozen S3D @0.2) | 17/53 | 0.53 | 0.18 | 2/20 | 7/13 | 0/14 | 645 |
 | **joint selected_only** | **30/53** | **0.93** | **0.29** | **5/20** | 9/13 | 0/14 | **203** |
-| joint selected_plus_rest | 31/53 | 0.58 | 0.31 | 5/20 | 10/13 | 0/14 | 842 |
+| joint selected_plus_rest | 31/53 | 0.56 | 0.31 | 5/20 | 10/13 | 0/14 | 842 |
 
 (QA micro-P/R over the exhaustive answer questions of
 `eval/questions/phase8/replica_room_2_qa.json`; 49 expected members total.)
@@ -112,7 +112,7 @@ references.
    representationally reachable. Floor: 7→9 of 13 (A: 13).
 4. **Precision restores to near-A only if the non-nominated masks are
    SUPPRESSED**: selected_only P 0.93 (A: 0.95, zero must_not violations,
-   203 edges); keeping the rest at frozen scores collapses P to 0.58 —
+   203 edges); keeping the rest at frozen scores collapses P to 0.56 —
    the same failure mode as M2's 0.52. The deployable rule must demote
    bad masks, not merely promote good ones.
 5. **Attachment is not a segmentation problem**: even variant A scores

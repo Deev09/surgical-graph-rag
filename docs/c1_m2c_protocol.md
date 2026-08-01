@@ -136,3 +136,45 @@ finding, out of scope for any selection rule.
       freeze the protocol and start rule v1")
 - [x] Protocol content frozen as committed at draft commit `9953f04`;
       this sign-off commit changes status text only.
+
+## VERDICT (2026-07-31): FAILED — STOPPED after 3 versions, holdout unspent
+
+All three budgeted rule versions ran under the frozen gates
+(`tools/c1_selection_repair_run.py`, reports in
+`runs/phase8_c1/selection_repair/`). None passed. Per the predeclared
+stopping rule, the experiment is closed as a NEGATIVE result; no holdout
+GPU was spent and no gate was adjusted.
+
+| version (mechanisms) | ent@0.5 | micro-P | micro-R | support | gates |
+|---|---|---|---|---|---|
+| v1 merge decomposition | 19/53 | 0.58 | 0.22 | 3/20 | G1–G4 FAIL |
+| v2 corroborated carve-out + retention | **24/53** | 0.35 | 0.22 | 3/20 | G2–G4 FAIL |
+| v3 composed, restricted admission | 20/53 | 0.46 | 0.22 | 3/20 | G1–G4 FAIL |
+| — delivered baseline | 17/53 | 0.53 | 0.18 | 2/20 | |
+| — oracle-guided joint ceiling | 30/53 | 0.93 | 0.29 | 5/20 | |
+| — Mask3D delivered (reference) | 18/53 | 1.00 | 0.24 | 2/20 | |
+
+G5 (violations) and G6 (Mask3D non-regression control) passed in every
+version — the rules never damaged the reference backend.
+
+Scoring correction applied mid-run (before v3, all versions re-scored):
+untranslated pred-space uids (`obj_<mask_row>`) collided with the oracle
+`obj_<id>` namespace in the key scorer; fixed by prefixing (`pred:`).
+Anchor changes were negligible (only the S3D plus_rest ceiling moved,
+P 0.58 → 0.56); v2's true precision was 0.35, not the 0.39 first printed.
+
+**Interpretation.** The allowlisted oracle-free signal family — scores,
+sizes, overlap/containment structure, corroboration counts, retained
+fractions — can FIND many of the winning masks (v2 reached the entity
+gate, 24/53) but cannot SEPARATE real objects from junk fragments well
+enough to hold precision: every version left answer-level metrics nearly
+flat (micro-R 0.22, support 3/20) while the oracle-guided ceiling reaches
+0.29/5 at P 0.93. The gap between "the right masks exist and are jointly
+compatible" (stage 0b, proven) and "these structural signals can pick
+them" (this experiment, refuted) is the finding. Closing it plausibly
+requires evidence outside this protocol's allowlist — mesh-geometry /
+color-normal coherence of the mask region (re-perception-adjacent), or a
+trained mask scorer — either of which is a NEW experiment with its own
+protocol. **Mask3D @0.2 remains the C1 reference backend**; against the
+human room_2 key it also outperforms every rule version (P 1.00 /
+R 0.24), so backend choice currently beats composition repair.
