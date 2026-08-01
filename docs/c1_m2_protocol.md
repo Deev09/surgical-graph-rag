@@ -121,4 +121,10 @@ on either backend — the fragment-ASSEMBLY half of the composition
 hypothesis is dead for the saved room_2 masks; the entire winnable set (13
 entities, 0.32 → 0.57) is pure mask SELECTION, mostly winner-takes-all
 losses of near-perfect masks (a plate at raw IoU 0.999 delivered at 0.000).
-See `docs/c1_composition_ceiling.md`.
+Stage 0b (same date) proved the 30 winners are JOINTLY compatible under the
+frozen resolver and, scored against the human room_2 key through the real
+Router, lift QA micro-P 0.53 → 0.93 and micro-R 0.18 → 0.29 (variant A's
+own ceiling: 0.95 / 0.41) — with 23/30 winning masks scoring below the
+frozen 0.2, i.e. the backend's confidence is anti-correlated with mask
+quality here. Verdict: GO for a deployable oracle-free selection-repair
+protocol. See `docs/c1_composition_ceiling.md`.
