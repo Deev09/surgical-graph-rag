@@ -56,3 +56,44 @@ def parse_vertices(ply_path: Path) -> np.ndarray:
 
     verts = np.frombuffer(body, dtype=np.dtype(props), count=n_vert)
     return np.stack([verts["x"], verts["y"], verts["z"]], axis=1).astype(np.float64)
+
+
+def parse_vertices_with_colors(ply_path: Path) -> tuple[np.ndarray, np.ndarray]:
+    """Return (xyz [n,3] float64, rgb [n,3] uint8). Same strict parser;
+    fails loudly if the vertex element carries no red/green/blue."""
+    raw = ply_path.read_bytes()
+    end = raw.find(b"end_header\n")
+    if end < 0:
+        raise ValueError(f"no end_header in {ply_path}")
+    header = raw[:end].decode("ascii", "replace")
+    body = raw[end + len(b"end_header\n"):]
+    if "format binary_little_endian" not in header:
+        raise ValueError(f"expected binary_little_endian PLY: {ply_path}")
+    n_vert = None
+    props: list[tuple[str, str]] = []
+    in_vertex = False
+    for line in header.splitlines():
+        parts = line.split()
+        if parts[:2] == ["element", "vertex"]:
+            n_vert = int(parts[2])
+            in_vertex = True
+        elif parts[:1] == ["element"]:
+            in_vertex = False
+        elif in_vertex and parts[:1] == ["property"]:
+            if parts[1] == "list":
+                raise ValueError(f"list property on vertices unsupported: {line}")
+            if parts[1] not in _PLY_TYPES:
+                raise ValueError(f"unknown vertex property type: {line}")
+            props.append((parts[2], _PLY_TYPES[parts[1]]))
+    if n_vert is None:
+        raise ValueError(f"no vertex element in {ply_path}")
+    names = [n for n, _ in props]
+    if not {"x", "y", "z"} <= set(names):
+        raise ValueError(f"vertex properties missing x/y/z: {names}")
+    if not {"red", "green", "blue"} <= set(names):
+        raise ValueError(f"vertex properties missing red/green/blue: {names}")
+    verts = np.frombuffer(body, dtype=np.dtype(props), count=n_vert)
+    xyz = np.stack([verts["x"], verts["y"], verts["z"]], axis=1).astype(np.float64)
+    rgb = np.stack([verts["red"], verts["green"], verts["blue"]],
+                   axis=1).astype(np.uint8)
+    return xyz, rgb

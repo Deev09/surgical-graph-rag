@@ -51,8 +51,16 @@ def build_c1_eval_bundle(
     *,
     z_translation: float = ROOM_0_Z_TRANSLATION,
     min_vertices: int = 20,
+    label_override: dict[int, str] | None = None,
 ) -> tuple[EntityArtifacts, dict]:
-    """Returns (enriched EntityArtifacts, correspondence/injection report)."""
+    """Returns (enriched EntityArtifacts, correspondence/injection report).
+
+    label_override (C2.0, docs/c2_matched_labels_protocol.md): pred_id ->
+    LEARNED label. When given, matched entities receive the learned label
+    instead of the oracle class; the matched set, the structural-removal
+    set (keyed on ORACLE class — declared scaffolding so C1/C2 entity sets
+    are identical), unmatched anonymity, and surfaces are all unchanged.
+    The frozen C1 path is byte-identical when the parameter is omitted."""
     report = evaluate(room_dir, bundle_dir)          # hard-checks G1 + hashes
     seg = load_segmentation_output(bundle_dir)
 
@@ -80,22 +88,32 @@ def build_c1_eval_bundle(
             unmatched.append(e.identity.object_uid)
             entities.append(e)                        # stays anonymous
             continue
-        label = m["oracle_class"]
-        if label in STRUCTURAL_CLASSES or label in DROP_CLASSES:
+        oracle_class = m["oracle_class"]
+        if oracle_class in STRUCTURAL_CLASSES or oracle_class in DROP_CLASSES:
             removed.append({"uid": e.identity.object_uid, "oracle_id": m["oracle_id"],
-                            "oracle_class": label})
+                            "oracle_class": oracle_class})
             continue
+        if label_override is not None:
+            if pred_id not in label_override:
+                raise ValueError(f"label_override missing matched pred "
+                                 f"{pred_id} (oracle {m['oracle_id']})")
+            label = label_override[pred_id]
+        else:
+            label = oracle_class
         entities.append(dataclasses.replace(
             e,
             identity=dataclasses.replace(e.identity, display_label=label),
         ))
         injections.append({"uid": e.identity.object_uid,
                            "oracle_id": m["oracle_id"],
-                           "oracle_class": label,
+                           "oracle_class": oracle_class,
+                           **({"learned_label": label}
+                              if label_override is not None else {}),
                            "iou": m["iou"]})
 
     injection_report = {
-        "provenance": "oracle_correspondence",
+        "provenance": ("learned_labels_c2" if label_override is not None
+                       else "oracle_correspondence"),
         "n_injected_labels": len(injections),
         "n_unmatched_kept_anonymous": len(unmatched),
         "n_removed_structural_or_dropped": len(removed),
