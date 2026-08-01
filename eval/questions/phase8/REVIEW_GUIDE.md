@@ -21,8 +21,8 @@ record exactly what the current system answers.
 | scene | status after fixes | verdict |
 |---|---|---|
 | replica_room_0 | human key promoted 2026-07-29; first real review exposed missed floor furniture, broader wall attachment, seat support, and cabinet support | **HUMAN VERIFIED** |
-| replica_room_1 | de-rotated +26.6°, floor snapped −0.11 m | **REVIEW NOW** — the bed-ATTACHED_TO case and the nightstand allowlist gap are the interesting reviews |
-| replica_room_2 | de-rotated −7.2°; rug-against-wall FP gone (F1); rug at frac 0.34 stays under the F4 guard, so it remains a *near*-wall answer — judge that membership yourself | **REVIEW NOW** — flag the *window* (obj_60) "on the floor" |
+| replica_room_1 | human key promoted 2026-07-31; bed attachment rejected, missing floor bed and wall furniture recorded, bed/nightstand/cabinet support added | **HUMAN VERIFIED** |
+| replica_room_2 | human key promoted 2026-07-31; window 60 moved from floor to wall contact/attachment, dining-table and cabinet/shelf memberships expanded | **HUMAN VERIFIED** |
 | replica_office_0 | rug excluded from against/near-wall (F4); floor + near-wall + furniture panels now readable | **PARTIAL** — "against the wall" still finds only `other-leaf`; missing real wall furniture is the F3-residual finding (one genuinely 17° wall + 2 cm band), not a key to force |
 | replica_frl_apartment_0 | floor snapped −0.28 m; sheet + draft regenerated | PARTIAL — floor/attached now sane; "near the wall" (178 objects) is trivially true for a multi-room scene — record membership only, never exhaustive |
 
@@ -156,20 +156,21 @@ Current draft answers in words (full UID→label maps in each question's
   The promoted key adds a scene-specific cabinet question because the current
   Router defers that support class; this is a measured capability gap, not a key
   error.
-- **room_1** — floor: 7 (rug, 2 nightstands, cabinet, basket, blanket, door —
-  check the *door*); against wall: blinds/bed/basket (plausible for a
-  bedroom); attached: blinds + **bed (obj_32) — the known false positive**:
-  its box bottom sits ~4.5 cm above the calibrated floor, above the 2 cm
-  contact band, so the floor-rest disqualifier doesn't fire. Put obj_32 in
-  `expected_must_not_contain` for the attached question — that is the review
-  catching a real system error, which is the point. Also note the missing
-  nightstand support question (nightstand isn't in the support-class
-  allowlist).
-- **room_2** — floor: 14 (chairs/table/shelf/rug/door… and **window
-  (obj_60)** — judge that one; a floor-to-ceiling window box can reach the
-  contact band without "standing on the floor"); against/attached: vent
-  only (plausible). Furniture-top: on table (vase, plate), on shelf
-  (3 vases), on chair (indoor-plant — odd but possible, check).
+- **room_1** — human verified 2026-07-31. Door `obj_6` is excluded from floor
+  support and bed `obj_32` is added. Against-wall keeps basket `obj_4`, blinds
+  `obj_27`, and bed `obj_32`, and adds both nightstands (`obj_8`, `obj_28`) plus
+  cabinet `obj_36`; door `obj_6` and rug `obj_20` are explicit negatives.
+  Attachment includes all four windows, all three blinds, and picture `obj_12`,
+  while bed `obj_32` is the confirmed false positive. Scene-specific bed,
+  nightstand, and cabinet support questions preserve the human furniture review
+  even though those owner classes currently defer in the Router.
+- **room_2** — human verified 2026-07-31. Window `obj_60` is explicitly not
+  floor-supported; it is against and attached to the wall. Attachment includes
+  all windows, blinds, vents, and picture `obj_58`. Dining-table support expands
+  beyond vase `obj_14` and plate `obj_18` to lamps `obj_39`, `obj_55` and plant
+  `obj_56`; the plant is rejected from the chair answer. Dataset `shelf`
+  `obj_4` was visually identified as the cabinet, and its exhaustive supported
+  membership expands from three vases to fifteen objects.
 - **office_0** — floor: 7 (rug, sofa, table, chair, 2 bins, door — now
   readable); near wall: 30, rug correctly absent (F4); on table: picture +
   desk-organizer + tablet (plausible). "Against the wall": only
