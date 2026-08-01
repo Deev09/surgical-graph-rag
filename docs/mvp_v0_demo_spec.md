@@ -150,3 +150,18 @@ deliverable), office_0/frl rows (no human keys).
       and the three open decisions — spec defaults on all three
       (date: 2026-08-01, by: project owner / deevyaswain — "approved
       with spec defaults, build the demo slice")
+
+## Amendment 1 (2026-08-01, owner-instructed): C2 rows + semantic citation
+
+After C2.0 was measured (`docs/c2_matched_labels_protocol.md`), the owner
+instructed adding the corrected, explicitly EVALUATION-ONLY C2.0 row to
+MVP-v0. Changes: room_1/room_2 gain a C2 variant whose labels come from
+the COMMITTED prediction sidecars (`eval/predictions/phase8_c2/`,
+hash-pinned to the frozen ms02 bundles; no torch in the demo path);
+metric naming clarified — micro P/R are labeled **uid micro-P/R**
+(UID/structural membership; the key cites uids, not names) and a
+**semantic citation** metric is added (uid-correct citations that also
+carry the canonical label; C1 = 1.0 by construction, a scorer
+self-check); room_2 C2 reference row (1.0 / 0.2041) added to the hard
+reference check. All original acceptance criteria re-verified after the
+amendment (determinism PASS, references reproduced, suite green).

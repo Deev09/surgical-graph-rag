@@ -95,14 +95,22 @@ numbers use (the mismatch had been accidentally favorable, 0.619 vs
 | room_1 | 22 | 0.500 (11/22) | 0.500 | n/a (0 owners) |
 
 Downstream QA vs the human keys (identical entities/geometry/surfaces —
-labels are the only difference):
+labels are the only difference). Metric naming corrected 2026-08-01:
+**uid micro-P/R score UID/structural MEMBERSHIP** (the key cites uids, not
+names); **semantic citation** scores whether uid-correct citations also
+carry the canonical label — a uid-correct answer can verbalize the wrong
+learned label, and this metric is where that shows (C1 = 1.0 by
+construction, which doubles as a scorer self-check):
 
-| scene | row | micro-P | micro-R | support hits |
-|---|---|---|---|---|
-| room_2 | C1 oracle labels | 1.00 | 0.245 | 2 |
-| room_2 | C2 learned labels | 1.00 | **0.204** | **0** |
-| room_1 | C1 oracle labels | 0.571 | 0.114 | 0 |
-| room_1 | C2 learned labels | 0.571 | 0.114 | 0 |
+| scene | row | uid micro-P | uid micro-R | support hits | semantic citation |
+|---|---|---|---|---|---|
+| room_2 | C1 oracle labels | 1.00 | 0.245 | 2 | 1.00 (23/23) |
+| room_2 | C2 learned labels | 1.00 | **0.204** | **0** | **0.619 (13/21)** |
+| room_1 | C1 oracle labels | 0.571 | 0.114 | 0 | 1.00 (12/12) |
+| room_1 | C2 learned labels | 0.571 | 0.114 | 0 | **0.500 (6/12)** |
+
+room_1's "zero downstream delta" is therefore a MEMBERSHIP statement
+only: half of its uid-correct citations verbalize a wrong label.
 
 ### Findings
 
@@ -128,12 +136,25 @@ labels are the only difference):
    objects change what an entity is CALLED, not which uids relations
    cite; the key scores uids).
 
-### Honest summary
+### Honest summary (narrowed 2026-08-01)
 
-Zero-shot CLIP on instance point-splats can carry the support-anchor
-labels that drive this system's QA (9/10) but not the clutter tail
-(0.5–0.57 overall). Since C1's coverage ceiling already dominates
-end-to-end raw-PLY error, label learning is NOT currently the binding
-constraint — consistent with the C1 closeout's prediction. C2.1
-(vocabulary hygiene) and per-class prompt work are cheap declared
-follow-ups; a C3 attempt remains blocked on C1 coverage, not on labels.
+Support-owner classification reached 9/10 on room_2 — but C2.0 did NOT
+preserve room_2's support QA: the one shelf-label error removed both
+existing support answers, and semantic-citation fidelity is 0.50–0.62
+(half the uid-correct answers verbalize a wrong label). Overall error
+remains dominated by C1 proposal coverage, consistent with the C1
+closeout's prediction: label learning is not the binding constraint,
+but it is not solved either.
+
+### Status: C2 optimization STOPPED (owner decision 2026-08-01)
+
+C2.1 (vocabulary hygiene) is NOT run: removing the junk classes would
+not fix the shelf error (CLIP ranked "vent" above "shelf"; dropping
+OTHER vocabulary entries does not change that ordering, and dropping
+"vent" itself would be post-hoc tuning — vents are legitimate
+attached-to-wall objects in the human key). C2.0 is integrated into
+MVP-v0 as an explicitly EVALUATION-ONLY row via the committed prediction
+sidecars (`eval/predictions/phase8_c2/`, pinned to the frozen ms02
+bundles by output hash). Any subsequent performance experiment should
+return to C1 proposal generation or new visual/geometric evidence — not
+C3 and not vocabulary tuning.

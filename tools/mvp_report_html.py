@@ -111,7 +111,7 @@ def _question_card(qid: str, per_variant: dict, key_q: dict) -> str:
         parts.append("<p><b>Must NOT contain:</b> "
                      + ", ".join(_esc(u) for u in key_q["expected_must_not_contain"])
                      + "</p>")
-    for variant in ("A", "B", "C1"):
+    for variant in ("A", "B", "C1", "C2"):
         row = per_variant.get(variant)
         if row is None:
             continue
@@ -158,19 +158,28 @@ def build_html(out_dir: Path) -> Path:
          f"Git {_esc(agg['git_commit'][:12])}; "
          f"reference check: {_esc(agg['reference_check'])}.</p>",
          "<h2>Headline</h2>",
-         "<table><tr><th>scene</th><th>variant</th><th>micro-P</th>"
-         "<th>micro-R</th><th>support hits</th><th>edges</th>"
-         "<th>C1 entities@0.5</th></tr>"]
+         "<table><tr><th>scene</th><th>variant</th><th>uid micro-P</th>"
+         "<th>uid micro-R</th><th>semantic citation</th>"
+         "<th>support hits</th><th>edges</th>"
+         "<th>entities@0.5</th></tr>"]
     for r in agg["headline"]:
         h.append(f"<tr><td>{_esc(r['scene_id'])}</td><td>{_esc(r['variant'])}</td>"
                  f"<td>{_fmt(r['micro_precision'])}</td>"
                  f"<td>{_fmt(r['micro_recall'])}</td>"
+                 f"<td>{_fmt(r.get('semantic_citation'))}</td>"
                  f"<td>{_fmt(r['support_hits'])}</td>"
                  f"<td>{_fmt(r['n_graph_edges'])}</td>"
                  f"<td>{_fmt(r.get('entity_matches_at_05'))}</td></tr>")
     h.append("</table>")
-    h.append("<p class='small'>room_0 has no C1 row: Mask3D was never run "
-             "on it and MVP-v0 spends no GPU — 'not run' is not 0.</p>")
+    h.append("<p class='small'>uid micro-P/R score UID/structural "
+             "MEMBERSHIP against the key (the key cites uids, not names). "
+             "Semantic citation scores whether uid-correct citations also "
+             "carry the canonical label — it is where wrong learned labels "
+             "show even when membership is unchanged. room_0 has no C1/C2 "
+             "row: Mask3D was never run on it and MVP-v0 spends no GPU — "
+             "'not run' is not 0. C2 rows are EVALUATION-ONLY: labels come "
+             "from the committed C2.0 prediction sidecars "
+             "(docs/c2_matched_labels_protocol.md).</p>")
 
     for sc in scenes:
         sid = sc["scene_id"]

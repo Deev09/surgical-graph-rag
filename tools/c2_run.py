@@ -108,11 +108,12 @@ def label_matched_instances(room_dir: Path, bundle_dir: Path) -> dict:
                       / max(n - len(sup_rows), 1), 4) if n else None),
         },
     }
+    from segmenter.clip_labeler import MODEL_NAME, PRETRAINED, PROMPTS
     return {
-        "labeler": {"model": "ViT-B-32", "pretrained": "openai",
+        "labeler": {"model": MODEL_NAME, "pretrained": PRETRAINED,
                     "weights_sha256": labeler.weights_sha256,
-                    "prompts": list(__import__("segmenter.clip_labeler",
-                                               fromlist=["PROMPTS"]).PROMPTS)},
+                    "prompts": list(PROMPTS)},
+        "source_bundle_output_sha256": seg.output_sha256,
         "vocabulary": vocab,
         "per_instance": per_instance,
         "label_accuracy": accuracy,
@@ -129,6 +130,8 @@ def qa_rows(room_dir: Path, bundle_dir: Path, scene_id: str, key: dict,
     ev = evaluate(room_dir, bundle_dir)
     uid_map = {f"obj_{m['pred_id']}": f"obj_{m['oracle_id']}"
                for m in ev["matches"]}
+    canonical = {f"obj_{m['oracle_id']}": m["oracle_class"]
+                 for m in ev["matches"] if m["oracle_class"]}
 
     rows, anchors = {}, {}
     for name, override in (("C1_oracle_labels", None),
@@ -139,13 +142,41 @@ def qa_rows(room_dir: Path, bundle_dir: Path, scene_id: str, key: dict,
         bundle, _ = build_graph(arts, _runs(),
                                 density_policy="phase2_telemetry_only")
         qa = score_against_key(key, bundle, router, ctx, uid_map)
+        # semantic citation: among cited HITS (uid correct), is the
+        # DISPLAYED label the canonical class? A uid-correct answer can
+        # still verbalize the wrong learned label — score that separately.
+        # Labels are looked up by the entity's OWN uid (pred space) —
+        # translated-uid keys would collide with unmatched pred uids.
+        label_by_uid = {e.identity.object_uid: e.identity.display_label
+                        for e in arts.entities}
+        n_hits = n_sem = 0
+        for q in key["questions"]:
+            ans = router.answer(q["question"], bundle, ctx)
+            must = set(q["expected_must_contain"])
+            for u in ans.cited_uids:
+                # same translation rule as the frozen scorer: unmatched
+                # pred uids are prefixed so they can never collide with
+                # oracle uids in the key
+                shown = uid_map[u] if u in uid_map else f"pred:{u}"
+                if shown in must:
+                    n_hits += 1
+                    n_sem += label_by_uid.get(u) == canonical.get(shown)
         rows[name] = {
-            "micro_precision": (None if qa["micro_precision"] is None
-                                else round(qa["micro_precision"], 4)),
-            "micro_recall": (None if qa["micro_recall"] is None
-                             else round(qa["micro_recall"], 4)),
+            "metric_note": ("uid_micro_* score UID/structural MEMBERSHIP "
+                            "vs the key (the key cites uids, not names); "
+                            "semantic_citation scores whether uid-correct "
+                            "citations also carry the canonical label"),
+            "uid_micro_precision": (None if qa["micro_precision"] is None
+                                    else round(qa["micro_precision"], 4)),
+            "uid_micro_recall": (None if qa["micro_recall"] is None
+                                 else round(qa["micro_recall"], 4)),
             "support_hits": (qa["per_relation"].get("ON_ENTITY_SURFACE")
                              or {}).get("n_hit"),
+            "semantic_citation": {
+                "n_uid_correct_citations": n_hits,
+                "n_with_canonical_label": n_sem,
+                "accuracy": round(n_sem / n_hits, 4) if n_hits else None,
+            },
             "n_graph_edges": len(bundle.edges),
             "per_question": {qid: {k: q[k] for k in
                                    ("actual_outcome", "n_cited", "n_hit")}
@@ -173,6 +204,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--key", type=Path, default=None)
     ap.add_argument("--out-dir", type=Path,
                     default=REPO_ROOT / "runs" / "phase8_c2")
+    ap.add_argument("--sidecar-dir", type=Path,
+                    default=REPO_ROOT / "eval" / "predictions" / "phase8_c2",
+                    help="TRACKED sanitized prediction sidecar (pins + "
+                         "per-instance labels; consumed by the offline MVP)")
     args = ap.parse_args(argv)
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -199,19 +234,43 @@ def main(argv: list[str] | None = None) -> int:
     out = args.out_dir / f"{args.scene_id}_c2_run.json"
     out.write_text(json.dumps(report, indent=1), encoding="utf-8")
 
+    # tracked, sanitized sidecar: pins + predictions only (no local paths)
+    args.sidecar_dir.mkdir(parents=True, exist_ok=True)
+    sidecar = {
+        "schema": "c2_label_sidecar_v1",
+        "protocol": "docs/c2_matched_labels_protocol.md",
+        "scene_id": args.scene_id,
+        "labeler": labels["labeler"],
+        "applies_to_bundle_output_sha256": labels["source_bundle_output_sha256"],
+        "vocabulary": labels["vocabulary"],
+        "label_accuracy": labels["label_accuracy"],
+        "per_instance": labels["per_instance"],
+        "note": ("evaluation-only C2.0 predictions on matched instances; "
+                 "consumed by tools/mvp_demo.py for the torch-free C2 row"),
+    }
+    sc = args.sidecar_dir / f"{args.scene_id}_c2_labels.json"
+    sc.write_text(json.dumps(sidecar, indent=1, sort_keys=True) + "\n",
+                  encoding="utf-8")
+
     acc = labels["label_accuracy"]
     print(f"[c2] {args.scene_id}: matched entities={acc['n_matched_entity_instances']} "
           f"top1={acc['top1']} top3={acc['top3']} "
           f"support-slice top1={acc['support_class_slice']['top1']}")
     if args.key:
         for name, r in report["qa_vs_human_key"]["rows"].items():
-            print(f"  {name}: P={r['micro_precision']} R={r['micro_recall']} "
-                  f"support={r['support_hits']} edges={r['n_graph_edges']}")
+            sem = r["semantic_citation"]
+            print(f"  {name}: uid-P={r['uid_micro_precision']} "
+                  f"uid-R={r['uid_micro_recall']} "
+                  f"support={r['support_hits']} "
+                  f"semantic-citation={sem['accuracy']} "
+                  f"({sem['n_with_canonical_label']}/{sem['n_uid_correct_citations']}) "
+                  f"edges={r['n_graph_edges']}")
         bad = [c for c, v in
                report["qa_vs_human_key"]["support_anchor_integrity"].items()
                if not v["same"]]
         print(f"  support anchors changed: {bad or 'none'}")
     print(f"report -> {out}")
+    print(f"sidecar -> {sc}")
     return 0
 
 

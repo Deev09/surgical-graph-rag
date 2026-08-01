@@ -1,0 +1,559 @@
+{
+ "applies_to_bundle_output_sha256": "2d994fbf1d4b08da8f027ae1e048d05617d9af8f08297b1ed4754d061f8817db",
+ "label_accuracy": {
+  "n_matched_entity_instances": 21,
+  "support_class_slice": {
+   "n": 10,
+   "predicted_support_when_oracle_not": 0.0,
+   "predicted_support_when_oracle_support": 0.9,
+   "top1": 0.9
+  },
+  "top1": 0.5714,
+  "top3": 0.7143
+ },
+ "labeler": {
+  "model": "ViT-B-32-quickgelu",
+  "pretrained": "openai",
+  "prompts": [
+   "a photo of a {c}",
+   "a photo of a {c} in a room",
+   "a 3D render of a {c}"
+  ],
+  "weights_sha256": "e6d1bd7789aa45192b3bf90570a789b478bae1b74ebcce7eddd908e83a2b7c31"
+ },
+ "note": "evaluation-only C2.0 predictions on matched instances; consumed by tools/mvp_demo.py for the torch-free C2 row",
+ "per_instance": [
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.8551,
+   "learned_label": "table",
+   "n_vertices": 30372,
+   "oracle_class": "table",
+   "oracle_id": 5,
+   "pred_id": 7,
+   "top3": [
+    {
+     "label": "table",
+     "score": 0.3022
+    },
+    {
+     "label": "shelf",
+     "score": 0.2821
+    },
+    {
+     "label": "rug",
+     "score": 0.2728
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": true,
+   "iou": 0.72,
+   "learned_label": "vent",
+   "n_vertices": 20408,
+   "oracle_class": "shelf",
+   "oracle_id": 4,
+   "pred_id": 23,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.2793
+    },
+    {
+     "label": "anonymize_picture",
+     "score": 0.2779
+    },
+    {
+     "label": "shelf",
+     "score": 0.276
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.5435,
+   "learned_label": "blinds",
+   "n_vertices": 27221,
+   "oracle_class": "blinds",
+   "oracle_id": 32,
+   "pred_id": 16,
+   "top3": [
+    {
+     "label": "blinds",
+     "score": 0.3017
+    },
+    {
+     "label": "vent",
+     "score": 0.2903
+    },
+    {
+     "label": "shelf",
+     "score": 0.2836
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.888,
+   "learned_label": "door",
+   "n_vertices": 12325,
+   "oracle_class": "door",
+   "oracle_id": 54,
+   "pred_id": 11,
+   "top3": [
+    {
+     "label": "door",
+     "score": 0.2763
+    },
+    {
+     "label": "wall-plug",
+     "score": 0.2761
+    },
+    {
+     "label": "shelf",
+     "score": 0.2698
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.9691,
+   "learned_label": "vent",
+   "n_vertices": 11347,
+   "oracle_class": "anonymize_picture",
+   "oracle_id": 58,
+   "pred_id": 13,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.3009
+    },
+    {
+     "label": "blinds",
+     "score": 0.2812
+    },
+    {
+     "label": "shelf",
+     "score": 0.2791
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9782,
+   "learned_label": "chair",
+   "n_vertices": 9590,
+   "oracle_class": "chair",
+   "oracle_id": 7,
+   "pred_id": 1,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.3254
+    },
+    {
+     "label": "vent",
+     "score": 0.3006
+    },
+    {
+     "label": "table",
+     "score": 0.2792
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9956,
+   "learned_label": "chair",
+   "n_vertices": 9402,
+   "oracle_class": "chair",
+   "oracle_id": 12,
+   "pred_id": 0,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.3155
+    },
+    {
+     "label": "vent",
+     "score": 0.3046
+    },
+    {
+     "label": "sculpture",
+     "score": 0.2781
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9897,
+   "learned_label": "chair",
+   "n_vertices": 9356,
+   "oracle_class": "chair",
+   "oracle_id": 9,
+   "pred_id": 2,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.3098
+    },
+    {
+     "label": "vent",
+     "score": 0.284
+    },
+    {
+     "label": "table",
+     "score": 0.2709
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9758,
+   "learned_label": "chair",
+   "n_vertices": 9463,
+   "oracle_class": "chair",
+   "oracle_id": 48,
+   "pred_id": 3,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.309
+    },
+    {
+     "label": "vent",
+     "score": 0.2894
+    },
+    {
+     "label": "switch",
+     "score": 0.2691
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9529,
+   "learned_label": "chair",
+   "n_vertices": 9243,
+   "oracle_class": "chair",
+   "oracle_id": 3,
+   "pred_id": 6,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.337
+    },
+    {
+     "label": "vent",
+     "score": 0.3115
+    },
+    {
+     "label": "table",
+     "score": 0.2896
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9695,
+   "learned_label": "chair",
+   "n_vertices": 9384,
+   "oracle_class": "chair",
+   "oracle_id": 13,
+   "pred_id": 4,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.3285
+    },
+    {
+     "label": "vent",
+     "score": 0.3069
+    },
+    {
+     "label": "table",
+     "score": 0.2831
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9617,
+   "learned_label": "chair",
+   "n_vertices": 9188,
+   "oracle_class": "chair",
+   "oracle_id": 11,
+   "pred_id": 5,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.3172
+    },
+    {
+     "label": "vent",
+     "score": 0.3001
+    },
+    {
+     "label": "table",
+     "score": 0.2772
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9432,
+   "learned_label": "chair",
+   "n_vertices": 8746,
+   "oracle_class": "chair",
+   "oracle_id": 6,
+   "pred_id": 9,
+   "top3": [
+    {
+     "label": "chair",
+     "score": 0.334
+    },
+    {
+     "label": "vent",
+     "score": 0.302
+    },
+    {
+     "label": "table",
+     "score": 0.2827
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": true,
+   "iou": 0.3996,
+   "learned_label": "vent",
+   "n_vertices": 8285,
+   "oracle_class": "blinds",
+   "oracle_id": 29,
+   "pred_id": 15,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.2919
+    },
+    {
+     "label": "blinds",
+     "score": 0.2888
+    },
+    {
+     "label": "shelf",
+     "score": 0.2832
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.7742,
+   "learned_label": "vent",
+   "n_vertices": 5663,
+   "oracle_class": "window",
+   "oracle_id": 10,
+   "pred_id": 14,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.2955
+    },
+    {
+     "label": "wall",
+     "score": 0.2745
+    },
+    {
+     "label": "shelf",
+     "score": 0.2728
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.922,
+   "learned_label": "vase",
+   "n_vertices": 2271,
+   "oracle_class": "vase",
+   "oracle_id": 17,
+   "pred_id": 10,
+   "top3": [
+    {
+     "label": "vase",
+     "score": 0.3391
+    },
+    {
+     "label": "bottle",
+     "score": 0.3105
+    },
+    {
+     "label": "lamp",
+     "score": 0.301
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.8818,
+   "learned_label": "anonymize_picture",
+   "n_vertices": 1168,
+   "oracle_class": "vase",
+   "oracle_id": 40,
+   "pred_id": 19,
+   "top3": [
+    {
+     "label": "anonymize_picture",
+     "score": 0.2837
+    },
+    {
+     "label": "undefined",
+     "score": 0.2708
+    },
+    {
+     "label": "plate",
+     "score": 0.2608
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.7738,
+   "learned_label": "anonymize_picture",
+   "n_vertices": 1079,
+   "oracle_class": "sculpture",
+   "oracle_id": 49,
+   "pred_id": 12,
+   "top3": [
+    {
+     "label": "anonymize_picture",
+     "score": 0.2835
+    },
+    {
+     "label": "chair",
+     "score": 0.2757
+    },
+    {
+     "label": "undefined",
+     "score": 0.2712
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": true,
+   "iou": 0.6395,
+   "learned_label": "anonymize_picture",
+   "n_vertices": 1601,
+   "oracle_class": "vase",
+   "oracle_id": 14,
+   "pred_id": 18,
+   "top3": [
+    {
+     "label": "anonymize_picture",
+     "score": 0.2887
+    },
+    {
+     "label": "vase",
+     "score": 0.282
+    },
+    {
+     "label": "vent",
+     "score": 0.2787
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.273,
+   "learned_label": "sculpture",
+   "n_vertices": 2870,
+   "oracle_class": "indoor-plant",
+   "oracle_id": 47,
+   "pred_id": 26,
+   "top3": [
+    {
+     "label": "sculpture",
+     "score": 0.2948
+    },
+    {
+     "label": "vase",
+     "score": 0.2871
+    },
+    {
+     "label": "wall",
+     "score": 0.2841
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.3537,
+   "learned_label": "rug",
+   "n_vertices": 876,
+   "oracle_class": "bottle",
+   "oracle_id": 26,
+   "pred_id": 20,
+   "top3": [
+    {
+     "label": "rug",
+     "score": 0.278
+    },
+    {
+     "label": "anonymize_picture",
+     "score": 0.278
+    },
+    {
+     "label": "wall",
+     "score": 0.2756
+    }
+   ]
+  }
+ ],
+ "protocol": "docs/c2_matched_labels_protocol.md",
+ "scene_id": "replica_room_2",
+ "schema": "c2_label_sidecar_v1",
+ "vocabulary": [
+  "anonymize_picture",
+  "blinds",
+  "bottle",
+  "bowl",
+  "box",
+  "ceiling",
+  "chair",
+  "door",
+  "floor",
+  "indoor-plant",
+  "lamp",
+  "plate",
+  "rug",
+  "sculpture",
+  "shelf",
+  "switch",
+  "table",
+  "undefined",
+  "vase",
+  "vent",
+  "wall",
+  "wall-plug",
+  "window"
+ ]
+}

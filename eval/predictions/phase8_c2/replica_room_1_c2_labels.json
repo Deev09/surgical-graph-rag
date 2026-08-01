@@ -1,0 +1,585 @@
+{
+ "applies_to_bundle_output_sha256": "737e0fd4f5a614a4ecc65917d20dc9c8e9c3b33cd52adad50a764d4be316e49c",
+ "label_accuracy": {
+  "n_matched_entity_instances": 22,
+  "support_class_slice": {
+   "n": 0,
+   "predicted_support_when_oracle_not": 0.0,
+   "predicted_support_when_oracle_support": null,
+   "top1": null
+  },
+  "top1": 0.5,
+  "top3": 0.5
+ },
+ "labeler": {
+  "model": "ViT-B-32-quickgelu",
+  "pretrained": "openai",
+  "prompts": [
+   "a photo of a {c}",
+   "a photo of a {c} in a room",
+   "a 3D render of a {c}"
+  ],
+  "weights_sha256": "e6d1bd7789aa45192b3bf90570a789b478bae1b74ebcce7eddd908e83a2b7c31"
+ },
+ "note": "evaluation-only C2.0 predictions on matched instances; consumed by tools/mvp_demo.py for the torch-free C2 row",
+ "per_instance": [
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.3905,
+   "learned_label": "bed",
+   "n_vertices": 64319,
+   "oracle_class": "bed",
+   "oracle_id": 32,
+   "pred_id": 10,
+   "top3": [
+    {
+     "label": "bed",
+     "score": 0.3184
+    },
+    {
+     "label": "comforter",
+     "score": 0.3047
+    },
+    {
+     "label": "pillow",
+     "score": 0.2967
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9491,
+   "learned_label": "cabinet",
+   "n_vertices": 17100,
+   "oracle_class": "cabinet",
+   "oracle_id": 36,
+   "pred_id": 17,
+   "top3": [
+    {
+     "label": "cabinet",
+     "score": 0.2928
+    },
+    {
+     "label": "rug",
+     "score": 0.2894
+    },
+    {
+     "label": "vent",
+     "score": 0.2874
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.5033,
+   "learned_label": "blinds",
+   "n_vertices": 32286,
+   "oracle_class": "blinds",
+   "oracle_id": 23,
+   "pred_id": 14,
+   "top3": [
+    {
+     "label": "blinds",
+     "score": 0.2722
+    },
+    {
+     "label": "vent",
+     "score": 0.2705
+    },
+    {
+     "label": "wall-plug",
+     "score": 0.2518
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.8375,
+   "learned_label": "blinds",
+   "n_vertices": 17743,
+   "oracle_class": "blinds",
+   "oracle_id": 15,
+   "pred_id": 12,
+   "top3": [
+    {
+     "label": "blinds",
+     "score": 0.2983
+    },
+    {
+     "label": "vent",
+     "score": 0.2827
+    },
+    {
+     "label": "window",
+     "score": 0.2629
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9342,
+   "learned_label": "door",
+   "n_vertices": 14516,
+   "oracle_class": "door",
+   "oracle_id": 6,
+   "pred_id": 7,
+   "top3": [
+    {
+     "label": "door",
+     "score": 0.2583
+    },
+    {
+     "label": "wall-plug",
+     "score": 0.2531
+    },
+    {
+     "label": "cabinet",
+     "score": 0.2516
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.9562,
+   "learned_label": "vent",
+   "n_vertices": 9883,
+   "oracle_class": "picture",
+   "oracle_id": 12,
+   "pred_id": 19,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.2871
+    },
+    {
+     "label": "blinds",
+     "score": 0.2853
+    },
+    {
+     "label": "plate",
+     "score": 0.2685
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.8264,
+   "learned_label": "pillow",
+   "n_vertices": 7727,
+   "oracle_class": "nightstand",
+   "oracle_id": 8,
+   "pred_id": 8,
+   "top3": [
+    {
+     "label": "pillow",
+     "score": 0.2861
+    },
+    {
+     "label": "vent",
+     "score": 0.2839
+    },
+    {
+     "label": "blanket",
+     "score": 0.2818
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.8096,
+   "learned_label": "rug",
+   "n_vertices": 7453,
+   "oracle_class": "nightstand",
+   "oracle_id": 28,
+   "pred_id": 9,
+   "top3": [
+    {
+     "label": "rug",
+     "score": 0.2896
+    },
+    {
+     "label": "pillow",
+     "score": 0.2885
+    },
+    {
+     "label": "vent",
+     "score": 0.288
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9753,
+   "learned_label": "lamp",
+   "n_vertices": 6518,
+   "oracle_class": "lamp",
+   "oracle_id": 52,
+   "pred_id": 1,
+   "top3": [
+    {
+     "label": "lamp",
+     "score": 0.2966
+    },
+    {
+     "label": "basket",
+     "score": 0.2929
+    },
+    {
+     "label": "vase",
+     "score": 0.2849
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.8729,
+   "learned_label": "lamp",
+   "n_vertices": 6064,
+   "oracle_class": "lamp",
+   "oracle_id": 45,
+   "pred_id": 0,
+   "top3": [
+    {
+     "label": "lamp",
+     "score": 0.3086
+    },
+    {
+     "label": "basket",
+     "score": 0.2956
+    },
+    {
+     "label": "vase",
+     "score": 0.2939
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.8344,
+   "learned_label": "vent",
+   "n_vertices": 5877,
+   "oracle_class": "window",
+   "oracle_id": 37,
+   "pred_id": 6,
+   "top3": [
+    {
+     "label": "vent",
+     "score": 0.2819
+    },
+    {
+     "label": "blinds",
+     "score": 0.2682
+    },
+    {
+     "label": "wall",
+     "score": 0.2662
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.6498,
+   "learned_label": "undefined",
+   "n_vertices": 3911,
+   "oracle_class": "blanket",
+   "oracle_id": 46,
+   "pred_id": 22,
+   "top3": [
+    {
+     "label": "undefined",
+     "score": 0.2764
+    },
+    {
+     "label": "rug",
+     "score": 0.2734
+    },
+    {
+     "label": "pillow",
+     "score": 0.2689
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.7013,
+   "learned_label": "vase",
+   "n_vertices": 4103,
+   "oracle_class": "indoor-plant",
+   "oracle_id": 54,
+   "pred_id": 3,
+   "top3": [
+    {
+     "label": "vase",
+     "score": 0.2981
+    },
+    {
+     "label": "vent",
+     "score": 0.278
+    },
+    {
+     "label": "undefined",
+     "score": 0.277
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.5704,
+   "learned_label": "pillow",
+   "n_vertices": 4877,
+   "oracle_class": "pillow",
+   "oracle_id": 9,
+   "pred_id": 15,
+   "top3": [
+    {
+     "label": "pillow",
+     "score": 0.2997
+    },
+    {
+     "label": "comforter",
+     "score": 0.2911
+    },
+    {
+     "label": "basket",
+     "score": 0.2842
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.9004,
+   "learned_label": "pillow",
+   "n_vertices": 2638,
+   "oracle_class": "pillow",
+   "oracle_id": 39,
+   "pred_id": 2,
+   "top3": [
+    {
+     "label": "pillow",
+     "score": 0.3418
+    },
+    {
+     "label": "comforter",
+     "score": 0.3119
+    },
+    {
+     "label": "blanket",
+     "score": 0.2986
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.8531,
+   "learned_label": "pillow",
+   "n_vertices": 2187,
+   "oracle_class": "pillow",
+   "oracle_id": 3,
+   "pred_id": 5,
+   "top3": [
+    {
+     "label": "pillow",
+     "score": 0.2845
+    },
+    {
+     "label": "blanket",
+     "score": 0.2778
+    },
+    {
+     "label": "comforter",
+     "score": 0.2773
+    }
+   ]
+  },
+  {
+   "correct_top1": true,
+   "correct_top3": true,
+   "iou": 0.3862,
+   "learned_label": "basket",
+   "n_vertices": 2626,
+   "oracle_class": "basket",
+   "oracle_id": 4,
+   "pred_id": 24,
+   "top3": [
+    {
+     "label": "basket",
+     "score": 0.2765
+    },
+    {
+     "label": "undefined",
+     "score": 0.2725
+    },
+    {
+     "label": "vent",
+     "score": 0.2721
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.9531,
+   "learned_label": "wall",
+   "n_vertices": 748,
+   "oracle_class": "plate",
+   "oracle_id": 42,
+   "pred_id": 21,
+   "top3": [
+    {
+     "label": "wall",
+     "score": 0.2763
+    },
+    {
+     "label": "undefined",
+     "score": 0.2758
+    },
+    {
+     "label": "rug",
+     "score": 0.2754
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.1218,
+   "learned_label": "undefined",
+   "n_vertices": 1040,
+   "oracle_class": "pillow",
+   "oracle_id": 18,
+   "pred_id": 16,
+   "top3": [
+    {
+     "label": "undefined",
+     "score": 0.2679
+    },
+    {
+     "label": "wall",
+     "score": 0.2617
+    },
+    {
+     "label": "floor",
+     "score": 0.2595
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.9152,
+   "learned_label": "wall",
+   "n_vertices": 279,
+   "oracle_class": "panel",
+   "oracle_id": 41,
+   "pred_id": 25,
+   "top3": [
+    {
+     "label": "wall",
+     "score": 0.2807
+    },
+    {
+     "label": "blinds",
+     "score": 0.271
+    },
+    {
+     "label": "rug",
+     "score": 0.2689
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.0963,
+   "learned_label": "undefined",
+   "n_vertices": 235,
+   "oracle_class": "pillow",
+   "oracle_id": 7,
+   "pred_id": 18,
+   "top3": [
+    {
+     "label": "undefined",
+     "score": 0.2648
+    },
+    {
+     "label": "plate",
+     "score": 0.2534
+    },
+    {
+     "label": "floor",
+     "score": 0.2507
+    }
+   ]
+  },
+  {
+   "correct_top1": false,
+   "correct_top3": false,
+   "iou": 0.0391,
+   "learned_label": "wall",
+   "n_vertices": 95,
+   "oracle_class": "pillow",
+   "oracle_id": 13,
+   "pred_id": 13,
+   "top3": [
+    {
+     "label": "wall",
+     "score": 0.248
+    },
+    {
+     "label": "undefined",
+     "score": 0.2408
+    },
+    {
+     "label": "floor",
+     "score": 0.2349
+    }
+   ]
+  }
+ ],
+ "protocol": "docs/c2_matched_labels_protocol.md",
+ "scene_id": "replica_room_1",
+ "schema": "c2_label_sidecar_v1",
+ "vocabulary": [
+  "basket",
+  "bed",
+  "blanket",
+  "blinds",
+  "book",
+  "cabinet",
+  "ceiling",
+  "comforter",
+  "door",
+  "floor",
+  "indoor-plant",
+  "lamp",
+  "nightstand",
+  "panel",
+  "picture",
+  "pillow",
+  "plate",
+  "rug",
+  "switch",
+  "undefined",
+  "vase",
+  "vent",
+  "wall",
+  "wall-plug",
+  "window"
+ ]
+}

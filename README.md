@@ -21,8 +21,10 @@ and negative results are committed as first-class documentation.
 - It is **not** an end-to-end NeRF/3DGS system. The only real reconstruction
   adapter is Replica/oracle data.
 - The learned-segmentation path (C1) starts from a raw `mesh.ply` but injects
-  **oracle labels and structural surfaces** for controlled evaluation. Learned
-  semantics (C2) and fully-raw operation (C3) are not implemented.
+  **oracle labels and structural surfaces** for controlled evaluation.
+  Learned semantics (C2.0) is a measured **isolation result only** —
+  zero-shot labels on C1's matched instances, closed to further
+  optimization — and fully-raw operation (C3) is not implemented.
 - The current headline is that the system **exposes and measures its own
   failures** — not that it solves raw-scene QA.
 
@@ -36,8 +38,8 @@ attribute differences to that stage (`docs/mesh_pipeline_contract.md`):
 | **A** | `info_semantic.json` oracle | oracle | frozen baseline |
 | **B** | derived from `mesh_semantic.ply` | oracle | frame parity with A frozen |
 | **C1** | learned segmenter on raw `mesh.ply` | oracle via exact vertex correspondence | **measured** (Mask3D reference @ MIN_SCORE=0.2; Segment3D pilot failed its predeclared gate — see below) |
-| **C2** | learned | learned | not implemented |
-| **C3** | learned | learned, mesh-derived surfaces | not implemented |
+| **C2** | learned (= C1 frozen) | learned (CLIP zero-shot on matched instances) | **measured, evaluation-only** — labels are not the bottleneck; C2 optimization stopped (`docs/c2_matched_labels_protocol.md`) |
+| **C3** | learned | learned, mesh-derived surfaces | not implemented (blocked on C1 coverage, not labels) |
 
 ## Measured status (2026-07-31)
 
@@ -59,6 +61,14 @@ mask); Segment3D raises the proposal ceiling (30/53 vs 20/53 on room_2) but
 wastes 13 viable masks in composition and failed 4/5 predeclared gate criteria
 — so the pilot stopped after one scene, per protocol
 (`docs/c1_closeout.md`, `docs/c1_m2_protocol.md`).
+
+**C2.0 (learned labels, isolation only).** Zero-shot CLIP on matched-
+instance point-splats: support-owner labels 9/10 on room_2, clutter tail
+0.50–0.57 top-1. But one shelf-label error erased room_2's both support
+answers, and semantic-citation fidelity (uid-correct answers that also
+carry the canonical label) is 0.50–0.62. Labels are confirmed not the
+binding constraint — C1 proposal coverage is — and C2 optimization is
+stopped (`docs/c2_matched_labels_protocol.md`).
 
 **Committed negative results.** Query-scoped raw-proposal expansion recovers
 zero additional support answers on saved proposals

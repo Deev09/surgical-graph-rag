@@ -56,18 +56,26 @@ SCENE_MANIFEST = REPO_ROOT / "eval" / "questions" / "phase8" / "scene_manifest.j
 
 # Predeclared scene set (spec): room_0 has a human key but Mask3D was never
 # run on it and v0 spends no GPU -> its C1 column is "not run", never 0.
+# C2 rows (spec addendum, owner-instructed 2026-08-01) are EVALUATION-ONLY:
+# labels come from the committed C2.0 prediction sidecars
+# (eval/predictions/phase8_c2/, pinned to the ms02 bundles) — no torch here.
 SCENES = [
     {"scene_id": "replica_room_0", "short": "room_0", "variants": ["A", "B"]},
-    {"scene_id": "replica_room_1", "short": "room_1", "variants": ["A", "B", "C1"]},
-    {"scene_id": "replica_room_2", "short": "room_2", "variants": ["A", "B", "C1"]},
+    {"scene_id": "replica_room_1", "short": "room_1",
+     "variants": ["A", "B", "C1", "C2"]},
+    {"scene_id": "replica_room_2", "short": "room_2",
+     "variants": ["A", "B", "C1", "C2"]},
 ]
+SIDECAR_DIR = REPO_ROOT / "eval" / "predictions" / "phase8_c2"
 
 # Committed reference values (4 dp) the demo must reproduce exactly —
-# spec acceptance criterion 3. Source: runs/phase8_c1/joint_ceiling*.
+# spec acceptance criterion 3. Sources: runs/phase8_c1/joint_ceiling*,
+# runs/phase8_c2/ (C2.0 protocol results).
 REFERENCE = {
     "replica_room_2": {
         "A": {"micro_precision": 0.9524, "micro_recall": 0.4082},
         "C1": {"micro_precision": 1.0, "micro_recall": 0.2449},
+        "C2": {"micro_precision": 1.0, "micro_recall": 0.2041},
     },
 }
 
@@ -139,27 +147,51 @@ def verify_inputs(rows: list[dict]) -> dict:
                                     "path": f"runs/phase8_c1/bundles_ms02/{short}",
                                     "resolver": "frozen MIN_SCORE=0.2 "
                                                 "min_vertices=20"}
+        if "C2" in row["variants"]:
+            sc_path = SIDECAR_DIR / f"{sid}_c2_labels.json"
+            sidecar = json.loads(sc_path.read_text())
+            if (sidecar["applies_to_bundle_output_sha256"]
+                    != prov["bundles"][sid]["output_sha256"]):
+                raise ValueError(f"{sid}: C2 sidecar pinned to a different "
+                                 f"bundle than the frozen ms02 bundle")
+            row["label_override"] = {int(r["pred_id"]): r["learned_label"]
+                                     for r in sidecar["per_instance"]}
+            prov.setdefault("c2_sidecars", {})[sid] = {
+                "path": f"eval/predictions/phase8_c2/{sid}_c2_labels.json",
+                "labeler": sidecar["labeler"],
+                "label_accuracy": sidecar["label_accuracy"],
+                "status": "EVALUATION-ONLY (labels from the committed C2.0 "
+                          "sidecar; docs/c2_matched_labels_protocol.md)"}
     return prov
 
 
 def build_variant_arts(variant: str, row: dict, min_vertices: int = 20):
-    """Returns (arts, uid_map or None, extras dict)."""
+    """Returns (arts, uid_map or None, extras dict). Keys starting with
+    '_' in extras are internal and stripped from the report."""
     room, sid = row["room_dir"], row["scene_id"]
     if variant == "A":
         return import_habitat_room(room, sid), None, {}
     if variant == "B":
         return import_mesh_room(room, sid), None, {}
+    override = row["label_override"] if variant == "C2" else None
     ev = evaluate(room, row["bundle_dir"])
     arts, _ = build_c1_eval_bundle(room, row["bundle_dir"], sid,
-                                   min_vertices=min_vertices)
+                                   min_vertices=min_vertices,
+                                   label_override=override)
     uid_map = {f"obj_{m['pred_id']}": f"obj_{m['oracle_id']}"
                for m in ev["matches"]}
     iou = {f"obj_{m['pred_id']}": rnd(m["iou"]) for m in ev["matches"]}
     n5 = ev["n_entity_matches_at_iou"]["0.5"]
-    return arts, uid_map, {
+    extras = {
         "match_iou_by_pred_uid": iou,
         "entity_matches_at_05": f"{n5}/{ev['n_oracle_entity_instances']}",
+        "_canonical": {f"obj_{m['oracle_id']}": m["oracle_class"]
+                       for m in ev["matches"] if m["oracle_class"]},
     }
+    if variant == "C2":
+        extras["labels"] = ("EVALUATION-ONLY learned labels from the "
+                            "committed C2.0 sidecar")
+    return arts, uid_map, extras
 
 
 def run_variant(variant: str, row: dict, router, ctx,
@@ -212,14 +244,37 @@ def run_variant(variant: str, row: dict, router, ctx,
             "recall": rnd(srow.get("recall")),
         })
 
+    # semantic citation (C1/C2 rows): among uid-correct citations, does the
+    # DISPLAYED label match the canonical class? micro P/R score uid
+    # membership only — a uid-correct answer can verbalize a wrong learned
+    # label, and this metric is where that shows.
+    semantic = None
+    canonical = extras.pop("_canonical", None)
+    if canonical is not None:
+        n_hits = n_sem = 0
+        for q in questions:
+            for c in q["cited"]:
+                if c["status"] == "hit":
+                    n_hits += 1
+                    n_sem += c["label"] == canonical.get(c["uid"])
+        semantic = {"n_uid_correct_citations": n_hits,
+                    "n_with_canonical_label": n_sem,
+                    "accuracy": rnd(n_sem / n_hits) if n_hits else None}
+
     return {
         "variant": variant,
         **extras,
         "graph_bundle_hash": bundle.bundle_hash,
         "n_entities": len(arts.entities),
         "n_graph_edges": len(bundle.edges),
+        "metric_note": ("micro_precision/micro_recall score UID/structural "
+                        "MEMBERSHIP vs the key (the key cites uids, not "
+                        "names); semantic_citation scores whether "
+                        "uid-correct citations also carry the canonical "
+                        "label"),
         "micro_precision": rnd(qa["micro_precision"]),
         "micro_recall": rnd(qa["micro_recall"]),
+        "semantic_citation": semantic,
         "per_relation": {rel: {k: rnd(v) if isinstance(v, float) else v
                                for k, v in d.items()}
                          for rel, d in qa["per_relation"].items()},
@@ -291,6 +346,9 @@ def run_all(out_dir: Path, only_scene: str | None = None) -> list[Path]:
                 "scene_id": sid, "variant": v,
                 "micro_precision": r["micro_precision"],
                 "micro_recall": r["micro_recall"],
+                "semantic_citation": ((r["semantic_citation"] or {})
+                                      .get("accuracy")
+                                      if r.get("semantic_citation") else None),
                 "support_hits": (r["per_relation"].get("ON_ENTITY_SURFACE")
                                  or {}).get("n_hit"),
                 "n_graph_edges": r["n_graph_edges"],
