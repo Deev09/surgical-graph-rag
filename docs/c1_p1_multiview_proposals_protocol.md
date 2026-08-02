@@ -230,6 +230,40 @@ publication must not call it sealed-holdout generalization.
 - claiming QA improvement from an oracle-guided proposal ceiling;
 - solving the AABB/support-representation ceiling already documented in C1.
 
+## Preflight (2026-08-02, read-only — no gate, budget, or rule changed)
+
+Verified against the current repository before requesting activation:
+
+- **Protocol integrity:** this file is unmodified since its draft commit
+  `7f04137` — hypothesis, gates G1–G6/H1–H5, budget (1 dev + 2 transfer
+  scenes, 40 views each, one checkpoint, one parameterization), and the
+  dev-fail stopping rule are exactly as drafted.
+- **Frozen anchors re-verified** against the ms02 failure-class reports
+  (schema v2): room_2 53 entities / viable 20 / delivered 18; office_0
+  47 / 13 / 12; room_1 45 / 21 / 17 — all match this document's table.
+- **Inputs on disk and pinned:** raw `mesh.ply` hash-locked for all
+  three scenes (`tools/replica_scenes.lock.json`); frozen gravity/yaw
+  frames present for all three (`eval/fixtures/c3_0_frames.json`);
+  human keys `human_verified` for all three.
+- **Post-draft context that does NOT alter this protocol:** the SR quad
+  parser now exists (room_2/office_0 raw meshes are pure quads, room_1
+  pure quads, room_0 pure triangles — the renderer must consume the
+  SR-triangulated geometry); Stage 0m closed the mesh-plane surface
+  family, making this protocol the active pivot target per the owner's
+  decision rule.
+- **Two notes for the freeze commit (cosmetic/logistical, not gate
+  changes):** (1) the sidecar contract class is named
+  `SegmentationOutput` in the repository (this document says
+  "SegmentationArtifact"); (2) execution environment is not fixed by
+  the protocol — recommendation: Colab CUDA (consistent with the
+  Mask3D/Segment3D runs and the declared bf16-autocast mode) rather
+  than local MPS/CPU; the environment actually used is recorded in
+  every sidecar either way.
+- **Not yet built (activation scope):** renderer + id buffers, SAM
+  harness, fusion, evaluator, Stage-0 synthetic tests, isolation test.
+  Stage 0 completes and the preparation freeze (with checkpoint sha)
+  lands BEFORE any scene inference, per this protocol.
+
 ## Sign-off
 
 - [ ] Project owner approves the hypothesis, frozen generator, gates, budget,

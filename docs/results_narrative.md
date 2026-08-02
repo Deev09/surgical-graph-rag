@@ -106,6 +106,35 @@ system fixed, so the changed stage becomes the testable explanation.
 7. **Honest outcomes are load-bearing.** "Empty ≠ absent" under the
    oracle completeness profile, "not run ≠ 0" in every table, and keys
    that the system fails are recorded as successful reviews.
+8. **Mesh-derived structural surfaces fail structurally, not
+   parametrically — and the failure arc is itself a methods result.**
+   Three successively cheaper attempts closed the mesh-plane estimator
+   family: C3.0-S stopped at its input contract (the pinned mesh is
+   quads; the frozen parser was triangles-only); C3.0-SR fixed the
+   parser under a predeclared rule and then failed all seven geometry
+   gates (14/15 grown components rejected by acceptance constants never
+   measured against real roughness); the read-only Stage 0m measurement
+   then showed no constant could work — floor and ceiling cohere
+   (coverage 0.96/0.99) but two of four room_2 walls reach only
+   0.03–0.04 coverage at ANY residual band up to 5 cm, because the
+   sensor mesh records shelving/blinds rather than the architectural
+   wall, and blinds form their own ≥2.2 m² planes
+   (`docs/c3_0_mesh_surfaces_protocol.md`,
+   `docs/c3_0_sr_mesh_surfaces_protocol.md`,
+   `docs/c3_stage0m_measurement_protocol.md`). Each failure was caught
+   earlier and cheaper than the last, ending with a zero-GPU
+   measurement that replaced a third premature freeze.
+9. **The oracle's own surface annotations disagree with the captured
+   geometry.** Stage 0m's impostor census found large planar components
+   belonging to the walls THEMSELVES (5.7–5.8 m²) sitting more than
+   5 cm from their oracle annotation planes on 2 of 4 room_2 walls.
+   Every ladder row (A, B, C1, C2) inherits those annotation planes, so
+   some measured wall-contact recall limits are partly annotation
+   artifacts: the 2–3 cm contact bands sit on planes with larger error
+   than the bands themselves. Keys and scores are deliberately NOT
+   revised — comparability is preserved and the mismatch is recorded
+   here as a limitation of the oracle target definition, not repaired
+   post hoc.
 
 ## Negative results (committed as first-class artifacts)
 
@@ -113,7 +142,10 @@ Segment3D pilot (predeclared gate, stopped after one scene); three
 selection-repair rule versions (stopped at budget, holdout unspent);
 query-scoped proposal expansion (zero recovered answers, 645→1360 edge
 inflation); uncertainty-preserving proposal pool (policy prototype only);
-C2 vocabulary hygiene explicitly rejected as post-hoc tuning.
+C2 vocabulary hygiene explicitly rejected as post-hoc tuning; the
+mesh-plane surface-estimator family (C3.0-S input-contract failure,
+C3.0-SR seven-gate failure, Stage 0m OVERLAP verdict — closed with
+transfer budgets unspent both times).
 
 ## Limitations
 
@@ -122,7 +154,15 @@ source; C1/C2 inject oracle labels/surfaces respectively as declared
 evaluation scaffolding; the C2 vocabulary is closed-set (declared leak);
 near-wall questions are membership-only; frl_apartment_0 remains
 plausibility-only; the compiler is a rules engine with a known
-paraphrase-brittleness surface (measured separately).
+paraphrase-brittleness surface (measured separately). The oracle
+structural-surface planes themselves are annotation targets that the
+captured geometry contradicts by more than 5 cm on 2 of 4 room_2 walls
+(finding 9): wall-contact metrics throughout should be read against
+that target uncertainty, and keys/scores were intentionally left
+unrevised to preserve comparability. Replica's raw mesh format is also
+not uniform across scenes (three scenes are pure quads, one pure
+triangles) — a reminder that even "one dataset" hides input-contract
+variance.
 
 ## Artifacts
 
