@@ -39,6 +39,15 @@ projection width along the qualifying wall's normal, and
 rule unlisted doors as NEGATIVES, so door admissions are false
 positives counting against the precision gate, not unspecified cases.
 
+**Revision 3 (2026-08-02, third review response — still unexecuted):**
+(1) D1's quantification corrected — `wall_contact` evaluates one
+entity–wall PAIR and selects nothing; D1 now states per-pair
+evaluation over every entity–wall pair at `contact_threshold_m = 0.12`,
+per-pair depth against that pair's wall normal, edge emission per
+satisfying pair, and citation iff ≥ 1 edge; (2) the relation-specific
+gates (attached ≥ 8/14, support ≥ 8/20, each @ citation precision
+≥ 0.85) are listed in the sign-off checkbox itself, not only in S2.
+
 ## Track separation (the non-negotiables)
 
 1. **A separately labeled track: `semantics_v2`.** Every result it
@@ -71,20 +80,22 @@ sweep, no post-hoc adjustment.
 Every geometric term below is bound to the EXISTING frozen predicate —
 no new distance machinery is introduced:
 
-- **Wall qualification and distance** reuse
-  `geometry/wall_contact.py::wall_contact` exactly as the v1
-  `ContactsSurfaceExtractor` consumes it (signed, interior-side,
-  polygon-clipped distance to a wall-capable surface), with ONE changed
-  parameter: the contact threshold is **0.12 m** instead of 2 cm
-  (widened to absorb the measured ≥5 cm annotation-plane displacement,
-  Stage 0m finding, plus box-source error). The qualifying wall for an
-  entity is the wall `wall_contact` selects; entities with no
-  qualifying wall under that predicate are not wall-mounted.
-- **Depth** is the width of the entity's AABB projected onto the
-  qualifying wall's (unit) plane normal.
+- **Per-pair evaluation (`wall_contact` evaluates one entity–wall
+  pair; it does not select a wall).** Evaluate EVERY entity–wall pair
+  with the frozen `geometry/wall_contact.py::wall_contact` exactly as
+  the v1 `ContactsSurfaceExtractor` consumes it (signed, interior-side,
+  polygon-clipped), with ONE changed parameter:
+  `contact_threshold_m = 0.12` instead of 2 cm (widened to absorb the
+  measured ≥5 cm annotation-plane displacement, Stage 0m finding, plus
+  box-source error).
+- **Depth** is computed per pair: the width of the entity's AABB
+  projected onto THAT pair's wall (unit) plane normal.
+- **Edge emission:** an `ATTACHED_TO` v2 edge is emitted for EVERY
+  entity–wall pair that satisfies D1 in full; an entity is CITED by the
+  attached question iff at least one such edge exists.
 
-An entity is wall-mounted iff `wall_contact` qualifies it at 0.12 m,
-its depth ≤ **0.35 m**, and at least ONE mounting disjunct holds:
+A pair satisfies D1 iff `wall_contact` passes at 0.12 m, the pair's
+depth ≤ **0.35 m**, and at least ONE mounting disjunct holds:
 
 - **(a) elevated mount:** AABB bottom ≥ **0.30 m** above the calibrated
   floor plane (this alone; at that height the v1 floor-support
@@ -188,5 +199,10 @@ at their stage and are committed as findings.
 ## Sign-off
 
 - [ ] Owner approves the track separation, definitions D1–D3 (with
-      their frozen constants), the A-first proceed rule (0.55 / 0.85 /
-      0.80), and the stage order (date: ______, by: ______)
+      their frozen constants and D1's per-pair edge-emission
+      semantics), the A-first proceed rule — relation-specific gates
+      **room_2 ATTACHED_TO ≥ 8/14 @ citation precision ≥ 0.85** and
+      **room_2 ON_ENTITY_SURFACE ≥ 8/20 @ citation precision ≥ 0.85**,
+      plus aggregate room_2 micro-R ≥ 0.55 @ micro-P ≥ 0.85 and the
+      all-scenes micro-P ≥ 0.80 floor — and the stage order
+      (date: ______, by: ______)
