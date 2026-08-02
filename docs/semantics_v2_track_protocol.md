@@ -189,6 +189,38 @@ questions answerable, they do not add questions.
   section in the narrative. Every table carries: "semantics_v2 track —
   benchmark-definition change; not comparable to the frozen track."
 
+## S1 completion record (2026-08-02)
+
+Implemented exactly to the frozen definitions; no scene was scored:
+
+- `graph/relations/attached_to_v2.py` — D1 per-pair extractor (frozen
+  `wall_contact` at 0.12 m as the only changed wall parameter; per-pair
+  depth along that pair's wall normal; disjuncts (a)/(b) partitioned at
+  0.30 m bottom elevation vs the calibrated floor plane; NO
+  floor-support disqualifier; edge per satisfying pair).
+- `graph/relations/on_entity_surface_v2.py` — D2/D3 extractor (v1
+  top-rest delegated verbatim with the v2 allowlist; contained-rest
+  disjunct with the frozen policy: smallest-footprint assignment,
+  deterministic ties, frozen ON_SURFACE floor disqualifier, (E,S)
+  dedupe against top-rest; allowlist = v1 + cabinet/nightstand/bed).
+- `reasoner/compiler_rules.py` — opt-in `extra_on_classes` constructor
+  parameter; the default constructs the frozen v1 vocabulary exactly.
+- `demo/semantics_v2.py` — `runs_v2()` (v1 stack with only the two
+  relation swaps) + `make_v2_compiler()`.
+- Tests: `tests/relations/test_semantics_v2.py` (6 synthetic
+  definition tests: elevated mount incl. an 8 cm-gap case that v1
+  provably rejects, low-thin-panel vs low-deep-box, deep-furniture
+  rejection + per-pair dual-wall emission, contained-rest +
+  smallest-footprint, floor-supported exclusion, D3 anchors + no
+  (E,S) duplicates) and `tests/tools/test_semantics_v2_guards.py`
+  (4 guards: golden v1 battery bundle hash `graph_dd30b1f3cecfabd5`
+  computed BEFORE S1 code landed; default compiler vocabulary frozen —
+  cabinet/nightstand/bed still not compiled; v2 anchors opt-in only;
+  `runs_v2` swaps exactly the two relation extractors).
+
+Full suite 71/71. **S2 (variant A first) does not run without its own
+owner authorization.**
+
 ## Budget and prohibitions
 
 Zero GPU. No key edits, no v1-artifact modification, no threshold
@@ -198,11 +230,13 @@ at their stage and are committed as findings.
 
 ## Sign-off
 
-- [ ] Owner approves the track separation, definitions D1–D3 (with
+- [x] Owner approves the track separation, definitions D1–D3 (with
       their frozen constants and D1's per-pair edge-emission
       semantics), the A-first proceed rule — relation-specific gates
       **room_2 ATTACHED_TO ≥ 8/14 @ citation precision ≥ 0.85** and
       **room_2 ON_ENTITY_SURFACE ≥ 8/20 @ citation precision ≥ 0.85**,
       plus aggregate room_2 micro-R ≥ 0.55 @ micro-P ≥ 0.85 and the
       all-scenes micro-P ≥ 0.80 floor — and the stage order
-      (date: ______, by: ______)
+      (2026-08-02, project owner / deevyaswain — "approved, sign off
+      semantics-v2 and start S1", after three recorded review rounds).
+      Definitions D1–D3 and all gates are FROZEN as of this sign-off.

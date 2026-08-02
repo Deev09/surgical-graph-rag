@@ -87,9 +87,21 @@ _DEFERRED_ATTACHED_P6 = (
 
 
 class RulesCompiler:
-    """Implements the QueryCompiler Protocol."""
+    """Implements the QueryCompiler Protocol.
+
+    `extra_on_classes` (semantics_v2 track, docs/semantics_v2_track_
+    protocol.md D3): optional additional noun -> entity-class anchors for
+    the "what is on the X?" pattern. Default None preserves the frozen
+    v1 vocabulary EXACTLY (guarded by tests); the v2 track passes
+    {"cabinet": "cabinet", "nightstand": "nightstand", "bed": "bed"}.
+    """
     name: str = "rules_v1"
     version: str = "0.1"
+
+    def __init__(self, extra_on_classes: dict[str, str] | None = None):
+        self._on_classes = dict(_ENTITY_SURFACE_ON_CLASSES)
+        if extra_on_classes:
+            self._on_classes.update(extra_on_classes)
 
     def _compile_surface_query(self, q: str) -> CompileResult | None:
         """P4.04 support queries. Returns a CompileResult for "on the X" /
@@ -117,7 +129,7 @@ class RulesCompiler:
                     compiler_name=self.name,
                     notes="matched=on_floor_pattern edge_type=SUPPORTS surface=floor",
                 )
-            entity_class = _ENTITY_SURFACE_ON_CLASSES.get(noun)
+            entity_class = self._on_classes.get(noun)
             if entity_class is not None:
                 bind = Variable(name="x")
                 ast = Aggregation(
