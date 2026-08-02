@@ -29,7 +29,10 @@ on the source mesh, turning aggregate losses into inspectable failure cases.
 
 **Demonstrated:** deterministic structural QA over four human-keyed captured
 scenes; stage-isolated A/B/C1/C2 comparisons; explicit uncertainty states;
-and inspectable provenance from an answer to 3D evidence.
+inspectable provenance from an answer to 3D evidence; a gate-passing
+multi-view 2D-to-3D proposal generator that removes the measured
+perception bottleneck (evaluation-only); and the measured relocation of
+the QA bottleneck from perception to relation semantics.
 
 **Not demonstrated:** a deployable raw-scene QA system, learned geometry and
 semantics end to end, cross-dataset generalization, or a NeRF/3DGS backend.
@@ -135,6 +138,33 @@ system fixed, so the changed stage becomes the testable explanation.
    revised — comparability is preserved and the mismatch is recorded
    here as a limitation of the oracle target definition, not repaired
    post hoc.
+10. **Multi-view 2D evidence fixes the proposal ceiling — the first
+   gate-passing performance experiment.** Rendering the raw mesh from
+   40 fixed cameras and lifting SAM 2.1's class-agnostic 2D masks back
+   through per-pixel vertex id buffers, fused by cross-view
+   co-membership over mesh edges, raised single-proposal entity
+   viability from 20/53 to 33/53 on the development scene and
+   transferred to both prospective scenes (+6 and +5 entities) with
+   zero scene-specific settings — under predeclared gates, one
+   inference run per scene (~30 s of A100 each). The recovered
+   population is exactly the wall-mounted/small clutter every 3D
+   geometry backend failed to propose: blinds, vents, switches,
+   wall-plugs, plates, lamps, vases at IoU 0.61–0.95
+   (`docs/c1_p1_multiview_proposals_protocol.md`). Proposals are
+   evaluation-only: no QA number changed.
+11. **With proposals fixed, the QA bottleneck measurably moved to
+   relation semantics.** The oracle-guided ceiling of the pooled
+   proposal bank materializes 31/53 entities at QA precision 1.00 —
+   and lifts human-keyed recall only 0.245 → 0.265 (support 2 → 3): of
+   13 newly recoverable key-cited entities, exactly ONE becomes a
+   citable answer, because the rest sit in attached-to-wall answers
+   the frozen 2 cm attachment semantics cannot cite even from perfect
+   geometry (variant A: 1/14). The predeclared proceed rule stopped
+   the composer before a single parameter existed
+   (`docs/c1_p2_composer_protocol.md`). For the first time in the
+   project, perception is not the binding constraint — the
+   representation layer is, and that relocation is itself the arc's
+   concluding measurement.
 
 ## Negative results (committed as first-class artifacts)
 
@@ -177,5 +207,9 @@ variance.
 - Reproduction manifest: `docs/reproduction.md`; artifact pins:
   `docs/c1_artifact_manifest.json`, `tools/replica_scenes.lock.json`,
   `eval/predictions/phase8_c2/`.
-- Release tag: `mvp-v1.0` (this freeze).
-- Canonical tests: `python3 tools/run_tests.py` (63/63 files).
+- C1-P1 proposal pipeline: `tools/c1p1_render.py` / `c1p1_fuse.py` /
+  `c1p1_eval.py` + `notebooks/c1p1_sam2_colab.ipynb`; frozen banks
+  pinned in `docs/c1_artifact_manifest.json` (`c1p1_proposal_banks`);
+  P2.0 ceiling: `tools/c1p2_ceiling.py`.
+- Release tag: `mvp-v1.0` (the MVP freeze; findings 8–11 postdate it).
+- Canonical tests: `python3 tools/run_tests.py`.
