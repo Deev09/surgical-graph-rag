@@ -168,9 +168,9 @@ ceiling is:
 Proceed rule required micro-R ≥ 0.285 or support ≥ 4; the ceiling gives
 0.2653 and 3. **STOP — no composer is built**, per the approved rule.
 
-**The finding, stated precisely:** of the 13 newly viable in-key
-entities P1 recovered, exactly ONE became a citable answer (one
-additional support hit). The other twelve — blinds, vents, wall-plugs
+**The finding, stated precisely:** of the 13 newly viable entities P1
+recovered (11 of them key-cited), exactly ONE became a citable answer
+(one additional support hit). The other twelve — blinds, vents, wall-plugs
 recovered at IoU 0.86–0.95 — sit in attached-to-wall answers that the
 frozen 2 cm ATTACHED_TO semantics cannot cite even from perfect
 geometry (variant A: 1/14). Perception is no longer the QA bottleneck

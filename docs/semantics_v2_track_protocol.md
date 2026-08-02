@@ -12,6 +12,19 @@ answers barely move, because the frozen 2 cm attachment band, the
 AABB-top support test, and the support-class allowlist cannot express
 what the human keys already record as true.
 
+**Revision 1 (2026-08-02, owner review response — pre-sign-off, nothing
+executed):** (1) D1 gained a floor-reaching thin-panel disjunct after
+the review caught a contradiction with the key's measured
+floor∩attached case (room_2 obj_57); (2) D2 gained an explicit
+supported-class policy (no class restriction on supported entities,
+smallest-footprint supporter assignment, chains permitted, draped-
+textile limitation declared); (3) the S2 proceed rule gained
+relation-specific gates (attached ≥ 8/14 and support ≥ 8/20 on room_2,
+each at citation precision ≥ 0.85) — aggregate gates alone cannot
+protect individual relations; (4) the companion narrative/P2 wording
+error ("13 key-cited" → 13 newly viable, 11 key-cited) was corrected in
+both documents.
+
 ## Track separation (the non-negotiables)
 
 1. **A separately labeled track: `semantics_v2`.** Every result it
@@ -39,19 +52,28 @@ All constants below are physical-reasoning choices declared now; they
 may be challenged at sign-off and are frozen findings afterward. No
 sweep, no post-hoc adjustment.
 
-### D1 — wall-mounted attachment (`ATTACHED_TO` v2)
+### D1 — wall-mounted attachment (`ATTACHED_TO` v2) — REVISED at review
 
-An entity is wall-mounted iff ALL of:
+An entity is wall-mounted iff BOTH base conditions hold:
 - nearest wall-plane distance of its bbox ≤ **0.12 m** (widened from
   2 cm to absorb the measured ≥5 cm annotation-plane displacement,
   Stage 0m finding, plus box-source error);
-- NOT floor-supported (existing disqualifier, unchanged), with the
-  existing furniture-rest limitation carried over unchanged;
-- bbox bottom ≥ **0.30 m** above the calibrated floor (excludes
-  floor-standing furniture leaning on walls; declared trade-off: sofas
-  against walls stay non-attached, which matches the keys);
-- bbox depth toward the wall ≤ **0.35 m** (thin objects: blinds, vents,
-  plugs, switches, pictures, panels, clocks; excludes deep furniture).
+- bbox depth toward the wall ≤ **0.35 m** (excludes deep furniture);
+
+AND at least ONE of the two mounting disjuncts:
+- **(a) elevated mount:** NOT floor-supported (existing disqualifier,
+  furniture-rest limitation carried over unchanged) AND bbox bottom ≥
+  **0.30 m** above the calibrated floor — vents, plugs, switches,
+  pictures, clocks, window blinds;
+- **(b) floor-reaching thin panel:** floor-supported or floor-reaching
+  AND bbox depth toward the wall ≤ **0.12 m** — resolves the key's
+  measured floor∩attached case (room_2 obj_57, a low blinds panel:
+  z [−0.49, 0.35], depth 0.07 m, ruled BOTH on-floor and attached by
+  the human key, which the original draft's unconditional
+  floor-support exclusion contradicted). Declared risk: thin doors may
+  fire under (b) and the
+  keys do not rule doors attached — a precision cost the S2 gates will
+  surface rather than a constant to tune away.
 
 ### D2 — seat / interior support surfaces (`ON_ENTITY_SURFACE` v2)
 
@@ -63,11 +85,28 @@ iff ALL of:
 - E's bbox bottom lies within S's vertical extent extended by the
   existing contact band (`S.bottom ≤ E.bottom ≤ S.top + band`);
 - E is not floor-supported and S is not E.
-This makes cushions-on-sofa, blanket-on-sofa, plate-on-lower-tier, and
-items-on-seats expressible from AABBs alone (variant A can reach them).
+This makes cushions-on-sofa, plate-on-lower-tier, and items-on-seats
+expressible from AABBs alone (variant A can reach them).
 Declared, accepted imprecision: objects INSIDE furniture volumes (e.g.
 drawer contents) also fire — recorded as a v2 semantics property, not a
 bug, and visible in precision if it costs.
+
+**Supported-class policy (disambiguated at review):**
+- Candidate SUPPORTED entities: ANY non-structural entity, with NO
+  class restriction — anchor-class entities may themselves be supported
+  (the keys rule room_0's plant-stand ON the table).
+- SUPPORTERS: D3-allowlist entities only.
+- Support chains are permitted (table → plant-stand → plant).
+- An entity whose footprint qualifies under multiple supporters is
+  assigned to the SMALLEST-footprint qualifying supporter
+  (deterministic tie: lower uid). One supporter per entity per
+  disjunct.
+- Floor-supported entities are EXCLUDED from the contained-rest
+  disjunct. Declared limitation this leaves unsolved: draped textiles
+  touching the floor (room_0's blanket obj_86, keyed on-sofa) remain
+  v2 misses — AABB draping is out of scope for this track.
+- E ≠ S always; the footprint ≤ 0.5× condition precludes mutual
+  support.
 
 ### D3 — furniture-anchor classes (support allowlist v2)
 
@@ -85,9 +124,16 @@ questions answerable, they do not add questions.
 - **S2 — variant A first: the new representation ceiling.** Run A under
   v2 semantics on all four keyed scenes; report per-relation and micro
   P/R next to (clearly labeled, never merged with) the frozen A rows.
-  **Predeclared proceed rule to S3:** learned variants are justified
-  iff, on room_2, A-v2 reaches **micro-R ≥ 0.55** (A-v1: 0.4082) with
-  **micro-P ≥ 0.85**, AND no scene's A-v2 micro-P falls below **0.80**.
+  **Predeclared proceed rule to S3 (REVISED at review — aggregate
+  gates alone cannot protect individual relations):** learned variants
+  are justified iff ALL of the following hold:
+  - room_2 `ATTACHED_TO` hits ≥ **8/14** with ATTACHED_TO citation
+    precision ≥ **0.85** (A-v1: 1/14);
+  - room_2 `ON_ENTITY_SURFACE` hits ≥ **8/20** with ON_ENTITY_SURFACE
+    citation precision ≥ **0.85** (A-v1: 5/20);
+  - room_2 aggregate micro-R ≥ **0.55** (A-v1: 0.4082) with micro-P ≥
+    **0.85**;
+  - no keyed scene's A-v2 micro-P falls below **0.80**.
   Otherwise STOP: the definitions do not unlock meaningful reachable
   recall, the v2 track closes as a measured negative, and the v1 track
   remains the project's only benchmark.
