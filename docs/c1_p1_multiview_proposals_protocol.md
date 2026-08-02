@@ -221,7 +221,36 @@ publication must not call it sealed-holdout generalization.
   peak VRAM, and failures;
 - a dated verdict addendum here. No hand-computed headline metrics.
 
-## Explicitly out of scope
+## 2026-08-02 Stage-1 verdict — room_2: ALL SIX DEVELOPMENT GATES PASS
+
+One inference run exactly as frozen (A100, seeds 0, checkpoint sha
+verified in-notebook, 31.5 s, peak 2.56 GiB; sidecar env recorded). SAM
+produced 619 accepted 2D masks over the 40 views; fusion built a bank of
+534 proposals (0.9 MB — far under the G6 caps). Evaluation
+(`runs/phase8_c1p1/replica_room_2_eval.json`):
+
+| gate | needed | measured |
+|---|---|---|
+| G1 pooled viable @0.5 | ≥ 30/53 | **33/53** (Mask3D 20, P1 alone 25) |
+| G2 newly viable | ≥ 10 | **13** |
+| G3 new in human-key answers | ≥ 4 | **11** |
+| G4 new in on-furniture answers | ≥ 2 | **3** |
+| G5 entity evidence coverage | ≥ 0.80 | **1.00** |
+| G6 bank caps | ≤ 2000 / 2 GiB | 534 / 0.9 MB |
+
+The newly viable set is precisely the measured "no viable proposal"
+population that closed every prior experiment: 4 blinds, 3 vents,
+2 lamps, 2 plates, a wall-plug, and a vase — most at IoU 0.83–0.95 from
+Mask3D baselines of 0.01–0.15. Eleven of thirteen appear in positive
+human-key citation sets (the blinds/vents are the attached-to-wall
+answers no variant could reach). This is the first gate-passing
+performance experiment in the project.
+
+Interpretation limits (unchanged by the pass): this is a proposal
+ceiling — no QA number changes until a separately predeclared C1-P2
+oracle-free scorer/composer passes its own gates. Per Stage 2, the
+identical frozen generator now runs once on office_0 and once on room_1;
+both sidecars are finalized before either is evaluated.
 
 - changing the Mask3D @0.2 reference, the human keys, graph semantics, Router,
   support allowlists, or evaluation definitions;
