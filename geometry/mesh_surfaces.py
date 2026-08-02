@@ -61,6 +61,11 @@ class RawTriangleMesh:
     xyz: np.ndarray       # float64 [V,3]
     faces: np.ndarray     # int64 [F,3]
     rgb: np.ndarray       # uint8 [V,3]
+    # C3.0-SR: quads are accepted and split on the fixed v0-v2 diagonal
+    # ((v0,v1,v2)+(v0,v2,v3), the rule already frozen for Replica quads in
+    # the C1-M2 triangulation); this records how many source faces were
+    # quads. Zero for pure-triangle inputs.
+    n_source_quads: int = 0
 
 
 @dataclass(frozen=True)
@@ -171,16 +176,27 @@ def _load_ascii_mesh(f, vertex: dict, face: dict) -> RawTriangleMesh:
         for c, idx in enumerate(rgb_idx):
             if idx is not None:
                 rgb[i, c] = int(vals[idx])
-    faces = np.empty((n_f, 3), dtype=np.int64)
+    tris: list[tuple[int, int, int]] = []
+    n_quads = 0
     for i in range(n_f):
         line = f.readline()
         if not line:
             raise ValueError(f"ASCII PLY ended at face {i}/{n_f}")
         vals = line.split()
-        if not vals or int(vals[0]) != 3 or len(vals) < 4:
-            raise ValueError("mesh_region_fit_v1 requires triangular faces")
-        faces[i] = (int(vals[1]), int(vals[2]), int(vals[3]))
-    return RawTriangleMesh(xyz=xyz, faces=faces, rgb=rgb)
+        arity = int(vals[0]) if vals else -1
+        if arity == 3 and len(vals) >= 4:
+            tris.append((int(vals[1]), int(vals[2]), int(vals[3])))
+        elif arity == 4 and len(vals) >= 5:
+            v0, v1, v2, v3 = (int(vals[1]), int(vals[2]),
+                              int(vals[3]), int(vals[4]))
+            tris.append((v0, v1, v2))
+            tris.append((v0, v2, v3))
+            n_quads += 1
+        else:
+            raise ValueError("mesh_region_fit_v1 accepts face arity 3 or 4 "
+                             f"only (face {i} has arity {arity})")
+    return RawTriangleMesh(xyz=xyz, faces=np.asarray(tris, dtype=np.int64),
+                           rgb=rgb, n_source_quads=n_quads)
 
 
 def _load_binary_mesh(f, vertex: dict, face: dict) -> RawTriangleMesh:
@@ -207,19 +223,59 @@ def _load_binary_mesh(f, vertex: dict, face: dict) -> RawTriangleMesh:
     if lp["item_type"] not in ("int", "int32", "uint", "uint32"):
         raise ValueError("binary face indices must be 32-bit integers")
     item_dtype = _PLY_SCALAR_DTYPES[lp["item_type"]]
-    signed = np.dtype(item_dtype).kind == "i"
-    fdtype = np.dtype(
-        [("n", "u1"), ("v0", "<i4" if signed else "<u4"),
-         ("v1", "<i4" if signed else "<u4"),
-         ("v2", "<i4" if signed else "<u4")], align=False)
-    fbytes = f.read(n_f * fdtype.itemsize)
-    if len(fbytes) != n_f * fdtype.itemsize:
-        raise ValueError("binary PLY ended inside face data")
-    rec = np.frombuffer(fbytes, dtype=fdtype, count=n_f)
-    if not np.all(rec["n"] == 3):
-        raise ValueError("mesh_region_fit_v1 requires triangular faces")
-    faces = np.column_stack([rec["v0"], rec["v1"], rec["v2"]]).astype(np.int64)
-    return RawTriangleMesh(xyz=xyz, faces=faces, rgb=rgb)
+    idt = np.dtype(item_dtype)
+    fbytes = f.read()
+
+    def uniform(k: int) -> np.ndarray | None:
+        """Fast path when every record is arity k (fixed record size)."""
+        rec_size = 1 + k * idt.itemsize
+        if len(fbytes) != n_f * rec_size:
+            return None
+        counts = np.frombuffer(fbytes, dtype=np.uint8)[0::rec_size]
+        if not np.all(counts == k):
+            return None
+        rec = np.frombuffer(fbytes, dtype=np.dtype(
+            [("n", "u1")] + [(f"v{j}", idt.str) for j in range(k)],
+            align=False), count=n_f)
+        return np.column_stack([rec[f"v{j}"] for j in range(k)]).astype(np.int64)
+
+    n_quads = 0
+    tri = uniform(3)
+    if tri is not None:
+        faces = tri
+    else:
+        quad = uniform(4)
+        if quad is not None:
+            # fixed v0-v2 diagonal, split triangles adjacent in face order
+            faces = np.empty((2 * n_f, 3), dtype=np.int64)
+            faces[0::2] = quad[:, (0, 1, 2)]
+            faces[1::2] = quad[:, (0, 2, 3)]
+            n_quads = n_f
+        else:
+            # mixed-arity walk: arity 3 or 4 only, anything else hard-fails
+            tris: list[tuple[int, int, int]] = []
+            off = 0
+            for i in range(n_f):
+                if off >= len(fbytes):
+                    raise ValueError("binary PLY ended inside face data")
+                arity = fbytes[off]
+                off += 1
+                end = off + arity * idt.itemsize
+                if arity not in (3, 4) or end > len(fbytes):
+                    raise ValueError(
+                        "mesh_region_fit_v1 accepts face arity 3 or 4 only "
+                        f"(face {i} has arity {arity})")
+                idx = np.frombuffer(fbytes[off:end], dtype=idt).astype(np.int64)
+                off = end
+                tris.append((idx[0], idx[1], idx[2]))
+                if arity == 4:
+                    tris.append((idx[0], idx[2], idx[3]))
+                    n_quads += 1
+            if off != len(fbytes):
+                raise ValueError("binary PLY has trailing bytes after faces")
+            faces = np.asarray(tris, dtype=np.int64)
+    return RawTriangleMesh(xyz=xyz, faces=faces, rgb=rgb,
+                           n_source_quads=n_quads)
 
 
 def load_raw_triangle_mesh(path: Path) -> RawTriangleMesh:
@@ -247,7 +303,8 @@ def transform_mesh(mesh: RawTriangleMesh, rotation: np.ndarray,
     if not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-6):
         raise ValueError("frame rotation is not orthonormal")
     xyz = np.einsum("ij,nj->ni", rotation, mesh.xyz) + translation[None, :]
-    return RawTriangleMesh(xyz=xyz, faces=mesh.faces.copy(), rgb=mesh.rgb.copy())
+    return RawTriangleMesh(xyz=xyz, faces=mesh.faces.copy(), rgb=mesh.rgb.copy(),
+                           n_source_quads=mesh.n_source_quads)
 
 
 def _plane_basis(normal: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -617,6 +674,7 @@ def estimate_structural_surfaces(mesh: RawTriangleMesh,
         "config_sha256": cfg.sha256(),
         "n_vertices": int(len(mesh.xyz)),
         "n_faces": int(len(mesh.faces)),
+        "n_source_quads": int(mesh.n_source_quads),
         "n_degenerate_faces": int(np.count_nonzero(~good)),
         "n_horizontal_candidate_faces": int(np.count_nonzero(family == 1)),
         "n_vertical_candidate_faces": int(np.count_nonzero(family == 2)),
