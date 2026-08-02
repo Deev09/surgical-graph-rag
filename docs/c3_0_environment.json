@@ -1,0 +1,11 @@
+{
+  "schema": "c3_0_environment_v1",
+  "implementation": "CPython",
+  "numpy": "2.4.4",
+  "platform": "macOS-15.7.3-arm64-arm-64bit-Mach-O",
+  "python": "3.13.2",
+  "runtime_dependencies": [
+    "numpy"
+  ],
+  "statement": "C3.0-S is CPU-only and introduces no new dependency beyond the existing core requirements. This environment is recorded before the first real-scene estimator run."
+}

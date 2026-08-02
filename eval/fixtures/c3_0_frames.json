@@ -1,0 +1,42 @@
+{
+  "schema": "c3_0_fixed_frame_inputs_v1",
+  "isolation": "Evaluation-only frame injection: gravity/yaw and z translation are frozen from the existing Replica B path. The mesh surface estimator receives only these numeric values and does not read semantic metadata. This is C3.0-S, not fully raw C3.",
+  "scenes": {
+    "replica_office_0": {
+      "world_from_raw_rotation": [
+        [0.9999935445261947, 1.9809744074920568e-07, 0.003593174905022972],
+        [1.9809744074920568e-07, 0.9999999939210356, -0.00011026282102980776],
+        [-0.003593174905022972, 0.00011026282102980776, 0.9999935384472303]
+      ],
+      "world_from_raw_translation": [0.0, 0.0, 1.52665],
+      "yaw_derotation_deg": 0.0
+    },
+    "replica_room_0": {
+      "world_from_raw_rotation": [
+        [0.9999933502978803, -5.485554556292755e-06, 0.003646824636541895],
+        [-5.485554556292755e-06, 0.999995474788457, 0.003008383705115653],
+        [-0.003646824636541895, -0.003008383705115653, 0.9999888250863372]
+      ],
+      "world_from_raw_translation": [0.0, 0.0, 1.52665],
+      "yaw_derotation_deg": 0.0
+    },
+    "replica_room_1": {
+      "world_from_raw_rotation": [
+        [0.8945023833440932, 0.44706016677560295, 0.0016411807661951374],
+        [-0.44706314560923616, 0.8944948658082016, 0.003671359522350266],
+        [0.00017329083113038683, -0.004017751278703918, 0.9999919137897818]
+      ],
+      "world_from_raw_translation": [0.0, 0.0, 1.52665],
+      "yaw_derotation_deg": 26.555434344395973
+    },
+    "replica_room_2": {
+      "world_from_raw_rotation": [
+        [0.9807093227125125, -0.12344189079854131, -0.15156293722690264],
+        [0.1258109909003416, 0.9920354451538119, 0.006104926465760573],
+        [0.1496022022345901, -0.02505544161572864, 0.988428756123577]
+      ],
+      "world_from_raw_translation": [0.0, 0.0, 1.52665],
+      "yaw_derotation_deg": -7.201065204442743
+    }
+  }
+}

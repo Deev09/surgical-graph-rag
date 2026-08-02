@@ -128,7 +128,10 @@ class SurfaceRecord:
     surface_type: Literal["floor", "wall", "ceiling"]
     plane: Plane
     polygon: list[Vec3] | None
-    source: Literal["habitat_label", "mesh_ransac", "synth_bbox_fallback"]
+    source: Literal[
+        "habitat_label", "mesh_ransac", "mesh_region_fit",
+        "synth_bbox_fallback",
+    ]
     confidence: float
 
 

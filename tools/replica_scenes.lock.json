@@ -3,6 +3,21 @@
   "data_root_relative_to_repo": "/Users/deevyaswain/Desktop/datasets/replica",
   "files": [
     {
+      "relpath": "room_0/habitat/info_semantic.json",
+      "size": 76790,
+      "sha256": "23d3411755d0c55bdd3451121a647495cc94e76340c1b3cf3ad3963b71f15a66"
+    },
+    {
+      "relpath": "room_0/habitat/mesh_semantic.ply",
+      "size": 43890939,
+      "sha256": "104cc7fe28bee178537e8034859e8f121f89a166ea37132b4574e10050947d98"
+    },
+    {
+      "relpath": "room_0/mesh.ply",
+      "size": 79114466,
+      "sha256": "14f06ded52c607802e94933bfbb09553ff5d748535b2e94b91f8f715306ae60e"
+    },
+    {
       "relpath": "room_1/habitat/info_semantic.json",
       "size": 49102,
       "sha256": "3615bb7550927e7bae9ee4e930466a4dc22568af7f6acd7a784b80529c1b1bd5"

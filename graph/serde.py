@@ -23,7 +23,9 @@ from graph.schema import (
 CURRENT_SCHEMA_VERSION = 6  # P7.02: ATTACHED_TO is now emitted/serialized as a stored entity->wall relation. v5 bundles reject under strict v6 load (no migration path).
 
 _VALID_SURFACE_TYPES = ("floor", "wall", "ceiling")
-_VALID_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")
+_VALID_SURFACE_SOURCES = (
+    "habitat_label", "mesh_ransac", "mesh_region_fit", "synth_bbox_fallback",
+)
 
 _VALID_EDGE_TYPES = frozenset(get_args(EdgeType))
 _VALID_FRAMES = ("world", "viewpoint", "scene_canonical")

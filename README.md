@@ -85,7 +85,7 @@ git clone https://github.com/Deev09/surgical-graph-rag.git
 cd surgical-graph-rag
 pip install -r requirements.txt   # numpy + Pillow for the current pipeline
 
-# Canonical test command (64 script-style test files, each in its own process;
+# Canonical test command (66 script-style test files, each in its own process;
 # dataset-guarded tests self-skip without the Replica data)
 python3 tools/run_tests.py
 
@@ -122,7 +122,7 @@ eval/                           # router QA scoring + Phase 8 answer keys (human
 tools/                          # evaluators, scorecard, sweeps, dataset fetch, run_tests
 notebooks/                      # Colab GPU backends (Mask3D, Segment3D) — full env recipes
 docs/                           # contracts, closeouts, protocols, phase records
-tests/                          # 62 script-style test files (tools/run_tests.py)
+tests/                          # 66 script-style test files (tools/run_tests.py)
 ```
 
 Reproduction (datasets, checkpoints, environments, hardware):

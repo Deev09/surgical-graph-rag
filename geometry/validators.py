@@ -26,7 +26,9 @@ import hashlib
 import math
 from typing import Any, Iterable
 
-ALLOWED_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")
+ALLOWED_SURFACE_SOURCES = (
+    "habitat_label", "mesh_ransac", "mesh_region_fit", "synth_bbox_fallback",
+)
 ALLOWED_SURFACE_TYPES = ("floor", "wall", "ceiling")
 REQUIRED_CANONICAL_COUNTS = {"floor": 1, "wall": 2, "ceiling": 1}
 
@@ -184,7 +186,7 @@ def validate_surface_extents(
 
 def validate_surface_source(surface: dict[str, Any]) -> None:
     """Per-surface provenance (A7): `source` is present and one of the
-    three recognized values. Catches missing-field bugs from upstream
+    recognized values. Catches missing-field bugs from upstream
     extractor changes."""
     if "source" not in surface:
         raise GeometryValidationError(

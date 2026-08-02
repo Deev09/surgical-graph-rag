@@ -1,9 +1,9 @@
 # C3.0-S — raw-mesh structural surfaces (draft protocol)
 
-**Status: DRAFT — AWAITING PROJECT-OWNER SIGN-OFF. No estimator run on a
-real scene, oracle comparison, threshold tuning, or downstream evaluation is
-authorized by this document. After sign-off, the frozen gates and parameters
-may not be changed mid-run.**
+**Status: OWNER-APPROVED 2026-08-02; PREPARATION IN PROGRESS. No estimator
+has run on a real scene. The first real-scene run remains blocked until the
+complete implementation/environment preparation commit is recorded below.
+After that freeze, gates and parameters may not be changed mid-run.**
 
 Written 2026-08-02 after MVP-v1.0 and before any raw-mesh surface-estimator
 implementation.
@@ -122,7 +122,9 @@ normal axis `n ≡ -n`.
 8. Deduplicate same-type surfaces when unsigned normal disagreement is at most
    `3°`, plane offset differs by at most `0.02 m`, and polygon IoU is at least
    `0.80`; retain the larger-area component, then lower seed-face index on a
-   tie.
+   tie. Polygon IoU uses deterministic `0.01 m` plane-local cell centers (the
+   same resolution already fixed for boundary simplification), with a hard
+   five-million-cell safety failure rather than adaptive coarsening.
 9. Emit deterministic UIDs ordered floor, walls by `(normal azimuth, offset,
    polygon digest)`, then ceiling. Provenance is
    `source="mesh_region_fit"`, estimator version `1`, input mesh SHA-256,
@@ -257,8 +259,8 @@ class should inform that protocol rather than tuning on ScanNet.
 
 ## Sign-off
 
-- [ ] Project owner approves the staged C3.0-S interpretation, fixed
-      estimator, development/transfer scenes, gates, and stopping rule.
+- [x] Project owner approves the staged C3.0-S interpretation, fixed
+      estimator, development/transfer scenes, gates, and stopping rule
+      (2026-08-02, project owner / deevyaswain — "approved—freeze C3.0-S").
 - [ ] Preparation-only freeze commit pins room_0 inputs and the complete
       implementation/environment before the first room_2 estimator run.
-

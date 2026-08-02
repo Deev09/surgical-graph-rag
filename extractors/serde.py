@@ -23,7 +23,9 @@ from extractors.base import (
 CURRENT_SCHEMA_VERSION = 2  # P2.06: StructuralSurface gained a `source` field
 
 _VALID_SURFACE_TYPES = ("floor", "wall", "ceiling")
-_VALID_SURFACE_SOURCES = ("habitat_label", "mesh_ransac", "synth_bbox_fallback")
+_VALID_SURFACE_SOURCES = (
+    "habitat_label", "mesh_ransac", "mesh_region_fit", "synth_bbox_fallback",
+)
 
 
 def _identity_to_dict(i: EntityIdentity) -> dict[str, Any]:
