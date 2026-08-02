@@ -85,7 +85,7 @@ git clone https://github.com/Deev09/surgical-graph-rag.git
 cd surgical-graph-rag
 pip install -r requirements.txt   # numpy + Pillow for the current pipeline
 
-# Canonical test command (62 script-style test files, each in its own process;
+# Canonical test command (64 script-style test files, each in its own process;
 # dataset-guarded tests self-skip without the Replica data)
 python3 tools/run_tests.py
 
@@ -96,6 +96,8 @@ python3 tools/scene_scorecard.py                      # human-verified headline
 python3 tools/mvp_demo.py                             # deterministic A/B/C1/C2 report
 python3 tools/mvp_viewer.py                           # interactive 3D evidence viewer
 #   -> open runs/mvp_v1/viewer.html (self-contained, offline)
+python3 tools/mvp_captioned_demo.py                   # self-running captioned walkthrough
+#   -> open runs/mvp_v1/captioned_demo.html (presentation-only derivative)
 ```
 
 ## Repo layout (current system)

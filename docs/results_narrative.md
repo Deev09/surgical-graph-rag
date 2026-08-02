@@ -1,29 +1,41 @@
-# Results narrative (publication draft, MVP release)
+# Results — an evidence-first spatial-graph reasoner for captured 3D scenes
 
-Status: DRAFT for the owner's editing pass — assembled 2026-08-01 at the
-MVP freeze. Every number is a committed, hash-pinned value; sources are
-cited per claim. Positioning is the agreed honest one:
+Release: `mvp-v1.0`. This is the publication-ready results narrative for
+the frozen MVP. Every number is committed and hash-pinned; every empirical
+claim names its evidence source. The scope is intentionally narrow:
 
-> **A modular, queryable spatial-graph reasoner over real captured 3D
+> **A modular, queryable spatial-graph reasoner over captured 3D
 > scenes that exposes uncertainty and isolates failures under imperfect
 > 3D instance extraction.** It does not claim to solve raw-scene QA, and
 > a strong end-to-end NeRF/3DGS claim would require a real reconstruction
 > adapter plus learned semantics — neither is claimed.
 
-## Summary
+## Abstract
 
 Given a captured indoor scene, the system builds a typed spatial scene
 graph (support, wall contact/proximity, attachment, directional) and
 answers structural questions through a compile → execute → verbalize
 Router with four honest outcomes: answer, grounded empty, defer, unknown.
-The contribution is not headline accuracy — it is the evaluation
-architecture: an input ladder in which each variant changes exactly one
-upstream stage, human-verified answer keys that record reality rather
-than system output, predeclared experimental protocols that are allowed
-to fail (and did), and end-to-end provenance from every cited answer back
-to hash-pinned inputs. Across four human-keyed Replica scenes, the ladder
-attributes every recall drop to a specific stage, and an interactive 3D
-viewer makes each attribution visible on the actual mesh.
+The contribution is an evidence architecture rather than a headline
+accuracy claim: an input ladder in which each variant changes one upstream
+stage; human-verified keys that describe reality rather than system output;
+predeclared experiments that are allowed to fail; and end-to-end provenance
+from every citation to hash-pinned inputs. Across four human-keyed Replica
+scenes, the ladder assigns observed answer changes to box construction,
+instance extraction, or labels. An interactive viewer renders those changes
+on the source mesh, turning aggregate losses into inspectable failure cases.
+
+## Scope of the claim
+
+**Demonstrated:** deterministic structural QA over four human-keyed captured
+scenes; stage-isolated A/B/C1/C2 comparisons; explicit uncertainty states;
+and inspectable provenance from an answer to 3D evidence.
+
+**Not demonstrated:** a deployable raw-scene QA system, learned geometry and
+semantics end to end, cross-dataset generalization, or a NeRF/3DGS backend.
+Replica supplies the reconstruction, and C1/C2 use declared evaluation-only
+oracle injections. These boundaries are part of the result, not caveats to
+hide.
 
 ## The ladder and headline numbers
 
@@ -50,6 +62,11 @@ Companion metrics (both defined in `docs/c2_matched_labels_protocol.md`):
 **semantic citation** scores whether uid-correct citations also carry the
 canonical label — C1 rows score 1.0 by construction (a scorer
 self-check), C2 rows score 0.31–0.62.
+
+The practical value of the ladder is diagnostic. A failed answer alone does
+not reveal whether perception, graph construction, relation semantics, or
+language caused the failure. Here, each transition holds the downstream
+system fixed, so the changed stage becomes the testable explanation.
 
 ## Findings (each with its evidence source)
 
@@ -112,8 +129,11 @@ paraphrase-brittleness surface (measured separately).
 - `python3 tools/mvp_demo.py` — deterministic A/B/C1/C2 report vs human
   keys (byte-identical, hard reference checks).
 - `python3 tools/mvp_viewer.py` — self-contained 3D evidence viewer
-  (office_0 + room_2), owner-accepted; walkthrough script in
-  `docs/mvp_walkthrough.md`.
+  (office_0 + room_2), owner-accepted.
+- `python3 tools/mvp_captioned_demo.py` — presentation-only, self-running
+  captioned walkthrough derived from the accepted viewer; no answers or
+  metrics are recomputed. Output: `runs/mvp_v1/captioned_demo.html`.
+- Manual recording script: `docs/mvp_walkthrough.md`.
 - Reproduction manifest: `docs/reproduction.md`; artifact pins:
   `docs/c1_artifact_manifest.json`, `tools/replica_scenes.lock.json`,
   `eval/predictions/phase8_c2/`.

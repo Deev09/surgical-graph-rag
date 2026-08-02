@@ -5,6 +5,18 @@ first if needed: `python3 tools/mvp_demo.py && python3 tools/mvp_viewer.py`,
 then open `runs/mvp_v1/viewer.html`. Numbers quoted below are the frozen
 values from `runs/mvp_v0/aggregate.json`; nothing is computed live.
 
+## No-recording option
+
+Run `python3 tools/mvp_captioned_demo.py`, then open
+`runs/mvp_v1/captioned_demo.html`. It is a roughly two-minute, self-running
+version of the walkthrough with captions and pause/back/next controls. It is
+a presentation-only derivative of the accepted viewer: the source viewer is
+embedded unchanged, its SHA-256 is shown in the controls, and no metric or
+answer is recomputed. Add `?autoplay=0` to start it paused.
+
+The six-beat script below remains the version to use if a personal voiceover
+is useful for a talk, paper supplement, or portfolio recording.
+
 ## Beat 1 — the scene is real (0:00–0:30)
 
 Open the viewer (office_0 loads first, raw RGB). Orbit and zoom.
