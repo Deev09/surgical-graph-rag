@@ -165,6 +165,76 @@ def fig_room2_attribution(headline: dict) -> str:
     return "\n".join(s)
 
 
+def fig_semantics_v2_room2() -> str:
+    """Finding 12: room_2 per-relation hit fractions, A-v1 vs A-v2.
+    Numbers from runs/semantics_v2/s2_report.json (frozen); the figure
+    carries the mandatory track label."""
+    s2 = json.loads((REPO_ROOT / "runs" / "semantics_v2" /
+                     "s2_report.json").read_text())
+    row = s2["rows"]["replica_room_2"]
+    rels = [("SUPPORTS_FLOOR", "floor"), ("CONTACTS_SURFACE", "against wall"),
+            ("ON_ENTITY_SURFACE", "support"), ("ATTACHED_TO", "attached")]
+    series = [("A_v1_frozen", "A (frozen v1 track)", COLOR["A"]),
+              ("A_v2", "A (semantics-v2)", COLOR["B"])]
+    W, H = 780, 400
+    L, R, T, B = 56, 16, 84, 64
+    pw, ph = W - L - R, H - T - B
+    bw, gap = 46, 3
+    gw = 2 * bw + gap
+    step = pw / len(rels)
+
+    s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
+         f'viewBox="0 0 {W} {H}" font-family="{FONT}">',
+         f'<rect width="{W}" height="{H}" fill="{SURFACE}"/>',
+         f'<text x="{L}" y="24" font-size="15" font-weight="600" '
+         f'fill="{INK}">room_2 — human-key hits by relation</text>',
+         f'<text x="{L}" y="41" font-size="11" fill="{INK2}">semantics_v2 '
+         f'track — benchmark-definition change; NOT comparable to the frozen '
+         f'track.</text>',
+         f'<text x="{L}" y="55" font-size="11" fill="{INK2}">Support becomes '
+         f'representable (5→16 of 20 at P 0.94); attached drops to zero — '
+         f'11/14 keyed objects lie BEHIND the oracle wall planes '
+         f'(finding 12).</text>']
+    lx = W - R - 2 * 170
+    for i, (_, label, col) in enumerate(series):
+        x = lx + i * 170
+        s.append(f'<rect x="{x}" y="14" width="10" height="10" rx="2" '
+                 f'fill="{col}"/>')
+        s.append(f'<text x="{x + 14}" y="23" font-size="11" '
+                 f'fill="{INK}">{label}</text>')
+    for val in (0.0, 0.5, 1.0):
+        y = T + ph - val * ph
+        s.append(f'<line x1="{L}" y1="{y:.1f}" x2="{W - R}" y2="{y:.1f}" '
+                 f'stroke="{GRID}" stroke-width="1"/>')
+        s.append(f'<text x="{L - 8}" y="{y + 3.5:.1f}" font-size="10.5" '
+                 f'fill="{INK2}" text-anchor="end">{val:.1f}</text>')
+    for ri, (rel, label) in enumerate(rels):
+        gx = L + ri * step + (step - gw) / 2
+        for si, (key_name, _, col) in enumerate(series):
+            v = row[key_name]["per_relation"][rel]
+            frac = min(1.0, v["n_hit"] / v["n_expected"])
+            x = gx + si * (bw + gap)
+            if v["n_hit"] > 0:
+                h = frac * ph
+                y = T + ph - h
+                s.append(f'<path d="{bar_path(x, y, bw, h)}" fill="{col}"/>')
+            s.append(f'<text x="{x + bw / 2:.1f}" '
+                     f'y="{T + ph - max(frac * ph, 0) - 5:.1f}" '
+                     f'font-size="10" fill="{INK2}" text-anchor="middle">'
+                     f'{v["n_hit"]}/{v["n_expected"]}</text>')
+        s.append(f'<text x="{gx + gw / 2:.1f}" y="{T + ph + 18}" '
+                 f'font-size="11.5" fill="{INK}" '
+                 f'text-anchor="middle">{label}</text>')
+    s.append(f'<line x1="{L}" y1="{T + ph}" x2="{W - R}" y2="{T + ph}" '
+             f'stroke="{INK2}" stroke-width="1"/>')
+    s.append(f'<text x="{L}" y="{H - 12}" font-size="10" fill="{INK2}">'
+             f'Fraction of human-key answers hit. Near-wall is '
+             f'membership-only and excluded. Keys identical in both rows; '
+             f'only the system semantics differ.</text>')
+    s.append("</svg>")
+    return "\n".join(s)
+
+
 def main() -> int:
     headline = load_headline()
     OUT.mkdir(parents=True, exist_ok=True)
@@ -172,8 +242,11 @@ def main() -> int:
                                                encoding="utf-8")
     (OUT / "fig_room2_attribution.svg").write_text(
         fig_room2_attribution(headline), encoding="utf-8")
+    (OUT / "fig_semantics_v2_room2.svg").write_text(
+        fig_semantics_v2_room2(), encoding="utf-8")
     print(f"wrote {OUT / 'fig_ladder_recall.svg'}")
     print(f"wrote {OUT / 'fig_room2_attribution.svg'}")
+    print(f"wrote {OUT / 'fig_semantics_v2_room2.svg'}")
     return 0
 
 

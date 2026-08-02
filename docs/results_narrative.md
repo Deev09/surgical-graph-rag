@@ -169,6 +169,50 @@ system fixed, so the changed stage becomes the testable explanation.
    project, perception is not the binding constraint — the
    representation layer is, and that relocation is itself the arc's
    concluding measurement.
+12. **Semantics are partly representable — and partly blocked by the
+   annotations themselves.** A separately labeled semantics-v2 track
+   (definitions frozen before scoring; every key and frozen row
+   preserved and hash-guarded) re-ran variant A first. Its
+   contained-rest support definition WORKS on the development scene —
+   room_2 support answers went 5/20 → 16/20 at precision 0.94 — but is
+   poorly calibrated across scenes (precision 0.36/0.58 on
+   office_0/room_1, the declared interior-volume property at real
+   cost). Attachment scored ZERO: a census of all 14 human-keyed
+   attached objects shows 11 lie BEHIND the oracle wall planes
+   (signed gaps −0.16 to −1.23 m — the finding-9 annotation
+   displacement measured from the A side), the three contact-passing
+   vents carry 0.37–0.62 m-deep annotation boxes, and one keyed vent
+   sits 1.26 m from every wall: "attached" in the keys is a semantic
+   judgment about wall fixtures, not a box-proximity property
+   recoverable from Replica annotations. The frozen relation-specific
+   gates stopped the track — notably, the aggregate gates alone
+   (micro-R 0.612 @ P 0.94) would have PASSED; only the per-relation
+   gates caught the failure, empirically vindicating that review
+   requirement (`docs/semantics_v2_track_protocol.md`).
+
+## The causal chain, end to end
+
+Read together, findings 10–12 form a complete measured causal result —
+each link established under predeclared gates, each hand-off measured
+rather than assumed:
+
+1. Proposal coverage was the binding constraint → **C1-P1 fixed it**
+   (33/53 dev, transferred twice, evaluation-only).
+2. With proposals fixed → **relation semantics became binding**
+   (P2.0: oracle-guided composition moves recall 0.245 → 0.265).
+3. With semantics redefined → **support is representable but poorly
+   calibrated across scenes; attachment is not recoverable from
+   annotation-box proximity at all** (semantics-v2 S2).
+4. Throughout → **relation-specific gates prevented a misleading
+   aggregate pass** at the exact moment an aggregate would have lied.
+
+![room_2 per-relation hits, frozen A vs semantics-v2 A](assets/fig_semantics_v2_room2.svg)
+
+*(Figure: the finding-12 decomposition on room_2 — floor and
+against-wall unchanged, support 5/20 → 16/20 under the contained-rest
+definition, attached 1/14 → 0/14 because the keyed fixtures sit behind
+the annotation planes. semantics_v2 track; benchmark-definition change;
+`runs/semantics_v2/s2_report.json`.)*
 
 ## Negative results (committed as first-class artifacts)
 
@@ -196,7 +240,26 @@ that target uncertainty, and keys/scores were intentionally left
 unrevised to preserve comparability. Replica's raw mesh format is also
 not uniform across scenes (three scenes are pure quads, one pure
 triangles) — a reminder that even "one dataset" hides input-contract
-variance.
+variance. Finding 12 extends the annotation caveat to objects: the
+keyed attachment answers are unrecoverable from Replica's annotation
+boxes (11/14 behind the wall planes), so the frozen track's near-zero
+attachment recall is a property of the dataset's annotation geometry
+as much as of the system — and the semantics-v2 support definition,
+though validated on the development scene, is reported with its
+measured cross-scene precision collapse, not just its dev-scene win.
+
+## Future work (explicitly NOT part of this release)
+
+Two successor experiments are identified but deliberately unopened,
+each requiring its own predeclared protocol: (1) **D2 precision
+hardening** — the contained-rest support definition validated on the
+development scene needs an over-fire guard for interior-volume false
+positives before it can hold its cross-scene precision floor; (2)
+**annotation-aware attachment** — recovering the keyed attachment
+answers requires evidence that tolerates fixtures annotated at or
+beyond the wall planes (embedded-in-plane semantics), a new definition
+class rather than a constant change. Both are future work; this
+release's experimental arc is closed.
 
 ## Artifacts
 
@@ -214,6 +277,9 @@ variance.
 - C1-P1 proposal pipeline: `tools/c1p1_render.py` / `c1p1_fuse.py` /
   `c1p1_eval.py` + `notebooks/c1p1_sam2_colab.ipynb`; frozen banks
   pinned in `docs/c1_artifact_manifest.json` (`c1p1_proposal_banks`);
-  P2.0 ceiling: `tools/c1p2_ceiling.py`.
+  P2.0 ceiling: `tools/c1p2_ceiling.py`; semantics-v2 track:
+  `demo/semantics_v2.py` + `tools/semantics_v2_s2.py` (v2 extractors
+  under `graph/relations/*_v2.py`, frozen-track hash guards in
+  `tests/tools/test_semantics_v2_guards.py`).
 - Release tag: `mvp-v1.0` (the MVP freeze; findings 8–11 postdate it).
 - Canonical tests: `python3 tools/run_tests.py`.
