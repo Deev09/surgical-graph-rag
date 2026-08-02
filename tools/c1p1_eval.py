@@ -38,6 +38,18 @@ GATES_DEV = {
     "G6_max_bytes": 2 * 1024 ** 3,
 }
 
+# Stage-2 transfer gates (protocol verbatim): improvement >= 5 pooled
+# viable entities over the FROZEN Mask3D baseline, >= 2 newly viable
+# in-key entities, same evidence-coverage guard and bank caps.
+TRANSFER_BASELINES = {"replica_office_0": (13, 47), "replica_room_1": (21, 45)}
+GATES_TRANSFER = {
+    "H_improvement_min": 5,
+    "H_new_in_key_min": 2,
+    "H_evidence_coverage_min": 0.80,
+    "H_max_proposals": 2000,
+    "H_max_bytes": 2 * 1024 ** 3,
+}
+
 
 def load_bank(root: Path, scene: str):
     bj = json.loads((root / f"{scene}_bank.json").read_text())
@@ -121,20 +133,39 @@ def main(argv: list[str] | None = None) -> int:
             cov_ok += 1
     evidence_cov = cov_ok / len(entity_oids)
 
-    g = GATES_DEV
-    gates = {
-        "G1": len(viable_pool) >= g["G1_pooled_viable_min"],
-        "G2": len(new_viable) >= g["G2_new_viable_min"],
-        "G3": len(new_in_key) >= g["G3_new_viable_in_key_min"],
-        "G4": len(new_on_furniture) >= g["G4_new_viable_on_furniture_min"],
-        "G5": evidence_cov >= g["G5_entity_evidence_coverage_min"],
-        "G6": (bank_meta["n_proposals"] <= g["G6_max_proposals"]
-               and bank_meta["serialized_bytes"] <= g["G6_max_bytes"]),
-    }
+    stage = "transfer" if scene in TRANSFER_BASELINES else "dev"
+    if stage == "dev":
+        g = GATES_DEV
+        gates = {
+            "G1": len(viable_pool) >= g["G1_pooled_viable_min"],
+            "G2": len(new_viable) >= g["G2_new_viable_min"],
+            "G3": len(new_in_key) >= g["G3_new_viable_in_key_min"],
+            "G4": len(new_on_furniture) >= g["G4_new_viable_on_furniture_min"],
+            "G5": evidence_cov >= g["G5_entity_evidence_coverage_min"],
+            "G6": (bank_meta["n_proposals"] <= g["G6_max_proposals"]
+                   and bank_meta["serialized_bytes"] <= g["G6_max_bytes"]),
+        }
+    else:
+        g = GATES_TRANSFER
+        base_viable, base_n = TRANSFER_BASELINES[scene]
+        if len(viable_m3d) != base_viable or len(entity_oids) != base_n:
+            raise AssertionError(
+                f"frozen anchor drift: recomputed Mask3D viable "
+                f"{len(viable_m3d)}/{len(entity_oids)} vs protocol "
+                f"{base_viable}/{base_n}")
+        gates = {
+            "H_improvement": (len(viable_pool) - base_viable
+                              >= g["H_improvement_min"]),
+            "H_new_in_key": len(new_in_key) >= g["H_new_in_key_min"],
+            "H_evidence": evidence_cov >= g["H_evidence_coverage_min"],
+            "H_caps": (bank_meta["n_proposals"] <= g["H_max_proposals"]
+                       and bank_meta["serialized_bytes"] <= g["H_max_bytes"]),
+        }
     report = {
         "schema": "c1p1_eval_v1",
         "protocol": "docs/c1_p1_multiview_proposals_protocol.md",
         "scene_id": scene,
+        "stage": stage,
         "bank_npz_sha256": bank_meta["bank_npz_sha256"],
         "n_entities": len(entity_oids),
         "viable_mask3d": len(viable_m3d),

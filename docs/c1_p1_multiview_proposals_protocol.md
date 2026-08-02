@@ -252,6 +252,38 @@ oracle-free scorer/composer passes its own gates. Per Stage 2, the
 identical frozen generator now runs once on office_0 and once on room_1;
 both sidecars are finalized before either is evaluated.
 
+## 2026-08-02 Stage-2 verdict — BOTH TRANSFER SCENES PASS: C1-P1 PASSES
+
+The identical committed generator ran once per transfer scene (A100,
+seeds 0, sha verified; 27.5 s / 27.0 s), with no code or parameter
+change between scenes. Both banks were finalized before either
+evaluation, per protocol. The evaluator gained its predeclared
+transfer-gate mode before any oracle read; it hard-asserts the
+recomputed Mask3D baselines equal the frozen anchors (they do).
+
+| scene | pooled viable | baseline | Δ (need ≥5) | new in-key (need ≥2) | evidence | caps |
+|---|---|---|---|---|---|---|
+| office_0 | **19/47** | 13/47 | **+6** | **5** | 0.87 | 335 / 1.0 MB |
+| room_1 | **26/45** | 21/45 | **+5** | **3** | 0.98 | 406 / 1.1 MB |
+
+All H-gates pass on both scenes. The recovered population is the same
+class of object in every scene — wall-mounted and small clutter that 3D
+geometry backends never proposed: office_0 gains switches, a panel, a
+wall-plug, a clock, a picture (IoU 0.70–0.92); room_1 gains blinds, a
+vent, a wall-plug, a lamp, a vase (IoU 0.61–0.95). The mechanism, with
+zero scene-specific settings, transfers.
+
+**Consequences (protocol verbatim):** the proposal artifacts are frozen
+(hashes pinned in `docs/c1_artifact_manifest.json` under
+`c1p1_proposal_banks`) and a C1-P2 experiment — an oracle-free
+scorer/composer with precision and human-QA gates — may now be drafted.
+P1 proposals remain EVALUATION-ONLY until C1-P2 passes; no QA number
+changes today. Publication language: prospective transfer under fixed
+settings, NOT sealed-holdout generalization (the keys and baselines
+pre-existed).
+
+## Explicitly out of scope
+
 - changing the Mask3D @0.2 reference, the human keys, graph semantics, Router,
   support allowlists, or evaluation definitions;
 - C2 label tuning, C3, `frl_apartment_0`, NeRF/3DGS integration, or a live

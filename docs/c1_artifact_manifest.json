@@ -66,5 +66,46 @@
     "output_sha256": "86d97796d10bb58b77d5802aec7ac721147c687808896d5382dfd5c5e5df3222"
    }
   }
+ },
+ "c1p1_proposal_banks": {
+  "note": "C1-P1 frozen proposal artifacts (dev+transfer PASS, 2026-08-02); EVALUATION-ONLY until C1-P2 passes; generated under docs/c1_p1_multiview_proposals_protocol.md (SAM 2.1 Hiera-L ckpt sha 2647878d..., sam2 @ 2b90b9f5, seeds 0)",
+  "scenes": {
+   "replica_room_2": {
+    "views_manifest_sha256": "da588ea352fc636438c3d8f7e13d77affaaeb08ed6366d103a64626d5da2d2c7",
+    "masks_sidecar_sha256": "2094f5b46d30eb93c32a55e850e4fefe73791041206d990344c0758a5b1a5081",
+    "bank_npz_sha256": "74b2a9a3dfc3fa3116dea8e4b4ee66589796c49e52fe24e4511f6b585a015e07",
+    "n_proposals": 534,
+    "paths": {
+     "views": "runs/phase8_c1p1/views_replica_room_2/",
+     "masks": "runs/phase8_c1p1/c1p1_masks_replica_room_2.npz",
+     "bank": "runs/phase8_c1p1/bank_replica_room_2.npz"
+    },
+    "external_storage": "Google Drive MyDrive/c1p1/ (views tar + masks npz)"
+   },
+   "replica_office_0": {
+    "views_manifest_sha256": "8bcaa77f9fc3c965b56ec0e17cdbf542d8c79797e8fad181158f7e785e484a07",
+    "masks_sidecar_sha256": "16e24a59ece1e5832be65b27b6240457f02d7d45f6e42ab4748242958f43e8c7",
+    "bank_npz_sha256": "1a4f7332598d8effad274f3905912456560fed59d14a9b3f4a6299d553cc9c1c",
+    "n_proposals": 335,
+    "paths": {
+     "views": "runs/phase8_c1p1/views_replica_office_0/",
+     "masks": "runs/phase8_c1p1/c1p1_masks_replica_office_0.npz",
+     "bank": "runs/phase8_c1p1/bank_replica_office_0.npz"
+    },
+    "external_storage": "Google Drive MyDrive/c1p1/ (views tar + masks npz)"
+   },
+   "replica_room_1": {
+    "views_manifest_sha256": "9ea14f6479cc7cbe2725cda1595c4b014599bb7cd352892c3153635a8e6d0259",
+    "masks_sidecar_sha256": "2a80a88c1ae69a64320eec0874e78c1ae014a903f2817e90b7669aa95a9e8194",
+    "bank_npz_sha256": "fb634d60acebda219f8f71a7b25239314120f7ce55fb6ee0ac9a40331ff8efc8",
+    "n_proposals": 406,
+    "paths": {
+     "views": "runs/phase8_c1p1/views_replica_room_1/",
+     "masks": "runs/phase8_c1p1/c1p1_masks_replica_room_1.npz",
+     "bank": "runs/phase8_c1p1/bank_replica_room_1.npz"
+    },
+    "external_storage": "Google Drive MyDrive/c1p1/ (views tar + masks npz)"
+   }
+  }
  }
 }
