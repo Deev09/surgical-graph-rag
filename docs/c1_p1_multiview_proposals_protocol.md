@@ -266,8 +266,21 @@ Verified against the current repository before requesting activation:
 
 ## Sign-off
 
-- [ ] Project owner approves the hypothesis, frozen generator, gates, budget,
-      and transfer interpretation (date/by/approval wording to be recorded).
-- [ ] Preparation-only freeze commit records the downloaded checkpoint
-      SHA-256 and complete environment before the first scene inference.
+- [x] Project owner approves the hypothesis, frozen generator, gates, budget,
+      and transfer interpretation (2026-08-02, project owner / deevyaswain —
+      "approved, activate C1-P1", following the recorded preflight).
+- [x] Preparation-only freeze commit (this commit) records the checkpoint
+      and environment BEFORE any scene inference:
+      `sam2.1_hiera_large.pt` sha256
+      `2647878d5dfa5098f2f8649825738a9345572bae2d4350a2468587ece47dd318`
+      (downloaded from the official
+      `dl.fbaipublicfiles.com/segment_anything_2/092824/` URL; stored
+      locally outside the repo; the notebook re-downloads and HARD-FAILS
+      on sha mismatch). Implementation frozen with Stage 0 green (6/6):
+      `segmenter/view_render.py` (40-view contract, joint depth-sorted
+      splats), `segmenter/proposal_fusion.py` (lift + co-membership +
+      cuts + dedupe), `tools/c1p1_render.py` / `c1p1_fuse.py` /
+      `c1p1_eval.py`, `notebooks/c1p1_sam2_colab.ipynb` (pinned commit,
+      params, seeds; refuses a wrong checkpoint). Inference environment:
+      Colab CUDA per the preflight recommendation.
 
