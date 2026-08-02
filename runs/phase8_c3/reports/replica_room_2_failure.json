@@ -1,0 +1,46 @@
+{
+  "schema": "c3_0_surface_failure_v1",
+  "protocol": "docs/c3_0_mesh_surfaces_protocol.md",
+  "scene_id": "replica_room_2",
+  "date": "2026-08-02",
+  "preparation_commit": "e5f77c7",
+  "run_commit": "78d4e56",
+  "command": ".venv/bin/python tools/c3_surface_run.py generate --scene replica_room_2",
+  "input_mesh": {
+    "relpath": "room_2/mesh.ply",
+    "sha256": "e58a7c717c7922e1300ba20ae8053c5dbfdf9bd5f2515e10c71edad98bcb7e44",
+    "size": 31788451
+  },
+  "failure": {
+    "class": "stage0_preparation_contract_failure",
+    "exception_type": "ValueError",
+    "message": "mesh_region_fit_v1 requires triangular faces",
+    "source": "geometry/mesh_surfaces.py:_load_binary_mesh"
+  },
+  "read_only_input_diagnostic": {
+    "format": "binary_little_endian 1.0",
+    "vertex_count": 722496,
+    "face_count": 722398,
+    "face_arity_counts": {
+      "4": 722398
+    },
+    "bytes_remaining_after_variable_length_parse": 0
+  },
+  "estimator_was_invoked": true,
+  "finalized_surface_artifact": false,
+  "oracle_or_key_evaluation_started": false,
+  "gates": {
+    "G1": "not_evaluated",
+    "G2": "not_evaluated",
+    "G3": "not_evaluated",
+    "G4": "not_evaluated",
+    "G5": "not_evaluated",
+    "G6": "not_evaluated",
+    "G7": "not_evaluated"
+  },
+  "all_gates_pass": false,
+  "decision": "STOPPED",
+  "transfer_scenes_run": [],
+  "transfer_runs_unspent": 3,
+  "rescue_policy": "No parser or topology change is allowed after the C3.0-S freeze."
+}

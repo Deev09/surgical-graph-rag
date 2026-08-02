@@ -1,8 +1,10 @@
 # C3.0-S — raw-mesh structural surfaces (frozen protocol)
 
-**Status: PREDECLARED AND FROZEN 2026-08-02 at preparation commit
-`e5f77c7`. No estimator had run on a real scene at that commit. Gates,
-parameters, and the implementation may not be changed mid-run.**
+**Status: STOPPED 2026-08-02 — negative implementation-validity result. The
+preparation was frozen at `e5f77c7`; the single room_2 attempt found that its
+pinned raw PLY contains quads, while the frozen parser and protocol accept
+triangles only. No surface artifact or oracle evaluation was produced, and
+all three transfer runs remain unspent.**
 
 Written 2026-08-02 after MVP-v1.0 and before any raw-mesh surface-estimator
 implementation.
@@ -264,3 +266,31 @@ class should inform that protocol rather than tuning on ScanNet.
 - [x] Preparation-only freeze commit `e5f77c7` pins room_0 inputs and the
       complete implementation/environment before the first room_2 estimator
       run (66/66 canonical test files passed; no `runs/phase8_c3` existed).
+
+## 2026-08-02 verdict — STOPPED before artifact finalization
+
+The one authorized room_2 generation attempt ran from frozen-status commit
+`78d4e56` and terminated in the frozen raw-mesh parser before a surface
+artifact or execution-telemetry sidecar was written:
+
+```text
+ValueError: mesh_region_fit_v1 requires triangular faces
+```
+
+A read-only parse of the pinned raw PLY then established the input fact behind
+the error: `room_2/mesh.ply` has 722,398 face records, all with arity four
+(`{4: 722398}`), zero trailing bytes, and no triangle records. Its locked hash
+remains `e58a7c717c7922e1300ba20ae8053c5dbfdf9bd5f2515e10c71edad98bcb7e44`.
+
+This is a Stage-0 preparation-contract failure, not a geometry/QA gate result:
+G1–G7 are **not evaluated** because the required immutable estimated-surface
+artifact does not exist. The evaluator never opened oracle surfaces or the
+human key. Deterministically triangulating each quad would be a new parser and
+topology rule after the freeze, so it is not treated as a serialization replay
+or silently repaired inside C3.0-S.
+
+Per the predeclared dev-failure stopping rule, C3.0-S is closed as a negative
+result. No room_1, office_0, or room_0 estimator run is permitted under this
+protocol. A corrected follow-up must be separately named and predeclared; the
+minimal candidate is C3.0-SR with one fixed quad-to-triangle diagonal rule and
+an actual pinned Replica raw-mesh format fixture in Stage 0.
