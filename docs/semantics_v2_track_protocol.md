@@ -25,6 +25,20 @@ protect individual relations; (4) the companion narrative/P2 wording
 error ("13 key-cited" → 13 newly viable, 11 key-cited) was corrected in
 both documents.
 
+**Revision 2 (2026-08-02, second review response — still unexecuted):**
+(1) the newly-viable accounting in the narrative and P2.0 verdict was
+made exact — of 13: SEVEN attached-key positives, THREE
+furniture-support positives (one materialized), ONE near-wall-only
+(non-exhaustive, outside micro-recall), TWO not key-cited; (2) D1 was
+made reproducible — distance/qualification bound to the frozen
+`geometry/wall_contact.py::wall_contact` predicate (signed,
+interior-side, polygon-clipped) at 0.12 m, depth defined as AABB
+projection width along the qualifying wall's normal, and
+"floor-reaching" removed in favor of a bottom-height partition at
+0.30 m; (3) the door risk was reclassified: exhaustive attachment keys
+rule unlisted doors as NEGATIVES, so door admissions are false
+positives counting against the precision gate, not unspecified cases.
+
 ## Track separation (the non-negotiables)
 
 1. **A separately labeled track: `semantics_v2`.** Every result it
@@ -52,28 +66,44 @@ All constants below are physical-reasoning choices declared now; they
 may be challenged at sign-off and are frozen findings afterward. No
 sweep, no post-hoc adjustment.
 
-### D1 — wall-mounted attachment (`ATTACHED_TO` v2) — REVISED at review
+### D1 — wall-mounted attachment (`ATTACHED_TO` v2) — REVISED ×2 at review
 
-An entity is wall-mounted iff BOTH base conditions hold:
-- nearest wall-plane distance of its bbox ≤ **0.12 m** (widened from
-  2 cm to absorb the measured ≥5 cm annotation-plane displacement,
-  Stage 0m finding, plus box-source error);
-- bbox depth toward the wall ≤ **0.35 m** (excludes deep furniture);
+Every geometric term below is bound to the EXISTING frozen predicate —
+no new distance machinery is introduced:
 
-AND at least ONE of the two mounting disjuncts:
-- **(a) elevated mount:** NOT floor-supported (existing disqualifier,
-  furniture-rest limitation carried over unchanged) AND bbox bottom ≥
-  **0.30 m** above the calibrated floor — vents, plugs, switches,
-  pictures, clocks, window blinds;
-- **(b) floor-reaching thin panel:** floor-supported or floor-reaching
-  AND bbox depth toward the wall ≤ **0.12 m** — resolves the key's
-  measured floor∩attached case (room_2 obj_57, a low blinds panel:
-  z [−0.49, 0.35], depth 0.07 m, ruled BOTH on-floor and attached by
-  the human key, which the original draft's unconditional
-  floor-support exclusion contradicted). Declared risk: thin doors may
-  fire under (b) and the
-  keys do not rule doors attached — a precision cost the S2 gates will
-  surface rather than a constant to tune away.
+- **Wall qualification and distance** reuse
+  `geometry/wall_contact.py::wall_contact` exactly as the v1
+  `ContactsSurfaceExtractor` consumes it (signed, interior-side,
+  polygon-clipped distance to a wall-capable surface), with ONE changed
+  parameter: the contact threshold is **0.12 m** instead of 2 cm
+  (widened to absorb the measured ≥5 cm annotation-plane displacement,
+  Stage 0m finding, plus box-source error). The qualifying wall for an
+  entity is the wall `wall_contact` selects; entities with no
+  qualifying wall under that predicate are not wall-mounted.
+- **Depth** is the width of the entity's AABB projected onto the
+  qualifying wall's (unit) plane normal.
+
+An entity is wall-mounted iff `wall_contact` qualifies it at 0.12 m,
+its depth ≤ **0.35 m**, and at least ONE mounting disjunct holds:
+
+- **(a) elevated mount:** AABB bottom ≥ **0.30 m** above the calibrated
+  floor plane (this alone; at that height the v1 floor-support
+  disqualifier is vacuous, and the v1 furniture-rest limitation carries
+  over unchanged) — vents, plugs, switches, pictures, clocks, window
+  blinds;
+- **(b) low thin panel:** AABB bottom < **0.30 m** (including
+  below-floor boxes) AND depth ≤ **0.12 m** — the term "floor-reaching"
+  is REMOVED; the bottom-height partition fully defines the disjunct.
+  This resolves the key's measured floor∩attached case (room_2 obj_57,
+  a low blinds panel: z [−0.49, 0.35], depth 0.07 m, ruled BOTH
+  on-floor and attached by the human key, which the original draft's
+  unconditional floor-support exclusion contradicted).
+
+Declared, quantified risk: thin doors can fire under (b), and because
+the attachment keys are EXHAUSTIVE, unlisted doors are ruled negatives
+— door admissions are FALSE POSITIVES, not unspecified cases. They
+count directly against the S2 attached-precision gate (≥ 0.85); no
+constant may be adjusted to avoid them.
 
 ### D2 — seat / interior support surfaces (`ON_ENTITY_SURFACE` v2)
 

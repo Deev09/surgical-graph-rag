@@ -156,10 +156,14 @@ system fixed, so the changed stage becomes the testable explanation.
    relation semantics.** The oracle-guided ceiling of the pooled
    proposal bank materializes 31/53 entities at QA precision 1.00 —
    and lifts human-keyed recall only 0.245 → 0.265 (support 2 → 3): of
-   the 13 newly recoverable entities (11 of them key-cited), exactly
-   ONE becomes a citable answer, because the rest sit in attached-to-wall answers
-   the frozen 2 cm attachment semantics cannot cite even from perfect
-   geometry (variant A: 1/14). The predeclared proceed rule stopped
+   the 13 newly recoverable entities, exactly ONE becomes a citable
+   answer. The full accounting: seven are attached-key positives
+   blocked by the frozen 2 cm attachment semantics (which cannot cite
+   them even from perfect geometry — variant A: 1/14); three are
+   furniture-support positives, of which one materialized as the new
+   support hit; one is cited only by the non-exhaustive near-wall
+   question (outside micro-recall by definition); and two are not
+   key-cited at all. The predeclared proceed rule stopped
    the composer before a single parameter existed
    (`docs/c1_p2_composer_protocol.md`). For the first time in the
    project, perception is not the binding constraint — the

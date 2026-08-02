@@ -169,11 +169,14 @@ Proceed rule required micro-R ≥ 0.285 or support ≥ 4; the ceiling gives
 0.2653 and 3. **STOP — no composer is built**, per the approved rule.
 
 **The finding, stated precisely:** of the 13 newly viable entities P1
-recovered (11 of them key-cited), exactly ONE became a citable answer
-(one additional support hit). The other twelve — blinds, vents, wall-plugs
-recovered at IoU 0.86–0.95 — sit in attached-to-wall answers that the
-frozen 2 cm ATTACHED_TO semantics cannot cite even from perfect
-geometry (variant A: 1/14). Perception is no longer the QA bottleneck
+recovered, exactly ONE became a citable answer (one additional support
+hit). The full accounting: SEVEN are attached-key positives (blinds and
+vents, IoU 0.83–0.95) blocked by the frozen 2 cm ATTACHED_TO semantics,
+which cannot cite them even from perfect geometry (variant A: 1/14);
+THREE are furniture-support positives (two plates, a vase), of which
+one materialized as the new support hit; ONE (a wall-plug) is cited
+only by the non-exhaustive near-wall question, outside micro-recall by
+definition; and TWO (lamps) are not key-cited at all. Perception is no longer the QA bottleneck
 on room_2: with P1's proposals, composition COULD deliver 31/53
 entities at precision 1.00, and it would barely move a single QA
 number. **The bottleneck has moved — for the first time in this
