@@ -59,5 +59,7 @@ scenes under H1–H6, one run each, no changes between scenes.
 
 - [x] Owner instruction to predeclare and run C3.0-SR (2026-08-02,
       project owner / deevyaswain, quoted above).
-- [ ] SR preparation freeze commit: __________ (filled at refreeze,
-      before the room_2 run)
+- [x] SR preparation freeze commit: `b05931a` (quad-aware parser +
+      real-format fixtures; frozen C3.0-S Stage-0 tests unchanged and
+      passing; 67/67 canonical test files green; committed BEFORE the
+      single authorized room_2 development run)
