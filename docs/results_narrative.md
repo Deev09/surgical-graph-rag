@@ -1,8 +1,9 @@
 # Results — an evidence-first spatial-graph reasoner for captured 3D scenes
 
-Release: `mvp-v1.0`. This is the publication-ready results narrative for
-the frozen MVP. Every number is committed and hash-pinned; every empirical
-claim names its evidence source. The scope is intentionally narrow:
+Release: `paper-results-v1.0` (the experimental-arc freeze; the earlier
+`mvp-v1.0` tag marks the demo freeze). Every number is committed and
+hash-pinned; every empirical claim names its evidence source. The scope
+is intentionally narrow:
 
 > **A modular, queryable spatial-graph reasoner over captured 3D
 > scenes that exposes uncertainty and isolates failures under imperfect
@@ -112,21 +113,18 @@ system fixed, so the changed stage becomes the testable explanation.
 8. **Mesh-derived structural surfaces fail structurally, not
    parametrically — and the failure arc is itself a methods result.**
    Three successively cheaper attempts closed the mesh-plane estimator
-   family: C3.0-S stopped at its input contract (the pinned mesh is
-   quads; the frozen parser was triangles-only); C3.0-SR fixed the
-   parser under a predeclared rule and then failed all seven geometry
-   gates (14/15 grown components rejected by acceptance constants never
-   measured against real roughness); the read-only Stage 0m measurement
-   then showed no constant could work — floor and ceiling cohere
-   (coverage 0.96/0.99) but two of four room_2 walls reach only
-   0.03–0.04 coverage at ANY residual band up to 5 cm, because the
-   sensor mesh records shelving/blinds rather than the architectural
-   wall, and blinds form their own ≥2.2 m² planes
-   (`docs/c3_0_mesh_surfaces_protocol.md`,
-   `docs/c3_0_sr_mesh_surfaces_protocol.md`,
-   `docs/c3_stage0m_measurement_protocol.md`). Each failure was caught
-   earlier and cheaper than the last, ending with a zero-GPU
-   measurement that replaced a third premature freeze.
+   family: C3.0-S stopped at its input contract (quad mesh,
+   triangles-only parser); C3.0-SR fixed the parser under a predeclared
+   rule and failed all seven geometry gates (14/15 grown components
+   rejected by acceptance constants never measured against real
+   roughness); the read-only Stage 0m measurement then showed no
+   constant could work — floor and ceiling cohere (0.96/0.99 coverage)
+   but two of four room_2 walls reach only 0.03–0.04 at any residual
+   band up to 5 cm, because the sensor mesh records shelving and
+   blinds, not the architectural wall
+   (`docs/c3_0_mesh_surfaces_protocol.md` and successors). Each failure
+   was caught earlier and cheaper than the last; a zero-GPU measurement
+   replaced what would have been a third premature freeze.
 9. **The oracle's own surface annotations disagree with the captured
    geometry.** Stage 0m's impostor census found large planar components
    belonging to the walls THEMSELVES (5.7–5.8 m²) sitting more than
@@ -232,21 +230,21 @@ source; C1/C2 inject oracle labels/surfaces respectively as declared
 evaluation scaffolding; the C2 vocabulary is closed-set (declared leak);
 near-wall questions are membership-only; frl_apartment_0 remains
 plausibility-only; the compiler is a rules engine with a known
-paraphrase-brittleness surface (measured separately). The oracle
-structural-surface planes themselves are annotation targets that the
-captured geometry contradicts by more than 5 cm on 2 of 4 room_2 walls
-(finding 9): wall-contact metrics throughout should be read against
-that target uncertainty, and keys/scores were intentionally left
-unrevised to preserve comparability. Replica's raw mesh format is also
-not uniform across scenes (three scenes are pure quads, one pure
-triangles) — a reminder that even "one dataset" hides input-contract
-variance. Finding 12 extends the annotation caveat to objects: the
-keyed attachment answers are unrecoverable from Replica's annotation
-boxes (11/14 behind the wall planes), so the frozen track's near-zero
-attachment recall is a property of the dataset's annotation geometry
-as much as of the system — and the semantics-v2 support definition,
-though validated on the development scene, is reported with its
-measured cross-scene precision collapse, not just its dev-scene win.
+paraphrase-brittleness surface (measured separately).
+
+Annotation quality is itself a measured limitation. The oracle wall
+planes disagree with the captured geometry by more than 5 cm on 2 of 4
+room_2 walls (finding 9), so wall-contact metrics carry target
+uncertainty larger than the 2–3 cm bands; finding 12 extends this to
+objects — the keyed attachment answers are unrecoverable from Replica's
+annotation boxes (11/14 behind the wall planes), making the near-zero
+attachment recall a property of the dataset's annotation geometry as
+much as of the system. Keys and scores were intentionally left
+unrevised to preserve comparability, and the semantics-v2 support
+definition is reported with its measured cross-scene precision
+collapse, not just its development-scene win. Replica's raw mesh format
+is also not uniform across scenes (three pure-quad scenes, one
+pure-triangle) — even "one dataset" hides input-contract variance.
 
 ## Future work (explicitly NOT part of this release)
 
@@ -281,5 +279,7 @@ release's experimental arc is closed.
   `demo/semantics_v2.py` + `tools/semantics_v2_s2.py` (v2 extractors
   under `graph/relations/*_v2.py`, frozen-track hash guards in
   `tests/tools/test_semantics_v2_guards.py`).
-- Release tag: `mvp-v1.0` (the MVP freeze; findings 8–11 postdate it).
-- Canonical tests: `python3 tools/run_tests.py`.
+- Release tags: `mvp-v1.0` (demo freeze) and `paper-results-v1.0` (the
+  experimental-arc freeze this narrative describes).
+- Canonical tests: `python3 tools/run_tests.py` (71 test files at the
+  paper freeze).

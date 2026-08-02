@@ -26,7 +26,10 @@ and negative results are committed as first-class documentation.
   zero-shot labels on C1's matched instances, closed to further
   optimization — and fully-raw operation (C3) is not implemented.
 - The current headline is that the system **exposes and measures its own
-  failures** — not that it solves raw-scene QA.
+  failures** — not that it solves raw-scene QA. The completed
+  experimental arc (tag `paper-results-v1.0`) traces where failure
+  MOVES: perception → relation semantics → the dataset's own annotation
+  geometry.
 
 ## The input ladder (stage isolation)
 
@@ -41,7 +44,7 @@ attribute differences to that stage (`docs/mesh_pipeline_contract.md`):
 | **C2** | learned (= C1 frozen) | learned (CLIP zero-shot on matched instances) | **measured, evaluation-only** — labels are not the bottleneck; C2 optimization stopped (`docs/c2_matched_labels_protocol.md`) |
 | **C3** | learned | learned, mesh-derived surfaces | fully raw path not implemented; C3.0-S and C3.0-SR surface-source isolation both CLOSED as negative results (input-contract, then acceptance-constant collapse on real mesh roughness — `docs/c3_0_sr_mesh_surfaces_protocol.md`) |
 
-## Measured status (2026-08-01)
+## Measured status (final at `paper-results-v1.0`, 2026-08-02)
 
 **Human-verified baseline (Phase 8).** Four Replica scenes
 (room_0/room_1/room_2/office_0) have human-reviewed answer keys; the scorecard
@@ -72,11 +75,31 @@ Labels are not the current binding constraint — C1 proposal coverage is —
 but they are not robustly solved; C2 optimization remains stopped
 (`docs/c2_matched_labels_protocol.md`).
 
-**Committed negative results.** Query-scoped raw-proposal expansion recovers
-zero additional support answers on saved proposals
+**The causal chain (findings 10–12, tag `paper-results-v1.0`).**
+(1) C1-P1 — the first gate-passing performance experiment: SAM 2.1 over
+40 deterministic renders of the raw mesh, lifted through vertex-id
+buffers and fused by cross-view co-membership, fixes the proposal
+bottleneck (entity viability 20/53 → 33/53 dev; +6/+5 on both transfer
+scenes; evaluation-only). (2) C1-P2.0 — with proposals fixed, an
+oracle-guided ceiling shows the bottleneck moved to relation semantics
+(31/53 entities at precision 1.00 lift recall only 0.245 → 0.265); the
+predeclared rule stopped the composer before a parameter existed.
+(3) semantics-v2 — a separately labeled benchmark-definition track:
+support becomes representable on the dev scene (5/20 → 16/20 @ P 0.94)
+but is miscalibrated across scenes; attachment is unrecoverable from
+Replica's annotation boxes (11/14 keyed fixtures lie BEHIND the
+annotated wall planes); relation-specific gates stopped the track where
+aggregate gates would have passed. Full story:
+`docs/results_narrative.md`; paper draft: `docs/paper_draft.md`.
+
+**Committed negative results.** Segment3D pilot; three selection-repair
+rules; query-scoped raw-proposal expansion
 (`docs/query_scoped_expansion_prototype.md`); the uncertainty-preserving
-provisional pool is a policy prototype, not a tuned improvement
-(`docs/uncertainty_policy_prototype.md`).
+provisional pool (`docs/uncertainty_policy_prototype.md`); the
+mesh-plane surface-estimator family (three-act closure incl. a
+read-only measurement that replaced a third premature freeze); the
+semantics-v2 track. Each is committed with its predeclared protocol and
+verdict.
 
 ## Quickstart
 
@@ -102,13 +125,17 @@ python3 tools/mvp_captioned_demo.py                   # self-running captioned w
 
 Public MVP walkthrough: **https://deev09.github.io/surgical-graph-rag/**
 
-The surface-source generalization experiments C3.0-S and C3.0-SR are CLOSED
-as negative results ([`docs/c3_0_mesh_surfaces_protocol.md`](docs/c3_0_mesh_surfaces_protocol.md),
-[`docs/c3_0_sr_mesh_surfaces_protocol.md`](docs/c3_0_sr_mesh_surfaces_protocol.md)):
-the fixed estimator accepts almost nothing on real captured mesh roughness.
-Any successor must measure real-mesh statistics before freezing constants. The separate performance
-protocol, [`docs/c1_p1_multiview_proposals_protocol.md`](docs/c1_p1_multiview_proposals_protocol.md),
-remains parked and unrun.
+The experimental arc is CLOSED at tag `paper-results-v1.0`. Surface
+estimation from the mesh closed as a three-act negative
+([`docs/c3_0_mesh_surfaces_protocol.md`](docs/c3_0_mesh_surfaces_protocol.md)
+and successors); the multiview proposal experiment PASSED all gates
+([`docs/c1_p1_multiview_proposals_protocol.md`](docs/c1_p1_multiview_proposals_protocol.md));
+the composer and semantics-v2 stages stopped under their predeclared
+rules ([`docs/c1_p2_composer_protocol.md`](docs/c1_p2_composer_protocol.md),
+[`docs/semantics_v2_track_protocol.md`](docs/semantics_v2_track_protocol.md)).
+Future work (D2 precision hardening; annotation-aware attachment) is
+identified but deliberately unopened — see
+[`docs/results_narrative.md`](docs/results_narrative.md).
 
 ## Repo layout (current system)
 
