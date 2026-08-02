@@ -93,6 +93,60 @@ way.
 
 ## Sign-off
 
-- [ ] Owner approves the measurement set, scene scoping (labeled =
+- [x] Owner approves the measurement set, scene scoping (labeled =
       room_2 only), band grid, and decision rule
-      (date: ______, by: ______)
+      (date: 2026-08-02, by: project owner / deevyaswain — "approved,
+      run Stage 0m")
+
+## 2026-08-02 verdict — OVERLAP: stop the estimator family, pivot to C1-P1
+
+One read-only run (`tools/c3_stage0m_measure.py`; report
+`runs/phase8_c3/stage0m/report.json`). No band in the grid is viable, so
+under the approved rule the mesh-plane estimator family is STOPPED and
+the pivot is to C1-P1.
+
+**M2 cohesion (room_2, best coverage at ANY band up to 0.05 m):**
+
+| oracle surface | best largest-component coverage | required |
+|---|---|---|
+| floor_8 | 0.960 | 0.85 |
+| ceiling_37 | 0.987 | 0.85 |
+| wall_43_yplus | 0.948 | 0.75 |
+| wall_16_yminus | 0.599 | 0.75 |
+| wall_20_xminus | **0.037** | 0.75 |
+| wall_30_xplus | **0.028** (84 fragments) | 0.75 |
+
+**Why — two structural causes, neither fixable by constants:**
+
+1. **Occlusion / absence.** The captured mesh records what the sensor
+   saw. Two of four walls are mostly covered (shelving, blinds, window
+   openings): their exposed planar surface within ±5 cm of the oracle
+   plane is 3–4% of the annotated wall area. No residual tolerance
+   manufactures geometry that is not in the mesh. Blinds themselves
+   form large (~2.2–2.3 m²) vertical planes — genuine impostors.
+2. **Annotation-vs-geometry displacement.** The M3 census at the frozen
+   0.02 m growth residual found large planar components ATTRIBUTED TO
+   THE WALLS THEMSELVES (obj_20: 5.7 m², obj_30: 5.8 m²) sitting MORE
+   THAN 5 cm from their oracle planes — the captured wall geometry
+   contradicts the annotation planes by more than the compatibility
+   tolerance. The estimator was being graded against planes the mesh
+   does not instantiate.
+
+Cause 2 is also a **standing limitation finding for the paper**: the
+"oracle" structural surfaces inherited by every ladder row (A, B, C1,
+C2) are annotation planes that the real geometry disagrees with by
+>5 cm on 2 of 4 room_2 walls. The 2–3 cm contact-band relations sit on
+top of planes with larger error than the bands themselves; wall-contact
+recall limits measured earlier are partly annotation artifacts.
+
+**M1 nugget (label-free, all four scenes):** Replica's raw format is
+NOT uniform — room_1/room_2/office_0 are pure quads (645k–722k), but
+room_0 is pure triangles (1.9M). C3.0-S's triangles-only parser would
+have "worked" on room_0 by luck; the SR parser handles both.
+
+**Per the approved rule:** no successor mesh-plane protocol will be
+drafted; the estimator family is closed with three commits of evidence
+(format failure, acceptance collapse, and now a measured structural
+ceiling). The pivot target is the parked C1-P1 multiview-proposals
+protocol; ACTIVATING it (and any GPU it needs) remains a separate owner
+decision — nothing is started by this verdict.
