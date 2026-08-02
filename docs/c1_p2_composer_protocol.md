@@ -151,6 +151,42 @@ both):
   recorded spec amendment after the pass. C2-style learned labels on
   the new composition would be a separate, later experiment.
 
+## 2026-08-02 Stage-P2.0 verdict — STOP: the ceiling is semantic, not compositional
+
+One oracle-guided ceiling run (`tools/c1p2_ceiling.py`; report
+`runs/phase8_c1p2/replica_room_2_p2_ceiling.json`; the recomputed C1
+reference row hard-matched the frozen anchors). 33 proposals nominated
+from the pooled bank (15 from P1), 31/53 entities materialized through
+the frozen resolver at QA precision 1.00 — and the human-keyed QA
+ceiling is:
+
+| row | ent@0.5 | uid micro-P | uid micro-R | support | attached | floor |
+|---|---|---|---|---|---|---|
+| C1 reference | 18/53 | 1.00 | 0.2449 | 2/20 | 0/14 | 10/13 |
+| **P2.0 ceiling** | **31/53** | 1.00 | **0.2653** | **3/20** | 0/14 | 10/13 |
+
+Proceed rule required micro-R ≥ 0.285 or support ≥ 4; the ceiling gives
+0.2653 and 3. **STOP — no composer is built**, per the approved rule.
+
+**The finding, stated precisely:** of the 13 newly viable in-key
+entities P1 recovered, exactly ONE became a citable answer (one
+additional support hit). The other twelve — blinds, vents, wall-plugs
+recovered at IoU 0.86–0.95 — sit in attached-to-wall answers that the
+frozen 2 cm ATTACHED_TO semantics cannot cite even from perfect
+geometry (variant A: 1/14). Perception is no longer the QA bottleneck
+on room_2: with P1's proposals, composition COULD deliver 31/53
+entities at precision 1.00, and it would barely move a single QA
+number. **The bottleneck has moved — for the first time in this
+project — from perception to relation semantics/representation.**
+
+Consequences: P1 banks remain frozen and evaluation-only; the frozen C1
+row remains the reference; Stages P2.1/P2.2 are cancelled with their
+budgets unspent. Any successor experiment must target the relation
+semantics/representation layer (wall-mount attachment semantics, seat
+surfaces, allowlist) — which changes ANSWER definitions for every
+variant including A, and therefore requires its own carefully
+comparability-guarded protocol. Nothing is authorized by this verdict.
+
 ## Explicitly out of scope
 
 Relation semantics, thresholds, allowlists, keys, graph/Router changes;
@@ -161,6 +197,7 @@ sealed-holdout generalization language.
 
 ## Sign-off
 
-- [ ] Owner approves the staged shape, Stage-P2.0 proceed/stop numbers,
+- [x] Owner approves the staged shape, Stage-P2.0 proceed/stop numbers,
       the rule-family shape and 4-scalar budget, all D/T gates, and the
-      3-version budget (date: ______, by: ______)
+      3-version budget (2026-08-02, project owner / deevyaswain —
+      "approved, run P2.0")
