@@ -63,3 +63,50 @@ scenes under H1–H6, one run each, no changes between scenes.
       real-format fixtures; frozen C3.0-S Stage-0 tests unchanged and
       passing; 67/67 canonical test files green; committed BEFORE the
       single authorized room_2 development run)
+
+## 2026-08-02 verdict — STOPPED: all seven development gates FAIL
+
+The single authorized room_2 run executed from `5c03aa0`. Unlike C3.0-S,
+the input contract held: the pinned quad mesh parsed (722,398 quads →
+1,444,796 triangles, 414 degenerate dropped), the estimator ran to
+completion, the hash-stamped surface artifact was finalized
+(`b5b23ee4b61f4a52…`), and the evaluator then opened oracle surfaces and
+the human key. This is a REAL geometry negative result, not a
+preparation failure.
+
+Result: **0 floors, 0 ceilings, 1 wall** (`invalid_reason:
+fewer_than_two_qualifying_horizontal_components`). G1–G7 all FAIL:
+
+| measure | value | gate |
+|---|---|---|
+| floor / ceiling emitted | 0 / 0 | G1 FAIL |
+| wall oracle area coverage | 0.066 (1 of 4 walls, 19% of it) | G3 FAIL |
+| compatible-plane errors (the one survivor) | 0.31°, 0.033 m | G4 FAIL (offset > 0.03) |
+| surface-question micro-P / micro-R vs key | null (0 cited) / 0.00 | G5/G6 FAIL (B: 0.9375 / 0.5172) |
+| NEAR_SURFACE(wall) F1 vs B | 0.00 | G7 FAIL |
+
+Failure class, read from the frozen artifact diagnostics only:
+**component-acceptance collapse on real mesh roughness.** Candidate
+faces were abundant (611,972 horizontal; 707,342 vertical) and region
+growth produced 15 components over the area floor — but 14 of 15 were
+rejected at the PCA-fit / boundary-loop stage (`n_rejected_fit_or_
+boundary: 14`, `n_fit_components: 1`). The constants that did this
+(0.015 m RMS residual, 0.02 m growth band, simple-boundary requirement)
+were fixed against synthetic planar fixtures and never measured against
+real captured-surface statistics; real Replica floors/walls carry
+carpet/texture/curvature that a clean plane fit rejects wholesale. The
+one component that survived fit accurately (0.31°) — the estimator is
+precise on what it accepts and accepts almost nothing.
+
+Per the inherited dev-failure stopping rule: **C3.0-SR is closed as a
+negative result.** Transfer runs remain unspent (3), no constant was
+altered, no rescue run occurred. The lesson for any successor protocol
+is methodological: BOTH C3.0 failures came from freezing contact with
+reality too late — first the input format, then the acceptance
+constants. A successor must include a predeclared, measurement-first
+Stage 0m that MEASURES real-mesh statistics (face-arity census,
+per-component point-to-plane residual distributions on the pinned
+meshes) read-only BEFORE any constant is fixed, exactly as the
+benchmark side of this project has always measured before gating.
+Whether to open that successor is an owner decision; nothing is
+authorized by this verdict.

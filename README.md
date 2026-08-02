@@ -39,7 +39,7 @@ attribute differences to that stage (`docs/mesh_pipeline_contract.md`):
 | **B** | derived from `mesh_semantic.ply` | oracle | frame parity with A frozen |
 | **C1** | learned segmenter on raw `mesh.ply` | oracle via exact vertex correspondence | **measured** (Mask3D reference @ MIN_SCORE=0.2; Segment3D pilot failed its predeclared gate — see below) |
 | **C2** | learned (= C1 frozen) | learned (CLIP zero-shot on matched instances) | **measured, evaluation-only** — labels are not the bottleneck; C2 optimization stopped (`docs/c2_matched_labels_protocol.md`) |
-| **C3** | learned | learned, mesh-derived surfaces | fully raw path not implemented; C3.0 surface-source isolation drafted |
+| **C3** | learned | learned, mesh-derived surfaces | fully raw path not implemented; C3.0-S and C3.0-SR surface-source isolation both CLOSED as negative results (input-contract, then acceptance-constant collapse on real mesh roughness — `docs/c3_0_sr_mesh_surfaces_protocol.md`) |
 
 ## Measured status (2026-08-01)
 
@@ -102,10 +102,11 @@ python3 tools/mvp_captioned_demo.py                   # self-running captioned w
 
 Public MVP walkthrough: **https://deev09.github.io/surgical-graph-rag/**
 
-The immediate generalization experiment is drafted—but not yet authorized—in
-[`docs/c3_0_mesh_surfaces_protocol.md`](docs/c3_0_mesh_surfaces_protocol.md).
-It replaces only oracle structural surfaces while holding the frame fixed, so
-it is C3.0 isolation rather than a fully raw C3 claim. The separate performance
+The surface-source generalization experiments C3.0-S and C3.0-SR are CLOSED
+as negative results ([`docs/c3_0_mesh_surfaces_protocol.md`](docs/c3_0_mesh_surfaces_protocol.md),
+[`docs/c3_0_sr_mesh_surfaces_protocol.md`](docs/c3_0_sr_mesh_surfaces_protocol.md)):
+the fixed estimator accepts almost nothing on real captured mesh roughness.
+Any successor must measure real-mesh statistics before freezing constants. The separate performance
 protocol, [`docs/c1_p1_multiview_proposals_protocol.md`](docs/c1_p1_multiview_proposals_protocol.md),
 remains parked and unrun.
 
