@@ -39,7 +39,7 @@ attribute differences to that stage (`docs/mesh_pipeline_contract.md`):
 | **B** | derived from `mesh_semantic.ply` | oracle | frame parity with A frozen |
 | **C1** | learned segmenter on raw `mesh.ply` | oracle via exact vertex correspondence | **measured** (Mask3D reference @ MIN_SCORE=0.2; Segment3D pilot failed its predeclared gate — see below) |
 | **C2** | learned (= C1 frozen) | learned (CLIP zero-shot on matched instances) | **measured, evaluation-only** — labels are not the bottleneck; C2 optimization stopped (`docs/c2_matched_labels_protocol.md`) |
-| **C3** | learned | learned, mesh-derived surfaces | not implemented (blocked on C1 coverage, not labels) |
+| **C3** | learned | learned, mesh-derived surfaces | fully raw path not implemented; C3.0 surface-source isolation drafted |
 
 ## Measured status (2026-08-01)
 
@@ -102,10 +102,12 @@ python3 tools/mvp_captioned_demo.py                   # self-running captioned w
 
 Public MVP walkthrough: **https://deev09.github.io/surgical-graph-rag/**
 
-The next performance experiment is drafted—but not yet authorized—in
-[`docs/c1_p1_multiview_proposals_protocol.md`](docs/c1_p1_multiview_proposals_protocol.md).
-It tests a new multi-view RGB proposal source under fixed gates; C1-P1 does not
-start until the project owner signs off.
+The immediate generalization experiment is drafted—but not yet authorized—in
+[`docs/c3_0_mesh_surfaces_protocol.md`](docs/c3_0_mesh_surfaces_protocol.md).
+It replaces only oracle structural surfaces while holding the frame fixed, so
+it is C3.0 isolation rather than a fully raw C3 claim. The separate performance
+protocol, [`docs/c1_p1_multiview_proposals_protocol.md`](docs/c1_p1_multiview_proposals_protocol.md),
+remains parked and unrun.
 
 ## Repo layout (current system)
 

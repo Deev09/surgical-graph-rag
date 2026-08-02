@@ -29,9 +29,10 @@ measured, and **CLOSED** (2026-08-01) with Mask3D @ MIN_SCORE=0.2 as the
 frozen reference composition — the Segment3D pilot and the oracle-free
 selection-repair experiment both failed their predeclared gates
 (`docs/c1_closeout.md`, `docs/c1_m2_protocol.md`,
-`docs/c1_m2c_protocol.md`). C2 and C3 are not implemented; C2 does not
-start before the MVP-v0 demo slice is accepted
-(`docs/mvp_v0_demo_spec.md`).
+`docs/c1_m2c_protocol.md`). C2.0 is measured on frozen matched instances and
+closed as evaluation-only (`docs/c2_matched_labels_protocol.md`). Fully raw C3
+is not implemented; the sign-off-gated C3.0 surface-source isolation is drafted
+in `docs/c3_0_mesh_surfaces_protocol.md`.
 
 ## A↔B frame parity (what "repaired and frozen" means)
 
