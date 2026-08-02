@@ -221,6 +221,61 @@ Implemented exactly to the frozen definitions; no scene was scored:
 Full suite 71/71. **S2 (variant A first) does not run without its own
 owner authorization.**
 
+## 2026-08-02 S2 verdict — STOP_TRACK (frozen gates; relation gates decisive)
+
+One S2 run (`tools/semantics_v2_s2.py`; report
+`runs/semantics_v2/s2_report.json`; every scene's frozen v1 A row was
+recomputed first and hard-matched its committed anchor).
+
+| scene | A-v1 (P / R) | A-v2 (P / R) |
+|---|---|---|
+| room_0 | 0.85 / 0.347 | 0.79 / 0.612 |
+| room_1 | 0.83 / 0.286 | 0.58 / 0.514 |
+| room_2 | 0.95 / 0.408 | 0.94 / 0.612 |
+| office_0 | 1.00 / 0.375 | **0.36** / 0.500 |
+
+Gate outcomes: aggregate recall (0.612 ≥ 0.55) and aggregate precision
+(0.94) PASS; support hits **16/20 @ P 0.94** PASS (v1: 5/20 — D2's
+contained-rest works exactly as designed on the dev scene); attached
+**0/14, zero citations** FAIL; all-scenes precision floor FAIL (office_0
+0.36, room_1 0.58). **STOP_TRACK per the frozen rule: the v1 track
+remains the project's only benchmark; S3 is cancelled unspent.**
+
+**Why attached scored ZERO (read-only census of all 14 keyed attached
+objects, recorded in full):** this is not a wiring failure — the v2
+extractor emitted no edge because the DATASET's annotation geometry
+contradicts any interior-side proximity definition:
+
+- **11 of 14 keyed attached objects lie BEHIND the oracle wall planes**
+  (signed best-wall gap −0.16 m to −1.23 m): windows, blinds, and the
+  picture are annotated at or beyond the annotated wall plane, so the
+  frozen `on_interior_side` clause fails regardless of any band width.
+  This is the Stage 0m annotation-displacement finding measured from
+  the variant-A side.
+- The 3 objects that DO pass wall contact (vents at gaps −0.01 to
+  +0.06 m) carry annotation boxes **0.37–0.62 m deep** — all beyond the
+  0.35 m depth ceiling; v2 thereby also lost the single hit v1 had
+  (obj_42, depth 0.372, by 0.022 m). Constants stay frozen; no
+  adjustment.
+- One keyed vent (obj_59) sits **1.26 m from every wall plane** — an
+  annotation reality no wall-proximity definition reaches.
+
+**What the verdict decomposes:** D2 (contained-rest support) is a
+validated definition on the development scene but over-fires on
+office_0/room_1 (precision 0.36/0.58 — interior-volume false positives,
+the declared drawer-contents property, at real cost); D1 (attachment)
+is structurally unreachable from A's annotation geometry — "attached"
+in the keys is a semantic judgment about wall fixtures, not an
+interior-side distance property of their boxes. Any successor would
+need annotation-geometry-aware attachment evidence (e.g., embedded-in-
+wall-plane semantics) — a NEW definition requiring its own protocol,
+not a constant change.
+
+**Methodological note:** the aggregate gates alone (R 0.612 @ P 0.94 on
+room_2) would have PASSED this run. The relation-specific gates the
+owner required at review (attached ≥ 8/14) are precisely what caught
+the failure. The review requirement is vindicated by the measurement.
+
 ## Budget and prohibitions
 
 Zero GPU. No key edits, no v1-artifact modification, no threshold
