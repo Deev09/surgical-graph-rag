@@ -100,6 +100,13 @@ python3 tools/mvp_captioned_demo.py                   # self-running captioned w
 #   -> open runs/mvp_v1/captioned_demo.html (presentation-only derivative)
 ```
 
+Public MVP walkthrough: **https://deev09.github.io/surgical-graph-rag/**
+
+The next performance experiment is drafted—but not yet authorized—in
+[`docs/c1_p1_multiview_proposals_protocol.md`](docs/c1_p1_multiview_proposals_protocol.md).
+It tests a new multi-view RGB proposal source under fixed gates; C1-P1 does not
+start until the project owner signs off.
+
 ## Repo layout (current system)
 
 ```

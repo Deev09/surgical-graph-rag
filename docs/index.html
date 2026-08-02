@@ -1,33 +1,33 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=plug_and_chug_demo.html">
-  <title>Surgical Graph RAG</title>
-  <link rel="canonical" href="plug_and_chug_demo.html">
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
-      color: #1f2623;
-      background: #f5f7f1;
-      letter-spacing: 0;
-    }
-
-    a {
-      color: #2f6f52;
-      text-underline-offset: 3px;
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <p>Opening <a href="plug_and_chug_demo.html">the plug-and-chug scene reasoning demo</a>.</p>
-  </main>
-</body>
-</html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Surgical Graph RAG — MVP-v1</title>
+<style>
+html{background:#0d1015;color:#e8edf3;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{max-width:840px;margin:0 auto;padding:56px 24px 80px}
+.eyebrow{color:#79b8ff;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+h1{font-size:clamp(34px,6vw,62px);line-height:1.05;margin:12px 0 22px;letter-spacing:-.035em}
+.lead{font-size:20px;color:#b8c2ce;max-width:720px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 42px}
+a.button{display:inline-block;padding:11px 17px;border-radius:8px;text-decoration:none;font-weight:650}
+.primary{background:#2f81f7;color:white}.secondary{border:1px solid #44505e;color:#dce6f0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:30px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:17px}
+.card h2{font-size:16px;margin:0 0 7px}.card p{font-size:14px;color:#aeb8c4;margin:0}
+.note{margin-top:34px;padding:14px 16px;background:#171a20;border-left:3px solid #d29922;color:#b9c1cb;font-size:14px}
+code{background:#20262e;padding:2px 5px;border-radius:4px}
+</style>
+<div class="eyebrow">MVP-v1.0 · evidence-first spatial reasoning</div>
+<h1>See where 3D question answering fails—and why.</h1>
+<p class="lead">A self-running, captioned walkthrough of a queryable spatial-graph reasoner over real captured scenes. It isolates box construction, learned instance extraction, and learned labels while keeping every answer tied to visible 3D evidence.</p>
+<div class="actions">
+  <a class="button primary" href="mvp-v1-demo.html">Launch the two-minute demo</a>
+  <a class="button secondary" href="https://github.com/Deev09/surgical-graph-rag">View source and results</a>
+  <a class="button secondary" href="plug_and_chug_demo.html">Open the legacy toy demo</a>
+</div>
+<div class="grid">
+  <div class="card"><h2>Real captured geometry</h2><p>Orbit full-resolution colored Replica meshes, then compare oracle and learned instances.</p></div>
+  <div class="card"><h2>Stage-isolated failures</h2><p>Watch an office answer collapse at instance extraction and a room_2 support anchor disappear under one label error.</p></div>
+  <div class="card"><h2>Honest uncertainty</h2><p>Human keys, answer/empty/defer/unknown states, disclosures, and click-level provenance remain visible.</p></div>
+</div>
+<div class="note"><strong>Scope:</strong> C1 and C2 are declared evaluation-only ladder stages. This demonstrates attributable structural reasoning over a frozen Replica reconstruction; it is not an end-to-end NeRF/3DGS claim.</div>
