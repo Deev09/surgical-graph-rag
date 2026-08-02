@@ -1,9 +1,8 @@
-# C3.0-S — raw-mesh structural surfaces (draft protocol)
+# C3.0-S — raw-mesh structural surfaces (frozen protocol)
 
-**Status: OWNER-APPROVED 2026-08-02; PREPARATION IN PROGRESS. No estimator
-has run on a real scene. The first real-scene run remains blocked until the
-complete implementation/environment preparation commit is recorded below.
-After that freeze, gates and parameters may not be changed mid-run.**
+**Status: PREDECLARED AND FROZEN 2026-08-02 at preparation commit
+`e5f77c7`. No estimator had run on a real scene at that commit. Gates,
+parameters, and the implementation may not be changed mid-run.**
 
 Written 2026-08-02 after MVP-v1.0 and before any raw-mesh surface-estimator
 implementation.
@@ -262,5 +261,6 @@ class should inform that protocol rather than tuning on ScanNet.
 - [x] Project owner approves the staged C3.0-S interpretation, fixed
       estimator, development/transfer scenes, gates, and stopping rule
       (2026-08-02, project owner / deevyaswain — "approved—freeze C3.0-S").
-- [ ] Preparation-only freeze commit pins room_0 inputs and the complete
-      implementation/environment before the first room_2 estimator run.
+- [x] Preparation-only freeze commit `e5f77c7` pins room_0 inputs and the
+      complete implementation/environment before the first room_2 estimator
+      run (66/66 canonical test files passed; no `runs/phase8_c3` existed).
